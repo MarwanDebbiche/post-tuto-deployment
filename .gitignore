@@ -2,3 +2,4 @@ __pycache__/
  *.pyc
 .ipynb_checkpoints
 .DS_Store
+data/scraping/comments_trustpilot.json
