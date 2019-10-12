@@ -1,6 +1,6 @@
 In this section we develop a scraper that fetches customer reviews from https://fr.trustpilot.com/
 
-We proceed as the following:
+We proceed as following:
 
 - We start by fetching the company profiles urls on trustpilot using Selenium. 
 
@@ -10,7 +10,7 @@ This results in the file: scraping/notebooks/exports/consolidate_company_urls.cs
 
 To run the script 
 
-```bash
+```shell
 cd scraping/
 scrapy crawl trustpilot
 ```
