@@ -1,4 +1,4 @@
 __pycache__/
  *.pyc
-data/scraping/.ipynb_checkpoints
+.ipynb_checkpoints
 .DS_Store
