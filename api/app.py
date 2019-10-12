@@ -1,12 +1,10 @@
-from flask import Flask, jsonify
-from flask import request
+from flask import Blueprint, request, jsonify, Flask
 import random
 
+api = Blueprint('api', 'api', url_prefix='/api')
 
-app = Flask(__name__)
 
-
-@app.route('/predict-rating', methods=['POST'])
+@api.route('/predict-rating', methods=['POST'])
 def predict_rating():
     '''
     Endpoint to predict the rating using the
@@ -17,6 +15,10 @@ def predict_rating():
             return jsonify({'error': 'no sting in body'}), 400
 
         return jsonify(random.randint(1, 5))
+
+
+app = Flask(__name__)
+app.register_blueprint(api)
 
 
 if __name__ == '__main__':

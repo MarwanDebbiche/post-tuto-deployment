@@ -1,0 +1,19 @@
+version: '3'
+services:
+  db:
+    image: postgres
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile
+  dash:
+    build:
+      context: dash
+      dockerfile: Dockerfile
+    ports:
+      - "8050:8050"
+    environment:
+      - DEBUG=0
+      - API_URL=http://api:5000/api
+    depends_on:
+      - db
