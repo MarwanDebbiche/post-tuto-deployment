@@ -25,8 +25,8 @@ ROBOTSTXT_OBEY = False
 CONCURRENT_REQUESTS = 128
 
 #Export to csv
-FEED_FORMAT = "csv"
-FEED_URI = "comments_trustpilot.csv"
+FEED_FORMAT = "json"
+FEED_URI = "comments_trustpilot.json"
 
 
 # Configure a delay for requests for the same website (default: 0)

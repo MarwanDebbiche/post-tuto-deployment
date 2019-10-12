@@ -1,70 +1,34 @@
 import re
+import pandas as pd
 import scrapy
 
 class Pages(scrapy.Spider):
     name = "trustpilot"
 
-    start_urls = [
-        "https://fr.trustpilot.com/categories"
-    ]
+    company_data = pd.read_csv('./notebooks/exports/consolidate_company_urls.csv')
+    start_urls = company_data['company_url'].tolist()
 
     def parse(self, response):
-        for category in response.css('div.category-object'):
-            uris = category.css('div.sub-category-list a.sub-category-item::attr(href)').extract()
-            names = category.css('div.sub-category-list a.sub-category-item::text').extract()
-            for name, uri in zip(names, uris):
-                request = response.follow(uri, callback=self.parse_websites_page)
-                request.meta['category'] = name
-                yield request 
+        company_logo = response.xpath('//img[@class="business-unit-profile-summary__image"]/@src').extract_first()
+        company_website = response.xpath("//a[@class='badge-card__section badge-card__section--hoverable']/@href").extract_first()
+        company_name = response.xpath("//span[@class='multi-size-header__big']/text()").extract_first()
+        comments = response.xpath("//p[@class='review-content__text']/text()").extract()
+        comments = [comment.strip() for comment in comments]
 
-    def parse_websites_page(self, response):
-        for a in response.css('div.rankings h2 a'):
-            uri = a.css('::attr(href)').extract_first().strip()
-            request = response.follow(uri, callback=self.parse_comments)
-            request.meta['url_website'] = uri
-            request.meta['url_category'] = response.meta['url_category']
-            yield request
+        ratings = response.xpath("//div[@class='star-rating star-rating--medium']//img/@alt").extract()
+        ratings = [int(re.match('\d+', rating).group(0)) for rating in ratings]
 
-        next_page = response.css('a[data-page-number=next-page] ::attr(href)').extract_first()
-        if next_page is not None:
-            request = response.follow(next_page, callback=self.parse_websites_page)
-            request.meta['url_category'] = response.meta['url_category']
-            yield request
-
-
-    def parse_comments(self, response):         
-        for section in response.css('section.review-card__content-section'):
-            comment = section.css("div.review-info__body p.review-info__body__text::text").extract_first().strip()
-            rating = section.css("div.review-info__header__verified div::attr(class)").extract_first()
-            rating = int(re.search(r'\d', rating).group(0))
-            if rating > 3:
-                label = 1
-            else:
-                label = 0
-
-            try:
-                url_website = response.meta['url_website'].split('/')[-1]
-            except:
-                url_website = None
-        
-            try:
-                url_category = response.meta['url_category'].split('/')[-1]
-            except:
-                url_category = None
-            
+        for comment, rating in zip(comments, ratings):
             yield {
-                "text": comment,
-                "rating": rating,
-                "label": label,
-                "url_website": url_website,
-                "url_category": url_category
-
+                'comment': comment,
+                'rating': rating,
+                'url_website' : response.url,
+                'company_name': company_name,
+                'company_website': company_website,
+                'company_logo': company_logo
             }
 
         next_page = response.css('a[data-page-number=next-page] ::attr(href)').extract_first()
         if next_page is not None:
-            request = response.follow(next_page, callback=self.parse_comments)
-            request.meta['url_category'] = response.meta['url_category']
-            request.meta['url_website'] = response.meta['url_website']
+            request = response.follow(next_page, callback=self.parse)
             yield request
-            
