@@ -14,3 +14,5 @@ To run the script
 cd scraping/
 scrapy crawl trustpilot
 ```
+
+This results in the comments_trustpilot.json file under scraping/
