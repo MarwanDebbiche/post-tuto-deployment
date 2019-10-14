@@ -2,6 +2,10 @@ version: '3'
 services:
   db:
     image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
   api:
     build:
       context: api
