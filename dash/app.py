@@ -1,48 +1,87 @@
-import dash
-import dash_table
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output, State
-import requests
+# -*- coding: utf-8 -*-
 import os
 
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import dash_bootstrap_components as dbc
 
-API_URL = os.getenv('API_URL')
-if API_URL is None:
-    API_URL = "http://localhost:5000/api"
+from flask import send_from_directory
 
-app = dash.Dash(__name__)
+external_stylesheets = ['https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css',
+                        'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
+                        'https://fonts.googleapis.com/css?family=Roboto&display=swap',
+                        'https://raw.githubusercontent.com/ahmedbesbes/stylesheets/master/form-signin.css'
+                        ]
 
-app.layout = html.Div([
-    html.H2("Review Analyzer"),
-    dcc.Textarea("review-input"),
-    html.Button(id='submit-button', n_clicks=0, children='Submit'),
-    html.Div(id="submit-output", children="")
-])
+app = dash.Dash(__name__,
+                external_stylesheets=external_stylesheets
+                )
 
+app.layout = html.Form(
+                    [
+                        html.Img(
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Fnac_Logo.svg/992px-Fnac_Logo.svg.png",
+                            style={
+                                'width': '150px',
+                                'height': '150px'
+                            }
+                        ),
+                        html.H1(
+                            "What do you think of this brand ?",
+                            className="h4 mb-3 font-weight-normal"
 
-@app.callback(
-    Output('submit-output', 'children'),
-    [Input('submit-button', 'n_clicks')],
-    [State('review-input', 'value')]
-)
-def sumbit_review_and_predict(n_clicks, review):
-    if not n_clicks:
-        return ""
+                        ),
+                        html.Div(
+                            [
+                                html.Textarea(
+                                    className="form-control z-depth-1",
+                                    id="exampleFormControlTextarea6",
+                                    rows="8",
+                                    placeholder="Write something here..."
+                                )
+                            ],
+                            className="form-group shadow-textarea"
+                        ),
+                        html.Button(
+                            [
+                                html.Span(
+                                    "Submit",
+                                    style={
+                                        "margin-right": "10px"
+                                    }
+                                ),
+                                html.I(
+                                    className="fa fa-paper-plane m-l-7"
+                                )
+                            ],
+                            className="btn btn-lg btn-primary btn-block",
+                            role="submit"
+                        ),
+                        html.Button(
+                            [
+                                html.Span(
+                                    "Review another brand",
+                                    style={
+                                        "margin-right": "10px"
+                                    }
+                                ),
+                                html.I(
+                                    className="fa fa-refresh m-l-7"
+                                )
+                            ],
+                            className="btn btn-lg btn-secondary btn-block",
+                            role="submit"
+                        ),
+                        html.P(
+                            "© BESBES / DEBBICHE - 2019",
+                            className="mt-5 mb-3 text-muted"
+                        )
 
-    elif review:
-        r = requests.post(url=f"{API_URL}/predict-rating", data={"review": review})
-        rating = r.json()
-        return [
-            html.Div("Thank you for the feedback."),
-            html.Div(f"Suggested grade : {rating}")
-         ]
-    else:
-        return "Please enter a review"
+                    ],
+                    className="form-signin",
+                    )
 
 
 if __name__ == '__main__':
-    app.run_server(
-        debug=True,
-        host='0.0.0.0'
-    )
+    app.run_server(debug=True)
