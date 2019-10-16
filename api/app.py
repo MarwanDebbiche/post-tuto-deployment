@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, Flask
 import random
+import db
 
 api = Blueprint('api', 'api', url_prefix='/api')
 
@@ -12,9 +13,34 @@ def predict_rating():
     '''
     if request.method == 'POST':
         if 'review' not in request.form:
-            return jsonify({'error': 'no sting in body'}), 400
+            return jsonify({'error': 'no review in body'}), 400
 
         return jsonify(random.randint(1, 5))
+
+
+@api.route('/review', methods=['POST'])
+def post_review():
+    '''
+    Save review to database.
+    '''
+    if request.method == 'POST':
+        if any(field not in request.form for field in ['review', 'rating', 'rating']):
+            return jsonify({'error': 'Missing field in body'}), 400
+
+        query = db.Review.create(**request.form)
+
+        return jsonify(query.serialize())
+
+
+@api.route('/reviews', methods=['GET'])
+def get_reviews():
+    '''
+    Get all reviews.
+    '''
+    if request.method == 'GET':
+        query = db.Review.select()
+
+        return jsonify([r.serialize() for r in query])
 
 
 app = Flask(__name__)
