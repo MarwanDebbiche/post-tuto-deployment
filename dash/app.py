@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
 
+from random import choice
+import pandas as pd
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_bootstrap_components as dbc
+from dash.dependencies import Input, Output
 
 from flask import send_from_directory
 
@@ -18,20 +21,41 @@ app = dash.Dash(__name__,
                 external_stylesheets=external_stylesheets
                 )
 
-app.layout = html.Form(
+companies = pd.read_csv('../data/scraping/companies.csv')
+
+app.layout = html.Div(
                     [
-                        html.Img(
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Fnac_Logo.svg/992px-Fnac_Logo.svg.png",
+                        html.Div(
+                            [
+                                html.Img(
+                                    id='company_logo',
+                                    style={
+                                        'width': '50%'
+                                    }
+                                ),
+                            ],
                             style={
-                                'width': '150px',
-                                'height': '150px'
+                                  'height': '150px'
                             }
                         ),
+
+                        html.H3(
+                            [
+                                html.Span(
+                                    id='company_name',
+                                    className="badge badge-secondary",
+                                    style={
+                                        'white-space': 'pre-wrap'
+                                    }
+                                )
+                            ]
+                        ),
+                        
                         html.H1(
                             "What do you think of this brand ?",
                             className="h4 mb-3 font-weight-normal"
-
                         ),
+                        
                         html.Div(
                             [
                                 html.Textarea(
@@ -71,7 +95,8 @@ app.layout = html.Form(
                                 )
                             ],
                             className="btn btn-lg btn-secondary btn-block",
-                            role="submit"
+                            id='another-brand',
+                            # role="submit"
                         ),
                         html.P(
                             "© BESBES / DEBBICHE - 2019",
@@ -81,6 +106,24 @@ app.layout = html.Form(
                     ],
                     className="form-signin",
                     )
+
+
+@app.callback(
+    [Output('company_logo', 'src'), Output('company_name', 'children')],
+    [Input('another-brand', 'n_clicks')]
+)
+def change_brand(n_clicks):
+    if n_clicks is not None:
+        row = companies.sample(1).to_dict(orient="records")[0]
+        random_logo = row['company_logo']
+        random_name = row['company_name']
+        if random_logo.startswith('http'):
+            return random_logo, random_name
+        else:
+            return 'https://' + random_logo, random_name
+    else:
+        fnac_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Fnac_Logo.svg/992px-Fnac_Logo.svg.png"
+        return fnac_logo, "Fnac"
 
 
 if __name__ == '__main__':
