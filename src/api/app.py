@@ -5,12 +5,17 @@ import random
 
 from flask import Blueprint, request, jsonify, Flask
 import torch
+import torch.nn.functional as F
 import boto3
 
 #import db
-from ml import model as charCNN 
+from ml import model as charCNN
+from ml import utils
 
-api = Blueprint('api', 'api', url_prefix='/api')
+app = Flask(__name__)
+# api = Blueprint('api', 'api', url_prefix='/api')
+# app.register_blueprint(api)
+api = app
 
 ### load pytorch model for inference ###
 model_path = '../ml/checkpoints/model.pth'
@@ -35,17 +40,25 @@ print('PyTorch model loaded !')
 
 ###
 
-@api.route('/predict-rating', methods=['POST'])
+@api.route('/predict', methods=['POST'])
 def predict_rating():
     '''
     Endpoint to predict the rating using the
     review's text data.
     '''
     if request.method == 'POST':
+        print('request.from =', request.form)
         if 'review' not in request.form:
             return jsonify({'error': 'no review in body'}), 400
-
-        return jsonify(random.randint(1, 5))
+        else:
+            parameters = model.get_model_parameters()
+            review = request.form['review']
+            processed_input = utils.preprocess_input(review, **parameters)
+            prediction = model(processed_input)
+            probabilities = F.softmax(prediction, dim=1)
+            probabilities = probabilities.detach().cpu().numpy()
+            output = probabilities[0][1]
+            return jsonify(float(output))
 
 
 @api.route('/review', methods=['POST'])
@@ -73,9 +86,8 @@ def get_reviews():
         return jsonify([r.serialize() for r in query])
 
 
-app = Flask(__name__)
-app.register_blueprint(api)
+
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host="localhost")
