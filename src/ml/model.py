@@ -2,6 +2,7 @@ import json
 import torch
 import torch.nn as nn
 
+
 class CharacterLevelCNN(nn.Module):
     def __init__(self):
         super(CharacterLevelCNN, self).__init__()
@@ -9,6 +10,7 @@ class CharacterLevelCNN(nn.Module):
         # model parameters
         self.number_of_characters = 69
         self.extra_characters = "éàèùâêîôûçëïü"
+        self.alphabet = ''
         self.max_length = 300
         self.number_of_classes = 2
 
@@ -90,6 +92,16 @@ class CharacterLevelCNN(nn.Module):
         x = x.view(x.size(0), -1)
         output_dimension = x.size(1)
         return output_dimension
+
+    # get model params:
+
+    def get_model_parameters(self):
+        return {
+            'alphabet': "abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:'\"/\\|_@#$%^&*~`+ =<>()[]{}",
+            'extra_characters': self.extra_characters,
+            'number_of_characters': self.number_of_characters,
+            'max_length': self.max_length
+        }
 
     # forward
 
