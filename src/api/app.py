@@ -86,8 +86,5 @@ def get_reviews():
         return jsonify([r.serialize() for r in query])
 
 
-
-
-
 if __name__ == '__main__':
     app.run(debug=True, host="localhost")
