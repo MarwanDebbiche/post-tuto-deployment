@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 import os
 import random
 
@@ -5,23 +7,33 @@ from flask import Blueprint, request, jsonify, Flask
 import torch
 import boto3
 
-import db
-from ..ml.model import CharacterLevelCNN
+#import db
+from ml import model as charCNN 
 
 api = Blueprint('api', 'api', url_prefix='/api')
 
-# load pytorch model for inference
+### load pytorch model for inference ###
 model_path = '../ml/checkpoints/model.pth'
-model = CharacterLevelCNN()
+model = charCNN.CharacterLevelCNN()
 
 if 'model.pth' not in os.listdir('../ml/checkpoints/'):
+    print('downloading the trained model from s3')
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('tuto-e2e-ml-trustpilot')
     bucket.download_file('models/model.pth', model_path)
+else:
+    print('model already saved to src/ml/checkpoints/model.pth')
 
-trained_weights = torch.load(model_path)
+if torch.cuda.is_available():
+    trained_weights = torch.load(model_path)
+else:
+    trained_weights = torch.load(model_path, map_location='cpu')
+    
 model.load_state_dict(trained_weights)
 model.eval()
+print('PyTorch model loaded !')
+
+###
 
 @api.route('/predict-rating', methods=['POST'])
 def predict_rating():
