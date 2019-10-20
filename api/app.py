@@ -1,9 +1,27 @@
-from flask import Blueprint, request, jsonify, Flask
+import os
 import random
+
+from flask import Blueprint, request, jsonify, Flask
+import torch
+import boto3
+
 import db
+from ..ml.model import CharacterLevelCNN
 
 api = Blueprint('api', 'api', url_prefix='/api')
 
+# load pytorch model for inference
+model_path = '../ml/checkpoints/model.pth'
+model = CharacterLevelCNN()
+
+if 'model.pth' not in os.listdir('../ml/checkpoints/'):
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket('tuto-e2e-ml-trustpilot')
+    bucket.download_file('models/model.pth', model_path)
+
+trained_weights = torch.load(model_path)
+model.load_state_dict(trained_weights)
+model.eval()
 
 @api.route('/predict-rating', methods=['POST'])
 def predict_rating():
