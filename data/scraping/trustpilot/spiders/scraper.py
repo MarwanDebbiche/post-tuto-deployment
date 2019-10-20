@@ -6,7 +6,7 @@ class Pages(scrapy.Spider):
     name = "trustpilot"
 
     company_data = pd.read_csv('./notebooks/exports/consolidate_company_urls.csv')
-    start_urls = company_data['company_url'].tolist()
+    start_urls = company_data['company_url'].unique().tolist()
 
     def parse(self, response):
         company_logo = response.xpath('//img[@class="business-unit-profile-summary__image"]/@src').extract_first()

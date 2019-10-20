@@ -22,11 +22,11 @@ NEWSPIDER_MODULE = 'trustpilot.spiders'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 150
+CONCURRENT_REQUESTS = 200
 
 #Export to csv
 FEED_FORMAT = "csv"
-FEED_URI = "comments_trustpilot.csv"
+FEED_URI = "comments_trustpilot_v2.csv"
 
 
 # Configure a delay for requests for the same website (default: 0)
