@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import requests
 
@@ -142,7 +141,7 @@ def change_brand(n_clicks):
 
 
 @app.callback(
-    [Output('proba', 'children'), Output('progress', 'value')],
+    [Output('proba', 'children'), Output('progress', 'value'), Output('progress', 'color')],
     [Input('review', 'value')]
 )
 def update_proba(review):
@@ -151,9 +150,14 @@ def update_proba(review):
             "http://localhost:5000/predict", data={'review': review})
         proba = response.json()
 
-        return proba, round(proba * 100)
+        if 0.6 < proba < 1:
+            return proba, round(proba * 100), 'success'
+        elif 0.4 < proba < 0.6:
+            return proba, round(proba * 100), 'warning'
+        elif proba < 0.4:
+            return proba, round(proba * 100), 'danger'
     else:
-        return None, 0
+        return None, 0, None
 
 
 if __name__ == '__main__':
