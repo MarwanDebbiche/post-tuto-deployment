@@ -9,9 +9,10 @@ class CharacterLevelCNN(nn.Module):
 
         # model parameters
         self.number_of_characters = 69
-        self.extra_characters = "éàèùâêîôûçëïü"
+        # self.extra_characters = "éàèùâêîôûçëïü"
+        self.extra_characters = ""
         self.alphabet = "abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:'\"/\\|_@#$%^&*~`+ =<>()[]{}"
-        self.max_length = 300
+        self.max_length = 1014
         self.number_of_classes = 2
 
         # define conv layers
@@ -78,7 +79,10 @@ class CharacterLevelCNN(nn.Module):
     def _create_weights(self, mean=0.0, std=0.05):
         for module in self.modules():
             if isinstance(module, nn.Conv1d) or isinstance(module, nn.Linear):
-                module.weight.data.normal_(mean, std)
+                #module.weight.data.normal_(mean, std)
+                nn.init.xavier_normal_(module.weigth.data)
+                if module.bias is not None:
+                    nn.init.normal_(module.bias.data)
 
     def _get_conv_output(self, shape):
         x = torch.rand(shape)
