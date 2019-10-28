@@ -22,7 +22,7 @@ app = dash.Dash(
     ]
 )
 
-companies = pd.read_csv('s3://tuto-e2e-ml-trustpilot/scraped-data/companies.csv')
+companies = pd.read_csv('../data/scraping/companies.csv')
 
 app.layout = html.Div(
     [
