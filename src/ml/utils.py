@@ -3,6 +3,7 @@ import torch
 
 def preprocess_input(text, alphabet, extra_characters, number_of_characters, max_length):
     text = text.lower()
+    text = text.strip()
 
     number_of_characters = number_of_characters + len(extra_characters)
     identity_mat = np.identity(number_of_characters)

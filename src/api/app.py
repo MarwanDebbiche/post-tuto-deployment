@@ -18,7 +18,7 @@ app = Flask(__name__)
 api = app
 
 ### load pytorch model for inference ###
-model_path = '../ml/checkpoints/model_en.pth'
+model_path = '../ml/checkpoints/model_fr_allocine_500.pth'
 model = charCNN.CharacterLevelCNN()
 
 if 'model.pth' not in os.listdir('../ml/checkpoints/'):
