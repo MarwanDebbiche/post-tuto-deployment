@@ -1,31 +1,28 @@
 import os
 import requests
-
-from random import choice
 import pandas as pd
-
+import config
 import dash
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 
-from flask import send_from_directory
+external_stylesheets = [
+    'https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css',
+    'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
+    'https://fonts.googleapis.com/css?family=Roboto&display=swap',
+    'https://raw.githubusercontent.com/ahmedbesbes/stylesheets/master/form-signin.css'
+]
 
-external_stylesheets = ['https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css',
-                        'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
-                        'https://fonts.googleapis.com/css?family=Roboto&display=swap',
-                        'https://raw.githubusercontent.com/ahmedbesbes/stylesheets/master/form-signin.css'
-                        ]
+app = dash.Dash(
+    __name__, external_stylesheets=external_stylesheets,
+    meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ]
+)
 
-app = dash.Dash(__name__,
-                external_stylesheets=external_stylesheets,
-                meta_tags=[
-                    {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-                    ]
-                )
-
-companies = pd.read_csv('../data/scraping/companies.csv')
+companies = pd.read_csv('s3://tuto-e2e-ml-trustpilot/scraped-data/companies.csv')
 
 app.layout = html.Div(
     [
@@ -112,14 +109,13 @@ app.layout = html.Div(
             id='another-brand',
             # role="submit"
         ),
-        html.P("BESBES / DEBBICHE - 2019",
+        html.P(
+            "BESBES / DEBBICHE - 2019",
             className="mt-5 mb-3 text-muted"
         )
-
     ],
     className="form-signin",
 )
-
 
 
 @app.callback(
@@ -141,7 +137,11 @@ def change_brand(n_clicks):
 
 
 @app.callback(
-    [Output('proba', 'children'), Output('progress', 'value'), Output('progress', 'color')],
+    [
+        Output('proba', 'children'),
+        Output('progress', 'value'),
+        Output('progress', 'color')
+    ],
     [Input('review', 'value')]
 )
 def update_proba(review):
@@ -161,4 +161,4 @@ def update_proba(review):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=config.DEBUG, host=config.HOST)

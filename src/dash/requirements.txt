@@ -1,3 +1,6 @@
 dash==1.4.0
 dash-daq==0.2.2
 requests==2.22.0
+pandas==0.25.1
+dash_bootstrap_components==0.7.1
+s3fs==0.3.5

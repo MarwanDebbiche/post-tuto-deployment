@@ -8,16 +8,18 @@ services:
       - POSTGRES_PASSWORD=password
   api:
     build:
-      context: api
+      context: src/api
       dockerfile: Dockerfile
   dash:
     build:
-      context: dash
+      context: src/dash
       dockerfile: Dockerfile
     ports:
       - "8050:8050"
     environment:
-      - DEBUG=0
+      - ENVIRONMENT=prod
       - API_URL=http://api:5000/api
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
     depends_on:
       - db
