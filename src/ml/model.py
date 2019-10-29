@@ -10,11 +10,10 @@ class CharacterLevelCNN(nn.Module):
         # model parameters
         self.number_of_characters = 69
         self.extra_characters = "éàèùâêîôûçëïü"
-        self.extra_characters = ""
         self.alphabet = "abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:'\"/\\|_@#$%^&*~`+ =<>()[]{}"
         self.max_length = 500
         self.number_of_classes = 2
-        self.dropout_input_p = 0.1 
+        self.dropout_input_p = 0
 
         # define dropout input
 
