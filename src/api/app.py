@@ -11,22 +11,22 @@ import torch.nn.functional as F
 import boto3
 
 #import db
-from ml import model as charCNN
-from ml import utils
+from model import CharacterLevelCNN
+from utils import preprocess_input
 
 app = Flask(__name__)
 api = app
 
 ### load pytorch model for inference ###
-model_path = '../ml/checkpoints/model.pth'
-model = charCNN.CharacterLevelCNN()
+model_path = './checkpoints/model.pth'
+model = CharacterLevelCNN()
 
 def hook(t):
     def inner(bytes_amount):
         t.update(bytes_amount)
     return inner
 
-if 'model.pth' not in os.listdir('../ml/checkpoints/'): 
+if 'model.pth' not in os.listdir('./checkpoints/'): 
     print('downloading the trained model from s3')
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('tuto-e2e-ml-trustpilot')
@@ -61,7 +61,7 @@ def predict_rating():
         else:
             parameters = model.get_model_parameters()
             review = request.form['review']
-            processed_input = utils.preprocess_input(review, **parameters)
+            processed_input = preprocess_input(review, **parameters)
             prediction = model(processed_input)
             probabilities = F.softmax(prediction, dim=1)
             probabilities = probabilities.detach().cpu().numpy()
