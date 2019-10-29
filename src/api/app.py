@@ -11,14 +11,14 @@ import torch.nn.functional as F
 import boto3
 
 #import db
-from model import CharacterLevelCNN
-from utils import preprocess_input
+from ml.model import CharacterLevelCNN
+from ml.utils import preprocess_input
 
 app = Flask(__name__)
 api = app
 
 ### load pytorch model for inference ###
-model_path = './checkpoints/model.pth'
+model_path = './ml/checkpoints/model.pth'
 model = CharacterLevelCNN()
 
 def hook(t):
@@ -26,7 +26,7 @@ def hook(t):
         t.update(bytes_amount)
     return inner
 
-if 'model.pth' not in os.listdir('./checkpoints/'): 
+if 'model.pth' not in os.listdir('./ml/checkpoints/'): 
     print('downloading the trained model from s3')
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('tuto-e2e-ml-trustpilot')
@@ -35,7 +35,7 @@ if 'model.pth' not in os.listdir('./checkpoints/'):
     with tqdm(total=filesize, unit='B', unit_scale=True, desc='model.pth') as t:
         bucket.download_file('models/model.pth', model_path, Callback=hook(t))
 else:
-    print('model already saved to src/ml/checkpoints/model.pth')
+    print('model already saved to api/ml/checkpoints/model.pth')
 
 if torch.cuda.is_available():
     trained_weights = torch.load(model_path)

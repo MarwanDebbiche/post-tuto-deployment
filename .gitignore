@@ -5,4 +5,4 @@ __pycache__/
 .DS_Store
 src/data/scraping/comments_trustpilot.json
 src/data/scraping/comments_trustpilot.csv
-src/ml/checkpoints/
+src/api/ml/checkpoints/
