@@ -3,6 +3,8 @@ sys.path.append('../')
 import os
 import random
 
+from tqdm import tqdm
+
 from flask import Blueprint, request, jsonify, Flask
 import torch
 import torch.nn.functional as F
@@ -13,19 +15,25 @@ from ml import model as charCNN
 from ml import utils
 
 app = Flask(__name__)
-# api = Blueprint('api', 'api', url_prefix='/api')
-# app.register_blueprint(api)
 api = app
 
 ### load pytorch model for inference ###
-model_path = '../ml/checkpoints/model_tp_500.pth'
+model_path = '../ml/checkpoints/model.pth'
 model = charCNN.CharacterLevelCNN()
 
-if 'model.pth' not in os.listdir('../ml/checkpoints/'):
+def hook(t):
+    def inner(bytes_amount):
+        t.update(bytes_amount)
+    return inner
+
+if 'model.pth' not in os.listdir('../ml/checkpoints/'): 
     print('downloading the trained model from s3')
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('tuto-e2e-ml-trustpilot')
-    bucket.download_file('models/model.pth', model_path)
+    file_object = s3.Object('tuto-e2e-ml-trustpilot', 'models/model.pth')
+    filesize = file_object.content_length
+    with tqdm(total=filesize, unit='B', unit_scale=True, desc='model.pth') as t:
+        bucket.download_file('models/model.pth', model_path, Callback=hook(t))
 else:
     print('model already saved to src/ml/checkpoints/model.pth')
 
