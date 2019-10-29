@@ -22,7 +22,7 @@ app = dash.Dash(
     ]
 )
 
-companies = pd.read_csv('../data/scraping/companies.csv')
+companies = pd.read_csv('./csv/companies.csv')
 
 app.layout = html.Div(
     [
@@ -110,7 +110,7 @@ app.layout = html.Div(
             # role="submit"
         ),
         html.P(
-            "BESBES / DEBBICHE - 2019",
+            "© BESBES / DEBBICHE - 2019",
             className="mt-5 mb-3 text-muted"
         )
     ],
@@ -119,7 +119,8 @@ app.layout = html.Div(
 
 
 @app.callback(
-    [Output('company_logo', 'src'), Output('company_name', 'children'), Output('review', 'value')],
+    [Output('company_logo', 'src'), Output(
+        'company_name', 'children'), Output('review', 'value')],
     [Input('another-brand', 'n_clicks')]
 )
 def change_brand(n_clicks):
