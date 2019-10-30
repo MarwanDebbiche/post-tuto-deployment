@@ -27,3 +27,15 @@ We'll be using the small variant of this model that has:
 |7|1024|
 |8|1024|
 |9|2|
+
+
+## Training
+
+When the scraping is done and the data is downloaded to src/scraping/scrapy/comments_trustpilot.csv
+
+```shell
+cd src/training/
+
+python train.py --data_path ../src/scraping/scrapy/comments_trustpilot.csv --validation_split 0.1 --label_column rating --text_column comment --group_labels binarize --extra_characters "éàèùâêîôûçëïü" --max_length 500 --dropout_input 0 --model_name trustpilot --balance 1
+
+```
