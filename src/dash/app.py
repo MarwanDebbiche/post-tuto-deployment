@@ -189,7 +189,7 @@ def change_brand(n_clicks):
 def update_proba(review):
     if review is not None and review.strip() != '':
         response = requests.post(
-            "http://localhost:5000/predict", data={'review': review})
+            "http://localhost:5000/api/predict", data={'review': review})
         proba = response.json()
         proba = round(proba * 100, 2)
         text_proba = f"{proba}%"
