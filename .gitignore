@@ -3,6 +3,6 @@ __pycache__/
  *.pyc
 .ipynb_checkpoints
 .DS_Store
-src/data/scraping/comments_trustpilot.json
-src/data/scraping/comments_trustpilot.csv
+src/scraping/scrpay/comments_trustpilot.json
+src/scraping/scrpay/comments_trustpilot.csv
 src/api/ml/checkpoints/
