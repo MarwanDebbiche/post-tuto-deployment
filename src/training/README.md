@@ -5,7 +5,7 @@ To learn more about the model and the implementation, you can check the original
 
 The model architecture comes from this paper: https://arxiv.org/pdf/1509.01626.pdf
 
-![Network architecture](plots/character_cnn.png)
+![Network architecture](images/character_cnn.png)
 
 There are two variants: a large and a small. You can switch between the two by changing the configuration file.
 
