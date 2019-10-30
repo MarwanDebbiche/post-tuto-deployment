@@ -14,7 +14,7 @@ from ml.model import CharacterLevelCNN
 from ml.utils import preprocess_input
 
 app = Flask(__name__)
-api = app
+api = Blueprint('api', __name__)
 
 ### load pytorch model for inference ###
 model_path = './ml/checkpoints/model.pth'
@@ -92,6 +92,8 @@ def get_reviews():
 
         return jsonify([r.serialize() for r in query])
 
+
+app.register_blueprint(api, url_prefix='/api')
 
 if __name__ == '__main__':
     app.run(debug=True, host="localhost")

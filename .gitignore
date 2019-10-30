@@ -5,4 +5,5 @@ __pycache__/
 .DS_Store
 src/scraping/scrpay/comments_trustpilot.json
 src/scraping/scrpay/comments_trustpilot.csv
-src/api/ml/checkpoints/
+src/api/ml/checkpoints/*
+!src/api/ml/checkpoints/.gitkeep
