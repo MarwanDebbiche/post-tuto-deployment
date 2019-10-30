@@ -40,31 +40,33 @@ app.layout = html.Div(
             }
         ),
 
-        html.Hr(),
-
         dbc.Button(
-            id='company_name',
+            children=[
+                html.Span(
+                    id='company_name'
+                ),
+                html.I(
+                    className="fas fa-link",
+                    style={
+                        'margin-left': '5px'
+                    }
+                )
+            ],
+            id='button_company',
             color="primary",
-            className="mr-2",
+            className="mr-1",
             outline=False,
-            external_link=False 
+            style={
+                'margin-top': '10px'
+            }
         ),
-
-        # html.H3(
-        #     [
-        #         html.Span(
-        #             id='company_name',
-        #             className="badge badge-secondary",
-        #             style={
-        #                 'white-space': 'pre-wrap'
-        #             }
-        #         )
-        #     ]
-        # ),
-
+        
         html.H1(
             "What do you think of this brand ?",
-            className="h3 mb-3 font-weight-normal"
+            className="h4 mb-3 font-weight-normal",
+            style={
+                'margin-top': '5px'
+            }
         ),
 
         html.Div(
@@ -79,18 +81,30 @@ app.layout = html.Div(
             className="form-group shadow-textarea"
         ),
 
-        dbc.Progress(children=html.Span(
-            id='proba',
-            style={
-                'color': 'black',
-                'font-weight': 'bold'
-            }
-        ),
+        dbc.Progress(
+            children=html.Span(
+                id='proba',
+                style={
+                    'color': 'black',
+                    'font-weight': 'bold'
+                }
+            ),
             id="progress",
-            striped=True,
-            animated=True),
+            striped=False,
+            animated=False
+        ),
 
         html.Hr(),
+
+        html.Div(
+            [
+                dcc.Slider(
+                    id='suggested_rating',
+                    max=100
+                ),
+            ],
+            style={'margin-bottom': '5px'}
+        ),
 
         html.Button(
             [
@@ -121,7 +135,6 @@ app.layout = html.Div(
             ],
             className="btn btn-lg btn-secondary btn-block",
             id='another-brand',
-            # role="submit"
         ),
         html.P(
             "BESBES / DEBBICHE - 2019",
@@ -136,8 +149,8 @@ app.layout = html.Div(
     [
         Output('company_logo', 'src'),
         Output('company_name', 'children'),
-        Output('company_name', 'href'),
-        Output('review', 'value')
+        Output('review', 'value'),
+        Output('button_company', 'href')
     ],
     [Input('another-brand', 'n_clicks')]
 )
@@ -150,39 +163,21 @@ def change_brand(n_clicks):
             random_logo = 'https://' + random_logo
 
         random_name = row['company_name']
+        random_website = row['company_website']
 
-        children = html.Div([
-            html.Span(
-                random_name,
-                id='company_name',
-                style={'margin-right': '5px'}
-            ),
-            html.I(
-                className="fas fa-link"
-            )
-        ]),
-
-        return random_logo, children, 'http://google.com', ''
+        return random_logo, random_name, '', random_website
     else:
         fnac_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Fnac_Logo.svg/992px-Fnac_Logo.svg.png"
-        children = html.Div([
-            html.Span(
-                'Fnac',
-                id='company_name',
-                style={'margin-right': '5px'}
-            ),
-            html.I(
-                className="fas fa-link"
-            )]
-        ),
-        return fnac_logo, children, 'http://google.com', ''
+        fnac_name = 'Fnac'
+        return fnac_logo, fnac_name, '', 'http://google.com'
 
 
 @app.callback(
     [
         Output('proba', 'children'),
         Output('progress', 'value'),
-        Output('progress', 'color')
+        Output('progress', 'color'),
+        Output('suggested_rating', 'value')
     ],
     [Input('review', 'value')]
 )
@@ -195,13 +190,16 @@ def update_proba(review):
         text_proba = f"{proba}%"
 
         if 60 < proba < 100:
-            return text_proba, proba, 'success'
+            suggested_rating = proba
+            return text_proba, proba, 'success', suggested_rating
         elif 40 < proba < 60:
-            return text_proba, proba, 'warning'
+            suggested_rating = proba
+            return text_proba, proba, 'warning', suggested_rating
         elif proba < 40:
-            return text_proba, proba, 'danger'
+            suggested_rating = proba
+            return text_proba, proba, 'danger', suggested_rating
     else:
-        return None, 0, None
+        return None, 0, None, 50
 
 
 if __name__ == '__main__':
