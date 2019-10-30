@@ -11,19 +11,19 @@ There are two variants: a large and a small. You can switch between the two by c
 
 This architecture has 6 convolutional layers:
 
-|Layer|Large Feature|Small Feature|Kernel|Pool|
-|-|-|-|-|-|
-|1|1024|256|7|3|
-|2|1024|256|7|3|
-|3|1024|256|3|N/A|
-|4|1024|256|3|N/A|
-|5|1024|256|3|N/A|
-|6|1024|256|3|3|
+|Layer|Number of Kernels|Kernel size|Pool|
+|-|-|-|-|
+|1|256|7|3|
+|2|256|7|3|
+|3|256|3|N/A|
+|4|256|3|N/A|
+|5|256|3|N/A|
+|6|256|3|3|
 
 and 2 fully connected layers:
 
-|Layer|Output Units Large|Output Units Small|
-|-|-|-|
-|7|2048|1024|
-|8|2048|1024|
-|9|Depends on the problem|Depends on the problem|
+|Layer|Number of neurons|
+|-|-|
+|7|1024|
+|8|1024|
+|9|2|
