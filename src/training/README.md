@@ -60,3 +60,11 @@ To learn more about the training options please check the <a href="https://githu
 ```shell
 tensorboard --logdir=src/training/logs/ --port=6006
 ```
+
+## Use the trained model
+
+Once the training is done you'll find a bunch of model checkpoints saved into the src/training/models folder
+
+Select the one of your choice, rename it to **model.pth** and copy it in the src/api/ml/checkpoints/ folder
+
+The api scripts will be in charge of the inference based on this model
