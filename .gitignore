@@ -6,3 +6,5 @@ __pycache__/
 src/scraping/scrpay/comments_trustpilot.json
 src/scraping/scrpay/comments_trustpilot.csv
 src/api/ml/checkpoints/
+src/training/logs/
+src/training/models/
