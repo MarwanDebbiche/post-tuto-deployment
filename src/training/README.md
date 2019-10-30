@@ -30,9 +30,9 @@ We'll be using the small variant of this model that has:
 
 ## Requirements
 
-PyTorch 0.4.1
-Tensorflow 2.0.0 (optional, useful for model monitoring)
-TensorboardX 1.8 (optional, useful for model monitoring) 
+- PyTorch 0.4.1
+- Tensorflow 2.0.0 (optional, useful for model monitoring)
+- TensorboardX 1.8 (optional, useful for model monitoring) 
 
 ## Training
 
