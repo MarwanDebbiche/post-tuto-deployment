@@ -7,9 +7,9 @@ The model architecture comes from this paper: https://arxiv.org/pdf/1509.01626.p
 
 ![Network architecture](images/character_cnn.png)
 
-There are two variants: a large and a small. You can switch between the two by changing the configuration file.
+We'll be using the small variant of this model that has:
 
-This architecture has 6 convolutional layers:
+- 6 convolutional layers:
 
 |Layer|Number of Kernels|Kernel size|Pool|
 |-|-|-|-|
@@ -20,7 +20,7 @@ This architecture has 6 convolutional layers:
 |5|256|3|N/A|
 |6|256|3|3|
 
-and 2 fully connected layers:
+- 2 fully connected layers:
 
 |Layer|Number of neurons|
 |-|-|
