@@ -47,7 +47,7 @@ app.layout = html.Div(
             color="primary",
             className="mr-2",
             outline=False,
-            external_link=False 
+            external_link=False
         ),
 
         # html.H3(
@@ -189,7 +189,7 @@ def change_brand(n_clicks):
 def update_proba(review):
     if review is not None and review.strip() != '':
         response = requests.post(
-            "http://localhost:5000/api/predict", data={'review': review})
+            f"{config.API_URL}/predict", data={'review': review})
         proba = response.json()
         proba = round(proba * 100, 2)
         text_proba = f"{proba}%"
@@ -205,4 +205,4 @@ def update_proba(review):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host=config.HOST)
+    app.run_server(debug=config.DEBUG, host=config.HOST)
