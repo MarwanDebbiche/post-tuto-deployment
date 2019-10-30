@@ -28,6 +28,11 @@ We'll be using the small variant of this model that has:
 |8|1024|
 |9|2|
 
+## Requirements
+
+PyTorch 0.4.1
+Tensorflow 2.0.0 (optional, useful for model monitoring)
+TensorboardX 1.8 (optional, useful for model monitoring) 
 
 ## Training
 
@@ -46,4 +51,10 @@ python train.py --data_path ../src/scraping/scrapy/comments_trustpilot.csv \
                 --dropout_input 0 \
                 --model_name trustpilot \
                 --balance 1
+```
+
+## Model monitoring 
+
+```shell
+tensorboard --logdir=src/training/logs/ --port=6006
 ```
