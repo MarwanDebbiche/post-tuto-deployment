@@ -53,6 +53,8 @@ python train.py --data_path ../src/scraping/scrapy/comments_trustpilot.csv \
                 --balance 1
 ```
 
+To learn more about the training options please check the <a href="https://github.com/ahmedbesbes/character-based-cnn">original repo</a>.
+
 ## Model monitoring 
 
 ```shell
