@@ -9,7 +9,8 @@ import torch
 import torch.nn.functional as F
 import boto3
 
-#import db
+# import db
+import config
 from ml.model import CharacterLevelCNN
 from ml.utils import preprocess_input
 
@@ -74,7 +75,7 @@ def post_review():
     Save review to database.
     '''
     if request.method == 'POST':
-        if any(field not in request.form for field in ['review', 'rating', 'rating']):
+        if any(field not in request.form for field in ['review', 'rating', 'suggested_rating']):
             return jsonify({'error': 'Missing field in body'}), 400
 
         query = db.Review.create(**request.form)
@@ -96,4 +97,4 @@ def get_reviews():
 app.register_blueprint(api, url_prefix='/api')
 
 if __name__ == '__main__':
-    app.run(debug=True, host="localhost")
+    app.run(debug=config.DEBUG, host=config.HOST)

@@ -10,6 +10,15 @@ services:
     build:
       context: src/api
       dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=prod
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    depends_on:
+      - db
   dash:
     build:
       context: src/dash
@@ -22,4 +31,4 @@ services:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
     depends_on:
-      - db
+      - api

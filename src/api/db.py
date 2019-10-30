@@ -1,8 +1,10 @@
 import peewee as pw
+import config
 
 db = pw.PostgresqlDatabase(
-    'postgres', user='postgres', password='password',
-    host='db', port=5432
+    config.POSTGRES_DB,
+    user=config.POSTGRES_USER, password=config.POSTGRES_PASSWORD,
+    host=config.POSTGRES_HOST, port=config.POSTGRES_PORT
 )
 
 
