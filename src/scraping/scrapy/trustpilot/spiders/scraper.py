@@ -5,7 +5,7 @@ import scrapy
 class Pages(scrapy.Spider):
     name = "trustpilot"
 
-    company_data = pd.read_csv('./notebooks/exports/consolidate_company_urls.csv')
+    company_data = pd.read_csv('../selenium/exports/consolidate_company_urls.csv')
     start_urls = company_data['company_url'].unique().tolist()
 
     def parse(self, response):
