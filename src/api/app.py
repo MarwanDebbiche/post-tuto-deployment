@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 import boto3
 
-# import db
+import db
 import config
 from ml.model import CharacterLevelCNN
 from ml.utils import preprocess_input
@@ -17,7 +17,7 @@ from ml.utils import preprocess_input
 app = Flask(__name__)
 api = Blueprint('api', __name__)
 
-### load pytorch model for inference ###
+# Load pytorch model for inference
 model_path = './ml/checkpoints/model.pth'
 model = CharacterLevelCNN()
 
@@ -26,7 +26,7 @@ def hook(t):
         t.update(bytes_amount)
     return inner
 
-if 'model.pth' not in os.listdir('./ml/checkpoints/'): 
+if 'model.pth' not in os.listdir('./ml/checkpoints/'):
     print('downloading the trained model from s3')
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('tuto-e2e-ml-trustpilot')
@@ -41,12 +41,11 @@ if torch.cuda.is_available():
     trained_weights = torch.load(model_path)
 else:
     trained_weights = torch.load(model_path, map_location='cpu')
-    
+
 model.load_state_dict(trained_weights)
 model.eval()
 print('PyTorch model loaded !')
 
-###
 
 @api.route('/predict', methods=['POST'])
 def predict_rating():
@@ -75,7 +74,11 @@ def post_review():
     Save review to database.
     '''
     if request.method == 'POST':
-        if any(field not in request.form for field in ['review', 'rating', 'suggested_rating']):
+        expected_fields = [
+            'review', 'rating', 'suggested_rating',
+            'sentiment_score'
+        ]
+        if any(field not in request.form for field in expected_fields):
             return jsonify({'error': 'Missing field in body'}), 400
 
         query = db.Review.create(**request.form)

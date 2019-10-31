@@ -6,7 +6,7 @@ import dash
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 external_stylesheets = [
     "https://use.fontawesome.com/releases/v5.0.7/css/all.css",
@@ -60,7 +60,7 @@ app.layout = html.Div(
                 'margin-top': '10px'
             }
         ),
-        
+
         html.H1(
             "What do you think of this brand ?",
             className="h4 mb-3 font-weight-normal",
@@ -99,11 +99,14 @@ app.layout = html.Div(
         html.Div(
             [
                 dcc.Slider(
-                    id='suggested_rating',
-                    max=100
+                    id='rating',
+                    max=5,
+                    min=1,
+                    step=1,
+                    marks={i: f'{i}' for i in range(1, 6)}
                 ),
             ],
-            style={'margin-bottom': '5px'}
+            style={'margin-bottom': '30px'}
         ),
 
         html.Button(
@@ -119,7 +122,9 @@ app.layout = html.Div(
                 )
             ],
             className="btn btn-lg btn-primary btn-block",
-            role="submit"
+            role="submit",
+            id="submit-button",
+            n_clicks_timestamp=0
         ),
         html.Button(
             [
@@ -135,6 +140,7 @@ app.layout = html.Div(
             ],
             className="btn btn-lg btn-secondary btn-block",
             id='another-brand',
+            n_clicks_timestamp=0
         ),
         html.P(
             "BESBES / DEBBICHE - 2019",
@@ -152,24 +158,44 @@ app.layout = html.Div(
         Output('review', 'value'),
         Output('button_company', 'href')
     ],
-    [Input('another-brand', 'n_clicks')]
+    [
+        Input('submit-button', 'n_clicks_timestamp'),
+        Input('another-brand', 'n_clicks_timestamp')
+    ],
+    [
+        State('review', 'value'),
+        State('progress', 'value'),
+        State('rating', 'value'),
+    ]
 )
-def change_brand(n_clicks):
-    if n_clicks is not None:
-        row = companies.sample(1).to_dict(orient="records")[0]
+def change_brand(submit_click_ts, another_brand_click_ts, review_text, score, rating):
+    if submit_click_ts > another_brand_click_ts:
+        sentiment_score = float(score) / 100
+        response = requests.post(
+            f"{config.API_URL}/review",
+            data={
+                'review': review_text,
+                'rating': rating,
+                'suggested_rating': min(int(sentiment_score * 5 + 1), 5),
+                'sentiment_score': sentiment_score
+            }
+        )
 
-        random_logo = row['company_logo']
-        if not random_logo.startswith('http'):
-            random_logo = 'https://' + random_logo
+        if response.ok:
+            print("Review Saved")
+        else:
+            print("Error Saving Review")
 
-        random_name = row['company_name']
-        random_website = row['company_website']
+    random_company = companies.sample(1).to_dict(orient="records")[0]
 
-        return random_logo, random_name, '', random_website
-    else:
-        fnac_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Fnac_Logo.svg/992px-Fnac_Logo.svg.png"
-        fnac_name = 'Fnac'
-        return fnac_logo, fnac_name, '', 'http://google.com'
+    company_logo_url = random_company['company_logo']
+    if not company_logo_url.startswith('http'):
+        company_logo_url = 'https://' + company_logo_url
+
+    company_name = random_company['company_name']
+    company_website = random_company['company_website']
+
+    return company_logo_url, company_name, '', company_website
 
 
 @app.callback(
@@ -177,7 +203,7 @@ def change_brand(n_clicks):
         Output('proba', 'children'),
         Output('progress', 'value'),
         Output('progress', 'color'),
-        Output('suggested_rating', 'value')
+        Output('rating', 'value')
     ],
     [Input('review', 'value')]
 )
@@ -187,16 +213,14 @@ def update_proba(review):
             f"{config.API_URL}/predict", data={'review': review})
         proba = response.json()
         proba = round(proba * 100, 2)
+        suggested_rating = min(int(proba / 100 * 5 + 1), 5)
         text_proba = f"{proba}%"
 
-        if 60 < proba < 100:
-            suggested_rating = proba
+        if suggested_rating >= 4:
             return text_proba, proba, 'success', suggested_rating
-        elif 40 < proba < 60:
-            suggested_rating = proba
+        elif 2 < suggested_rating < 4:
             return text_proba, proba, 'warning', suggested_rating
-        elif proba < 40:
-            suggested_rating = proba
+        elif suggested_rating <= 2:
             return text_proba, proba, 'danger', suggested_rating
     else:
         return None, 0, None, 50
