@@ -81,6 +81,10 @@ app.layout = html.Div(
             className="form-group shadow-textarea"
         ),
 
+        html.H5(
+            'Sentiment anlysis 🤖'
+        ),
+
         dbc.Progress(
             children=html.Span(
                 id='proba',
@@ -91,16 +95,21 @@ app.layout = html.Div(
             ),
             id="progress",
             striped=False,
-            animated=False
+            animated=False,
+            style={
+                'margin-bottom': '10px'
+            }
         ),
 
-        html.Hr(),
+        html.H5(
+            'Propose a rating 😁📢'
+        ),
 
         html.Div(
             [
                 dcc.Slider(
                     id='suggested_rating',
-                    max=100
+                    max=5
                 ),
             ],
             style={'margin-bottom': '5px'}
@@ -188,18 +197,16 @@ def update_proba(review):
         proba = response.json()
         proba = round(proba * 100, 2)
         text_proba = f"{proba}%"
+        suggested_rating = int(proba / 20)
 
         if 60 < proba < 100:
-            suggested_rating = proba
             return text_proba, proba, 'success', suggested_rating
         elif 40 < proba < 60:
-            suggested_rating = proba
             return text_proba, proba, 'warning', suggested_rating
         elif proba < 40:
-            suggested_rating = proba
             return text_proba, proba, 'danger', suggested_rating
     else:
-        return None, 0, None, 50
+        return None, 0, None, 0
 
 
 if __name__ == '__main__':
