@@ -2,6 +2,7 @@ import os
 import requests
 import pandas as pd
 import config
+from flask import request
 import dash
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
@@ -175,18 +176,24 @@ app.layout = html.Div(
         State('review', 'value'),
         State('progress', 'value'),
         State('rating', 'value'),
+        State('company_name', 'children')
     ]
 )
-def change_brand(submit_click_ts, another_brand_click_ts, review_text, score, rating):
+def change_brand(submit_click_ts, another_brand_click_ts, review_text, score, rating, brand_name):
     if submit_click_ts > another_brand_click_ts:
         sentiment_score = float(score) / 100
+        ip_address = request.remote_addr
+        user_agent = request.headers.get('User-Agent')
         response = requests.post(
             f"{config.API_URL}/review",
             data={
                 'review': review_text,
                 'rating': rating,
                 'suggested_rating': min(int(sentiment_score * 5 + 1), 5),
-                'sentiment_score': sentiment_score
+                'sentiment_score': sentiment_score,
+                'brand': brand_name,
+                'user_agent': user_agent,
+                'ip_address': ip_address
             }
         )
 

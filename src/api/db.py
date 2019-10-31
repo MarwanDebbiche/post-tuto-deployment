@@ -20,6 +20,9 @@ class Review(BaseModel):
     rating = pw.IntegerField()
     suggested_rating = pw.IntegerField()
     sentiment_score = pw.FloatField()
+    brand = pw.TextField()
+    user_agent = pw.TextField()
+    ip_address = pw.TextField()
 
     def serialize(self):
         data = {
@@ -27,7 +30,10 @@ class Review(BaseModel):
             'review': self.review,
             'rating': int(self.rating),
             'suggested_rating': int(self.suggested_rating),
-            'sentiment_score': float(self.sentiment_score)
+            'sentiment_score': float(self.sentiment_score),
+            'brand': self.brand,
+            'user_agent': self.user_agent,
+            'ip_address': self.ip_address
         }
 
         return data

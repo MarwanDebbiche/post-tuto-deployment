@@ -80,7 +80,10 @@ def post_review():
             'review',
             'rating',
             'suggested_rating',
-            'sentiment_score'
+            'sentiment_score',
+            'brand',
+            'user_agent',
+            'ip_address'
         ]
         if any(field not in request.form for field in expected_fields):
             return jsonify({'error': 'Missing field in body'}), 400
