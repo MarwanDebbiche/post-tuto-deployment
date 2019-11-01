@@ -1,7 +1,10 @@
 import numpy as np
 import torch
+import torch.nn.functional as F
 
-def preprocess_input(text, alphabet, extra_characters, number_of_characters, max_length):
+
+def predict_sentiment(model, text, alphabet, extra_characters, number_of_characters, max_length, num_classes):
+
     text = text.lower()
     text = text.strip()
 
@@ -23,4 +26,25 @@ def preprocess_input(text, alphabet, extra_characters, number_of_characters, max
 
     processed_output = torch.tensor(processed_output)
     processed_output = processed_output.unsqueeze(0)
-    return processed_output
+
+    prediction = model(processed_output)
+    probabilities = F.softmax(prediction, dim=1)
+    proba, index = torch.max(probabilities, dim=1)
+    proba = proba.item()
+    index = index.item()
+
+    if num_classes == 3:
+
+        if index == 0:
+            score = (0.33 - 0) * proba + 0
+
+        elif index == 1:
+            score = (0.67 - 0.33) * proba + 0.33
+
+        elif index == 2:
+            score = (1 - 0.67) * proba + 0.67
+        
+    elif num_classes == 2:
+        score = proba
+
+    return score

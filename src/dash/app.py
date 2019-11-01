@@ -23,7 +23,7 @@ app = dash.Dash(
     ]
 )
 
-companies = pd.read_csv('./csv/companies.csv')
+companies = pd.read_csv('./csv/companies_forbes.csv')
 
 app.layout = html.Div(
     [
@@ -32,12 +32,17 @@ app.layout = html.Div(
                 html.Img(
                     id='company_logo',
                     style={
-                        'width': '50%'
+                        'width': '50%',
+                        'padding': '5px'
                     }
                 ),
             ],
             style={
-                'height': '150px'
+                'height': '150px',
+                'background-color': 'white',
+                'border-style': 'solid',
+                'border-radius': '140px',
+                'border-width': 'thin'
             }
         ),
 
@@ -232,11 +237,11 @@ def update_proba(review):
         suggested_rating = min(int((proba / 100) * 5 + 1), 5)
         text_proba = f"{proba}%"
 
-        if suggested_rating >= 4:
+        if proba >= 67:
             return text_proba, proba, 'success', suggested_rating
-        elif 2 < suggested_rating < 4:
+        elif 33 < proba < 67:
             return text_proba, proba, 'warning', suggested_rating
-        elif suggested_rating <= 2:
+        elif proba <= 33:
             return text_proba, proba, 'danger', suggested_rating
     else:
         return None, 0, None, 0

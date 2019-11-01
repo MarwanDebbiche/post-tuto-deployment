@@ -12,24 +12,23 @@ import boto3
 import db
 import config
 from ml.model import CharacterLevelCNN
-from ml.utils import preprocess_input
+from ml.utils import predict_sentiment
 
 app = Flask(__name__)
 api = Blueprint('api', __name__)
 
 # Load pytorch model for inference
-model_path = './ml/checkpoints/model.pth'
+model_name = 'model_en.pth'
+model_path = f'./ml/checkpoints/{model_name}'
 model = CharacterLevelCNN()
-
 
 def hook(t):
     def inner(bytes_amount):
         t.update(bytes_amount)
     return inner
 
-
-if 'model.pth' not in os.listdir('./ml/checkpoints/'):
-    print('downloading the trained model from s3')
+if model_name not in os.listdir('./ml/checkpoints/'):
+    print(f'downloading the trained model {model_name}')
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('tuto-e2e-ml-trustpilot')
     file_object = s3.Object('tuto-e2e-ml-trustpilot', 'models/model.pth')
@@ -37,7 +36,7 @@ if 'model.pth' not in os.listdir('./ml/checkpoints/'):
     with tqdm(total=filesize, unit='B', unit_scale=True, desc='model.pth') as t:
         bucket.download_file('models/model.pth', model_path, Callback=hook(t))
 else:
-    print('model already saved to api/ml/checkpoints/model.pth')
+    print('model already saved to api/ml/checkpoints')
 
 if torch.cuda.is_available():
     trained_weights = torch.load(model_path)
@@ -62,11 +61,7 @@ def predict_rating():
         else:
             parameters = model.get_model_parameters()
             review = request.form['review']
-            processed_input = preprocess_input(review, **parameters)
-            prediction = model(processed_input)
-            probabilities = F.softmax(prediction, dim=1)
-            probabilities = probabilities.detach().cpu().numpy()
-            output = probabilities[0][1]
+            output = predict_sentiment(model, review, **parameters)
             return jsonify(float(output))
 
 
