@@ -1,5 +1,6 @@
 import os
 import requests
+import time
 import pandas as pd
 import config
 from flask import request
@@ -69,9 +70,29 @@ app.layout = html.Div(
 
         html.H1(
             "What do you think of this brand ?",
-            className="h4 mb-3 font-weight-normal",
+            className="h3 mb-3 font-weight-normal",
             style={
                 'margin-top': '5px'
+            }
+        ),
+
+        html.Div(
+            [
+                dcc.Loading(
+                    id="loading",
+                    children=[
+                        html.Span(
+                            id='loading-output-1',
+                            style={
+                                'display': 'none'
+                            }
+                        )
+                    ],
+                    type="default"
+                )
+            ],
+            style={
+                'height': '50px'
             }
         ),
 
@@ -245,6 +266,17 @@ def update_proba(review):
             return text_proba, proba, 'danger', suggested_rating
     else:
         return None, 0, None, 0
+
+
+@app.callback(
+    Output('loading-output-1', 'children'),
+    [
+        Input('review', 'value')
+    ]
+)
+def trigger_loading(value):
+    time.sleep(1)
+    return None
 
 
 if __name__ == '__main__':
