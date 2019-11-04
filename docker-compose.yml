@@ -17,6 +17,8 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
     depends_on:
       - db
   dash:
@@ -28,7 +30,5 @@ services:
     environment:
       - ENVIRONMENT=prod
       - API_URL=http://api:5000/api
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY
     depends_on:
       - api
