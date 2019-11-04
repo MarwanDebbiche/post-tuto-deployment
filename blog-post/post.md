@@ -4,7 +4,7 @@
 
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun. 
 
-Before to start, let's look first a the app we'll be building:
+Before to start, let's first look at the app we'll be building:
 
 <!-- insert GIF or VIDEO here -->
 
