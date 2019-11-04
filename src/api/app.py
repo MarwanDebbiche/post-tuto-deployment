@@ -19,7 +19,7 @@ api = Blueprint('api', __name__)
 
 # Load pytorch model for inference
 model_name = 'model_en.pth'
-model_path = f'./ml/checkpoints/{model_name}'
+model_path = f'./ml/models/{model_name}'
 model = CharacterLevelCNN()
 
 def hook(t):
@@ -27,16 +27,17 @@ def hook(t):
         t.update(bytes_amount)
     return inner
 
-if model_name not in os.listdir('./ml/checkpoints/'):
+
+if model_name not in os.listdir('./ml/models/'):
     print(f'downloading the trained model {model_name}')
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('tuto-e2e-ml-trustpilot')
-    file_object = s3.Object('tuto-e2e-ml-trustpilot', 'models/model.pth')
+    file_object = s3.Object('tuto-e2e-ml-trustpilot', f'models/{model_name}')
     filesize = file_object.content_length
-    with tqdm(total=filesize, unit='B', unit_scale=True, desc='model.pth') as t:
-        bucket.download_file('models/model.pth', model_path, Callback=hook(t))
+    with tqdm(total=filesize, unit='B', unit_scale=True, desc=model_name) as t:
+        bucket.download_file(f'models/{model_name}', model_path, Callback=hook(t))
 else:
-    print('model already saved to api/ml/checkpoints')
+    print('model already saved to api/ml/models')
 
 if torch.cuda.is_available():
     trained_weights = torch.load(model_path)
