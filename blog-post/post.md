@@ -2,17 +2,17 @@
 
 ## Introduction
 
-In this post, we'll go through the different steps that allow to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun. 
+In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun. 
 
-Before to start, let's look at the final demo and see what the application looks like:
+Before to start, let's look first a the app we'll be building:
 
 <!-- insert GIF or VIDEO here -->
 
-As you see it, this web app allows to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input in real time along with a proposed rating from 1 to 5.
+As you see it, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input in real-time along with a proposed rating from 1 to 5.
 
 The user can then fix the rating and submit.
 
-You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis component based on a machine learning model.
+You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings.
 
 ## Scraping the data from Trustpilot
 
@@ -22,17 +22,17 @@ To collect labeled data in order to train a sentiment classifier, we'll scrape c
 
 <img src="./assets/truspilot.png">
 
-We'll focus on english reviews only. 
+In this post, Wwe'll focus on english reviews only. 
 
-Trustpilot is an interesting choice because each customer review is associated with a number of stars. By leveraging this data, we can infer a sentiment label for each review.
+Trustpilot is an interesting source because each customer review is associated with a number of stars. By leveraging this data, we can infer a sentiment label for each review.
 
 <img src="./assets/review_label.png">
 
-Here is how we did it:
+We mapped each review to a class based on the number of stars and we used this information for training the sentiment classifier.
 
-- 1 and 2 stars: bad reviews (label = 0)
-- 3 stars: average reviews (label = 1)
-- 4 and 5 stars: good reviews (label = 2)
+- 1 and 2 stars: bad reviews
+- 3 stars: average reviews
+- 4 and 5 stars: good reviews
 
 
 In order to scrape customer reviews from trustpilot, we have to first understand the structure of the website. 
@@ -40,6 +40,20 @@ In order to scrape customer reviews from trustpilot, we have to first understand
 Trustpilot is organized by categories of businesses.
 
 <img src="./assets/1-categories.png">
+
+Each category is divided into sub-categories.
+
+<img src="./assets/2-subcategories.png">
+
+Each sub-category is divided into companies.
+
+<img src="./assets/3-comanies.png">
+
+And then each companies has its own set of reviews. 
+
+<img src="./assets/4-reviews.png">
+
+Pretty simple right?
 
 
 ## Training a sentiment classifer usig PyTorch
