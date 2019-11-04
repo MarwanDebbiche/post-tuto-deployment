@@ -88,12 +88,111 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
 from tqdm import tqdm_notebook
+
+base_url = "https://trustpilot.com"
+
+
+def get_soup(url):
+    return BeautifulSoup(requests.get(url).content, 'lxml')
+    
 ```
 
 
+We start by fetching the sub-categories URIs nested inside each category:
 
+```python
+data = {}
 
+soup = get_soup(base_url + '/categories')
+for category in soup.findAll('div', {'class': 'category-object'}):
+    name = category.find('h3', {'class': 'sub-category__header'}).text
+    name = name.strip()
+    data[name] = {}  
+    sub_categories = category.find('div', {'class': 'sub-category-list'})
+    for sub_category in sub_categories.findAll('div', {'class': 'child-category'}):
+        sub_category_name = sub_category.find('a', {'class': 'sub-category-item'}).text 
+        sub_category_uri = sub_category.find('a', {'class': 'sub-category-item'})['href'] 
+        data[name][sub_category_name] = sub_category_uri
+```
 
+This function allows to fetch company urls referenced in a given subcategory:
+
+```python
+def extract_company_urls_form_page():
+    a_list = driver.find_elements_by_xpath('//a[@class="category-business-card card"]')
+    urls = [a.get_attribute('href') for a in a_list]
+    dedup_urls = list(set(urls))
+    return dedup_urls
+```
+
+and this one indicates if a pagination exists on the page:
+
+```python
+def go_next_page():
+    try:
+        button = driver.find_element_by_xpath('//a[@class="button button--primary next-page"]')
+        return True, button
+    except NoSuchElementException:
+        return False, None
+```
+
+Now we initialize Selenium with a headless Chromedriver:
+
+```python
+
+options = Options()
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('start-maximized')
+options.add_argument('disable-infobars')
+options.add_argument("--disable-extensions")
+
+prefs = {"profile.managed_default_content_settings.images": 2}
+options.add_experimental_option("prefs", prefs)
+
+driver = webdriver.Chrome('./driver/chromedriver', options=options)
+
+timeout = 3
+```
+
+and launch the scraping. This approximatively takes 50 minutes.
+
+```python
+
+company_urls = {}
+for category in tqdm_notebook(data):
+    for sub_category in tqdm_notebook(data[category], leave=False):
+        company_urls[sub_category] = []
+
+        url = base_url + data[category][sub_category] + "?numberofreviews=0&timeperiod=0&status=all"
+        driver.get(url)
+        try: 
+            element_present = EC.presence_of_element_located(
+                (By.CLASS_NAME, 'category-business-card card'))
+            
+            WebDriverWait(driver, timeout).until(element_present)
+        except:
+            pass
+    
+        next_page = True
+        c = 1
+        while next_page:
+            extracted_company_urls = extract_company_urls_form_page()
+            company_urls[sub_category] += extracted_company_urls
+            next_page, button = go_next_page()
+            
+            if next_page:
+                c += 1
+                next_url = base_url + data[category][sub_category] + "?numberofreviews=0&timeperiod=0&status=all" + f'&page={c}'
+                driver.get(next_url)
+                try: 
+                    element_present = EC.presence_of_element_located(
+                        (By.CLASS_NAME, 'category-business-card card'))
+                    
+                    WebDriverWait(driver, timeout).until(element_present)
+                except:
+                    pass
+```
 
 
 
