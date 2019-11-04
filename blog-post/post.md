@@ -198,12 +198,27 @@ for category in tqdm_notebook(data):
 
 ## Training a sentiment classifer usig PyTorch
 
-## Building an interactive web interface with Dash, Flask and Post
 
+## Building an interactive web interface with Dash, Flask and PostgeSQL
 
+--> provide a diagram for the architecture to have a global picture first
 
 ## Dockerizing the application with Docker compose
 
+--> Marwan
+
 ## Deploying to AWS: Demo time
 
+--> Marwan
+
 ## Where to go from here?
+
+[Random ideas thrown in random orders]
+
+- How to manage multiple concurrent sessions
+- Deploy on multiple EC2 machines
+- Use Kubernetes to manage clusters of containers 
+
+## Contributions and pull requests
+
+This would be awesolme 😁
