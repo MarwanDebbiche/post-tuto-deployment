@@ -43,19 +43,27 @@ In order to scrape customer reviews from trustpilot, we have to first understand
 
 Trustpilot is organized by categories of businesses.
 
-<img src="./assets/1-categories.png">
+<p align="center">
+  <img src="./assets/1-categories.png" width="80%">
+</p>
 
 Each category is divided into sub-categories.
 
-<img src="./assets/2-subcategories.png">
+<p align="center">
+  <img src="./assets/2-subcategories.png" width="80%">
+</p>
 
 Each sub-category is divided into companies.
 
-<img src="./assets/3-companies.png">
+<p align="center">
+  <img src="./assets/3-companies.png" width="80%">
+</p>
 
 And then each companies has its own set of reviews. 
 
-<img src="./assets/4-reviews.png">
+<p align="center">
+  <img src="./assets/4-reviews.png" width="80%">
+</p>
 
 Pretty simple right?
 
