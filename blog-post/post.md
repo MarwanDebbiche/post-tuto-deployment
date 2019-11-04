@@ -47,7 +47,7 @@ Each category is divided into sub-categories.
 
 Each sub-category is divided into companies.
 
-<img src="./assets/3-comanies.png">
+<img src="./assets/3-companies.png">
 
 And then each companies has its own set of reviews. 
 
