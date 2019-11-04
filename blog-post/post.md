@@ -26,6 +26,8 @@ We'll focus on english reviews only.
 
 Trustpilot is an interesting choice because each customer review is associated with a number of stars. By leveraging this data, we can infer a sentiment label for each review.
 
+<img src="./assets/review_label.png">
+
 Here is how we did it:
 
 - 1 and 2 stars: bad reviews (label = 0)
