@@ -26,7 +26,9 @@ In this post, Wwe'll focus on english reviews only.
 
 Trustpilot is an interesting source because each customer review is associated with a number of stars. By leveraging this data, we can infer a sentiment label for each review.
 
-<img src="./assets/review_label.png">
+<p style="text-align: center">
+  <img src="./assets/review_label.png" width="50%">
+</p>
 
 We mapped each review to a class based on the number of stars and we used this information for training the sentiment classifier.
 
