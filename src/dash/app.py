@@ -25,6 +25,7 @@ app = dash.Dash(
 )
 
 companies = pd.read_csv('./csv/companies_forbes.csv')
+random_reviews = pd.read_csv('./csv/random_reviews.csv')
 
 app.layout = html.Div(
     [
@@ -83,9 +84,9 @@ app.layout = html.Div(
                     children=[
                         html.Span(
                             id='loading-output-1',
-                            style={
-                                'display': 'none'
-                            }
+                            # style={
+                            #     'display': 'none'
+                            # }
                         )
                     ],
                     type="default"
