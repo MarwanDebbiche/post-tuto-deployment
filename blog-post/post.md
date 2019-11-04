@@ -14,7 +14,7 @@ The user can then fix the rating and submit.
 
 You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings.
 
-## Scraping the data from Trustpilot
+## Scraping the data from Trustpilot with Selenium and Scrapy
 
 In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as Amazon polarity or IMDB movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. 
 
@@ -65,7 +65,19 @@ And then each companies has its own set of reviews.
   <img src="./assets/4-reviews.png" width="80%">
 </p>
 
-Pretty simple right?
+As you see, this is a top down tree structure. In order to scrape it efficiently we'll use **Scrapy** framework, but before going that far we need a little bit of Selenium to fetch the company urls first, then feed those to Scrapy.
+
+We unfortunately need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) and cannot be accessed from the page source like Scrapy does. Selenium simulates a browser that clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
+
+Let's see how to launch Selenium to fetch the company urls:
+
+
+
+
+
+
+
+
 
 
 ## Training a sentiment classifer usig PyTorch
