@@ -20,14 +20,16 @@ In order to train a sentiment classifier, we need data. We can sure download ope
 
 To collect labeled data in order to train a sentiment classifier, we'll scrape customer reviews from Trustpilot. Trustpilot.com is a consumer review website founded in Denmark in 2007 and hosts reviews of businesses worldwide. Nearly 1 million new reviews are posted each month.
 
-<img src="./assets/truspilot.png">
+<p align="center">
+  <img src="./assets/truspilot.png" width="90%">
+</p>
 
 In this post, Wwe'll focus on english reviews only. 
 
 Trustpilot is an interesting source because each customer review is associated with a number of stars. By leveraging this data, we can infer a sentiment label for each review.
 
-<p style="text-align: center">
-  <img src="./assets/review_label.png" width="50%">
+<p align="center">
+  <img src="./assets/review_label.png" width="70%">
 </p>
 
 We mapped each review to a class based on the number of stars and we used this information for training the sentiment classifier.
