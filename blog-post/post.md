@@ -345,12 +345,31 @@ class Pages(scrapy.Spider):
 
 ```
 
+Before launching the scraper you have to change the settings.py:
+
+Here are the changing I made:
+
+```python
+# Obey robots.txt rules
+ROBOTSTXT_OBEY = False
+
+# Configure maximum concurrent requests performed by Scrapy (default: 16)
+CONCURRENT_REQUESTS = 32
+
+#Export to csv
+FEED_FORMAT = "csv"
+FEED_URI = "comments_trustpilot_en.csv"
+```
+This indicates to the scraper to ignore robots.txt, to use 32 concurrent requests and to export the data into a csv format under the filename: ```comments_trustpilot_en.csv```
+
 To launch the scraper: 
 
 ```bash 
 cd src/scraping/scrapy
 scrapy crawl trustpilot
 ```
+
+
 
 ## Training a sentiment classifer usig PyTorch
 
