@@ -381,21 +381,21 @@ Note that we can interrupt it at any moment since it saves the data on the fly.
 
 This script is meant for educational purposes only: scrape responsively.
 
-## Training a sentiment classifer usig PyTorch
+## Training a sentiment classifer usig PyTorch 🤖
 
 Now the data is collected and we're ready to train a sentiment classifier.
 
 
 
-## Building an interactive web app ??with Dash, Flask and PostgeSQL 
+## Building an interactive web app 📲 with Dash, Flask and PostgeSQL 
 
 --> provide a diagram for the architecture to have a global picture first
 
-## Dockerizing the application with Docker compose
+## Dockerizing the application with Docker compose 🐳
 
 --> Marwan
 
-## Deploying to AWS: Demo time
+## Deploying to AWS: Demo time 💻
 
 --> Marwan
 
