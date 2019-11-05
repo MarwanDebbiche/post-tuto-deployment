@@ -23,6 +23,7 @@ app = dash.Dash(
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ]
 )
+app.title = 'Reviews AI2Prod'
 
 companies = pd.read_csv('./csv/companies_forbes.csv')
 random_reviews = pd.read_csv('./csv/random_reviews.csv')
