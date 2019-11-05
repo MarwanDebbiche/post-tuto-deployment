@@ -1,4 +1,4 @@
-# End to End Machine Learning : From Data Collection to Deployment
+# End to End Machine Learning : From Data Collection to Deployment 🚀
 
 ## Introduction
 
@@ -395,7 +395,7 @@ Now the data is collected and we're ready to train a sentiment classifier.
 
 --> Marwan
 
-## Deploying to AWS: Demo time 🚀
+## Deploying to AWS: Demo time 💻
 
 --> Marwan
 
