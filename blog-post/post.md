@@ -12,16 +12,19 @@ As you see it, this web app allows a user to evaluate random brands by writing r
 
 The user can then fix the rating and submit.
 
-You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings.
+You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings which the user can tweak and adapt.
 
 To build this application we'll follow the following steps:
 
 - Data collection
 - Model training
-- App development 
+- App development
+- Containerization
 - App deployment
 
-Let's get started!
+All the code is available in github and organized in independant directories.
+
+Let's get started! 👨🏻‍💻
 
 ## Scraping the data from Trustpilot with Selenium and Scrapy
 
@@ -74,7 +77,8 @@ And then each company has its own set of reviews, usually spread over many pages
   <img src="./assets/4-reviews.png" width="80%">
 </p>
 
-As you see, this is a top down tree structure. In order to scrape it efficiently we'll use **Scrapy** framework, but before going that far we need a little bit of Selenium to fetch the company urls first, then feed those to Scrapy.
+
+As you see, this is a top down tree structure. In order to scrape it efficiently we'll use **Scrapy** framework, but before going that far we need a little bit of Selenium to fetch the company urls first (see previous screenshot), then feed those to Scrapy.
 
 We unfortunately need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) and cannot be accessed from the page source like Scrapy does. Selenium simulates a browser that clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
 
@@ -111,19 +115,21 @@ def get_soup(url):
     
 ```
 
-We start by fetching the sub-categoriy URIs nested inside each category.
+We start by fetching the sub-category URLs nested inside each category.
 
-If you open up your browser and inspect the source code, you'll find out 22 category blocks (on the right) located in ```div``` objects that have ```class``` attributes equal to  ```category-object```
+If you open up your browser and inspect the source code, you'll find out 22 category blocks (on the right) located in ```div``` objects that have a ```class``` attribute equal to  ```category-object```
 
 <p align="center">
     <img src="./assets/5-category_block.png" width="80%">
 </p>
 
-Each category has its own set of sub-categories. Those are located in ```div```objects that have ```class``` attributes equal to ```child-category```.
+Each category has its own set of sub-categories. Those are located in ```div``` objects that have ```class``` attributes equal to ```child-category```.
 <p align="center">
     <img src="./assets/6-nested_urls.png" width="80%">
 </p>
 
+
+Let's first loop over categories and for each one of them collect the URLs of the sub-categories.
 
 ```python
 data = {}
@@ -140,7 +146,7 @@ for category in soup.findAll('div', {'class': 'category-object'}):
         data[name][sub_category_name] = sub_category_uri
 ```
 
-This function allows to fetch company urls referenced in a given subcategory:
+We define a function to fetch company urls referenced in a given subcategory:
 
 ```python
 def extract_company_urls_form_page():
@@ -150,7 +156,7 @@ def extract_company_urls_form_page():
     return dedup_urls
 ```
 
-and this one indicates if a pagination exists on the page:
+and another function to indicate if next page exists:
 
 ```python
 def go_next_page():
@@ -161,10 +167,12 @@ def go_next_page():
         return False, None
 ```
 
-Now we initialize Selenium with a headless Chromedriver:
+Now we initialize Selenium with a headless Chromedriver. 
+
+PS: You'll have to donwload Chromedrive from this <a href="https://chromedriver.chromium.org/">link</a> 
+
 
 ```python
-
 options = Options()
 options.add_argument('--headless')
 options.add_argument('--no-sandbox')
@@ -180,10 +188,9 @@ driver = webdriver.Chrome('./driver/chromedriver', options=options)
 timeout = 3
 ```
 
-and launch the scraping. This approximatively takes 50 minutes.
+and launch the scraping. This approximatively takes 50 minutes with good internet connexion:
 
 ```python
-
 company_urls = {}
 for category in tqdm_notebook(data):
     for sub_category in tqdm_notebook(data[category], leave=False):
@@ -219,7 +226,118 @@ for category in tqdm_notebook(data):
                     pass
 ```
 
+Once the scraping is over, we save the urls to a csv file:
 
+```python
+consolidated_data = []
+
+for category in data:
+    for sub_category in data[category]:
+        for url in company_urls[sub_category]:
+            consolidated_data.append((category, sub_category, url))
+
+df_consolidated_data = pd.DataFrame(consolidated_data, columns=['category', 'sub_category', 'company_url'])
+
+df_consolidated_data.to_csv('./exports/consolidate_company_urls.csv', index=False)
+```
+
+Here's what the data looks like:
+
+<p align="center">
+    <img src="./assets/url_companies.png" width="80%">
+</p>
+
+### Scraping customer reviews with Scrapy
+
+Ok, now we're ready to scrape the data we need with Scrapy.
+
+First you need to make sure Scrapy is installed. Otherwise, you can install using
+- conda: ```conda install -c conda-forge scrapy``` 
+
+or 
+
+- pip: ```pip install scrapy```
+
+Then, you'll need to start a scrapy project:
+
+```bash
+cd src/scraping/scrapy
+scrapy startproject trustpilot
+```
+
+This last command creates a structure of a Scrapy project. It has the following structure:
+
+```
+scrapy/
+    scrapy.cfg            # deploy configuration file
+
+    trustpilot/             # project's Python module, you'll import your code from here
+        __init__.py
+
+        items.py          # project items definition file
+
+        middlewares.py    # project middlewares file
+
+        pipelines.py      # project pipelines file
+
+        settings.py       # project settings file
+
+        spiders/          # a directory where you'll later put your spiders
+            __init__.py
+```
+
+Using Scrapy for the first time can be overwhelming, so to learn more about it you can visit the official <a href="http://doc.scrapy.org/en/latest/intro/tutorial.html">tutorials</a>
+
+To build our scraper we'll create a spider inside the ```spiders``` folder.
+
+Here's the full script:
+
+```python
+import re
+import pandas as pd
+import scrapy
+
+class Pages(scrapy.Spider):
+    name = "trustpilot"
+
+    company_data = pd.read_csv('../selenium/exports/consolidate_company_urls.csv')
+    start_urls = company_data['company_url'].unique().tolist()
+
+    def parse(self, response):
+        company_logo = response.xpath('//img[@class="business-unit-profile-summary__image"]/@src').extract_first()
+        company_website = response.xpath("//a[@class='badge-card__section badge-card__section--hoverable']/@href").extract_first()
+        company_name = response.xpath("//span[@class='multi-size-header__big']/text()").extract_first()
+        comments = response.xpath("//p[@class='review-content__text']")
+        comments = [comment.xpath('.//text()').extract() for comment in comments]
+        comments = [[c.strip() for c in comment_list] for comment_list in comments]
+        comments = [' '.join(comment_list) for comment_list in comments]
+
+        ratings = response.xpath("//div[@class='star-rating star-rating--medium']//img/@alt").extract()
+        ratings = [int(re.match('\d+', rating).group(0)) for rating in ratings]
+
+        for comment, rating in zip(comments, ratings):
+            yield {
+                'comment': comment,
+                'rating': rating,
+                'url_website' : response.url,
+                'company_name': company_name,
+                'company_website': company_website,
+                'company_logo': company_logo
+            }
+
+        next_page = response.css('a[data-page-number=next-page] ::attr(href)').extract_first()
+        if next_page is not None:
+            request = response.follow(next_page, callback=self.parse)
+            yield request
+
+```
+
+To launch the scraper: 
+
+```bash 
+cd src/scraping/scrapy
+scrapy crawl trustpilot
+```
 
 ## Training a sentiment classifer usig PyTorch
 
@@ -243,7 +361,8 @@ for category in tqdm_notebook(data):
 - How to manage multiple concurrent sessions
 - Deploy on multiple EC2 machines 
 - Use CI/CD 
-- Use Kubernetes to manage clusters of containers 
+- Use Kubernetes to manage clusters of containers
+- 
 
 ## Contributions and pull requests
 
