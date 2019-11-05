@@ -216,7 +216,8 @@ for category in tqdm_notebook(data):
 [Random ideas thrown in random orders]
 
 - How to manage multiple concurrent sessions
-- Deploy on multiple EC2 machines
+- Deploy on multiple EC2 machines 
+- Use CI/CD 
 - Use Kubernetes to manage clusters of containers 
 
 ## Contributions and pull requests
