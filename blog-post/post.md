@@ -1,45 +1,54 @@
-# End 2 End Machine Learning : From Data Collection to Deployment
+# End to End Machine Learning : From Data Collection to Deployment
 
 ## Introduction
 
-In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun. 
+In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun.  👨🏻‍💻
 
 Before to start, let's first look at the app we'll be building:
 
 <!-- insert GIF or VIDEO here -->
 
-As you see it, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input in real-time along with a proposed rating from 1 to 5.
+As you see it, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
 
 The user can then fix the rating and submit.
 
 You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings.
 
+To build this application we'll follow the following steps:
+
+- Data collection
+- Model training
+- App development 
+- App deployment
+
+Let's get started!
+
 ## Scraping the data from Trustpilot with Selenium and Scrapy
 
-In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as Amazon polarity or IMDB movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. 
+In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as Amazon polarity or IMDB movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
 
-To collect labeled data in order to train a sentiment classifier, we'll scrape customer reviews from Trustpilot. Trustpilot.com is a consumer review website founded in Denmark in 2007 and hosts reviews of businesses worldwide. Nearly 1 million new reviews are posted each month.
+Trustpilot.com is a consumer review website founded in Denmark in 2007. It hosts reviews of businesses worldwide and nearly 1 million new reviews are posted each month.
+
 
 <p align="center">
   <img src="./assets/truspilot.png" width="90%">
 </p>
 
-In this post, Wwe'll focus on english reviews only. 
 
-Trustpilot is an interesting source because each customer review is associated with a number of stars. By leveraging this data, we can infer a sentiment label for each review.
+Trustpilot is an interesting source because each customer review is associated with a number of stars.
 
 <p align="center">
   <img src="./assets/review_label.png" width="70%">
 </p>
 
-We mapped each review to a class based on the number of stars and we used this information for training the sentiment classifier.
+By leveraging this data, we are able to map each review to a sentiment class based on its number of stars so that reviews with:
 
-- 1 and 2 stars: bad reviews
-- 3 stars: average reviews
-- 4 and 5 stars: good reviews
+- 1 and 2 stars are **bad reviews**
+- 3 stars are **average reviews**
+- 4 and 5 stars are **good reviews**
 
 
-In order to scrape customer reviews from trustpilot, we have to first understand the structure of the website. 
+In order to scrape customer reviews from trustpilot, we first have to understand the structure of the website. 
 
 Trustpilot is organized by categories of businesses.
 
@@ -59,7 +68,7 @@ Each sub-category is divided into companies.
   <img src="./assets/3-companies.png" width="80%">
 </p>
 
-And then each companies has its own set of reviews. 
+And then each company has its own set of reviews, usually spread over many pages.
 
 <p align="center">
   <img src="./assets/4-reviews.png" width="80%">
@@ -69,7 +78,12 @@ As you see, this is a top down tree structure. In order to scrape it efficiently
 
 We unfortunately need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) and cannot be accessed from the page source like Scrapy does. Selenium simulates a browser that clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
 
-Let's see how to launch Selenium to fetch the company urls:
+### Collect company urls with Selenium
+
+
+Let's see how to launch Selenium to fetch the company urls.
+
+We'll first import Selenium dependencies along with other utility packages.
 
 ```python
 import json
@@ -97,8 +111,19 @@ def get_soup(url):
     
 ```
 
+We start by fetching the sub-categoriy URIs nested inside each category.
 
-We start by fetching the sub-categories URIs nested inside each category:
+If you open up your browser and inspect the source code, you'll find out 22 category blocks (on the right) located in ```div``` objects that have ```class``` attributes equal to  ```category-object```
+
+<p align="center">
+    <img src="./assets/5-category_block.png" width="80%">
+</p>
+
+Each category has its own set of sub-categories. Those are located in ```div```objects that have ```class``` attributes equal to ```child-category```.
+<p align="center">
+    <img src="./assets/6-nested_urls.png" width="80%">
+</p>
+
 
 ```python
 data = {}
