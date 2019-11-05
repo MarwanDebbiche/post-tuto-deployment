@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun.  👨🏻‍💻
+In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun. 😀
 
 Before to start, let's first look at the app we'll be building:
 
@@ -28,7 +28,7 @@ All the code is available in github and organized in independant directories.
 
 Let's get started! 👨🏻‍💻
 
-## Scraping the data from Trustpilot with Selenium and Scrapy
+## Scraping the data from Trustpilot with Selenium and Scrapy ⛏
 
 In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as Amazon polarity or IMDB movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
 
@@ -251,7 +251,7 @@ And here's what the data looks like:
     <img src="./assets/url_companies.png" width="80%">
 </p>
 
-### Scraping customer reviews with Scrapy
+### Scraping customer reviews with Scrapy 
 
 Ok, now we're ready to scrape the data we need with Scrapy.
 
@@ -381,18 +381,17 @@ Note that we can interrupt it at any moment since it saves the data on the fly.
 
 This script is meant for educational purposes only: scrape responsively.
 
-## Training a sentiment classifer usig PyTorch
+## Training a sentiment classifer usig PyTorch 🤖
 
-Now the data is collected and we're ready to train a 
-
-
+Now the data is collected and we're ready to train a sentiment classifier.
 
 
-## Building an interactive web interface with Dash, Flask and PostgeSQL
+
+## Building an interactive web app 📲 with Dash, Flask and PostgeSQL 
 
 --> provide a diagram for the architecture to have a global picture first
 
-## Dockerizing the application with Docker compose
+## Dockerizing the application with Docker compose 
 
 --> Marwan
 
@@ -400,7 +399,7 @@ Now the data is collected and we're ready to train a
 
 --> Marwan
 
-## Where to go from here?
+## Where to go from here ❓
 
 [Random ideas thrown in random orders]
 
