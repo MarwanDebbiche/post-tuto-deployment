@@ -23,6 +23,7 @@ app = dash.Dash(
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ]
 )
+app.title = 'Reviews AI2Prod'
 
 companies = pd.read_csv('./csv/companies_forbes.csv')
 random_reviews = pd.read_csv('./csv/random_reviews.csv')
@@ -31,69 +32,38 @@ app.layout = html.Div(
     [
         html.Div(
             [
-                html.Img(
-                    id='company_logo',
-                    style={
-                        'width': '50%',
-                        'padding': '5px'
-                    }
-                ),
+                html.A(
+                    html.Img(
+                        id='company_logo',
+                        style={
+                            'height': '100px',
+                            'padding': '5px'
+                        }
+                    ),
+                    id="button_company",
+                    target="_blank"
+                )
             ],
             style={
-                'height': '150px',
+                'height': '100px',
                 'background-color': 'white',
                 'border-style': 'solid',
-                'border-radius': '140px',
+                'border-radius': '100px',
                 'border-width': 'thin'
             }
         ),
 
-        dbc.Button(
-            children=[
+        html.H1(
+            [
+                "What do you think of ",
                 html.Span(
                     id='company_name'
                 ),
-                html.I(
-                    className="fas fa-link",
-                    style={
-                        'margin-left': '5px'
-                    }
-                )
+                " ?"
             ],
-            id='button_company',
-            color="primary",
-            className="mr-1",
-            outline=False,
-            style={
-                'margin-top': '10px'
-            }
-        ),
-
-        html.H1(
-            "What do you think of this brand ?",
             className="h3 mb-3 font-weight-normal",
             style={
                 'margin-top': '5px'
-            }
-        ),
-
-        html.Div(
-            [
-                dcc.Loading(
-                    id="loading",
-                    children=[
-                        html.Span(
-                            id='loading-output-1',
-                            # style={
-                            #     'display': 'none'
-                            # }
-                        )
-                    ],
-                    type="default"
-                )
-            ],
-            style={
-                'height': '50px'
             }
         ),
 
@@ -267,17 +237,6 @@ def update_proba(review):
             return text_proba, proba, 'danger', suggested_rating
     else:
         return None, 0, None, 0
-
-
-@app.callback(
-    Output('loading-output-1', 'children'),
-    [
-        Input('review', 'value')
-    ]
-)
-def trigger_loading(value):
-    time.sleep(1)
-    return None
 
 
 if __name__ == '__main__':
