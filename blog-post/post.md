@@ -6,7 +6,9 @@ In this post, we'll go through the necessary steps to build and deploy a machine
 
 Before to start, let's first look at the app we'll be building:
 
-<!-- insert GIF or VIDEO here -->
+<p align="center">
+    <img src="./assets/app.gif">
+</p>
 
 As you see it, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
 
@@ -362,7 +364,7 @@ FEED_URI = "comments_trustpilot_en.csv"
 ```
 This indicates to the scraper to ignore robots.txt, to use 32 concurrent requests and to export the data into a csv format under the filename: ```comments_trustpilot_en.csv```
 
-Now time launch the scraper: 
+Now time to launch the scraper: 
 
 ```bash 
 cd src/scraping/scrapy
@@ -378,6 +380,10 @@ Note that we can interrupt it at any moment since it saves the data on the fly.
 This script is meant for educational purposes only: scrape responsively.
 
 ## Training a sentiment classifer usig PyTorch
+
+Now the data is collected and we're ready to train a 
+
+
 
 
 ## Building an interactive web interface with Dash, Flask and PostgeSQL
