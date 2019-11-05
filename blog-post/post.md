@@ -1,12 +1,14 @@
-# End to End Machine Learning : From Data Collection to Deployment
+# End to End Machine Learning : From Data Collection to Deployment  ??
 
 ## Introduction
 
-In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun.  👨🏻‍💻
+In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun.
 
 Before to start, let's first look at the app we'll be building:
 
-<!-- insert GIF or VIDEO here -->
+<p align="center">
+    <img src="./assets/app.gif">
+</p>
 
 As you see it, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
 
@@ -24,7 +26,7 @@ To build this application we'll follow the following steps:
 
 All the code is available in github and organized in independant directories.
 
-Let's get started! 👨🏻‍💻
+Let's get started!
 
 ## Scraping the data from Trustpilot with Selenium and Scrapy
 
@@ -129,7 +131,7 @@ Each category has its own set of sub-categories. Those are located in ```div``` 
 </p>
 
 
-Let's first loop over categories and for each one of them collect the URLs of the sub-categories.
+Let's first loop over categories and for each one of them collect the URLs of the sub-categories. This can be achieved using Beautifulsoup and requests.
 
 ```python
 data = {}
@@ -146,7 +148,9 @@ for category in soup.findAll('div', {'class': 'category-object'}):
         data[name][sub_category_name] = sub_category_uri
 ```
 
-We define a function to fetch company urls referenced in a given subcategory:
+Now comes the selenium part: we'll need to loop over the companies of each sub-category and fetch their URL. 
+
+We first define a function to fetch company urls referenced in a given subcategory:
 
 ```python
 def extract_company_urls_form_page():
@@ -156,7 +160,7 @@ def extract_company_urls_form_page():
     return dedup_urls
 ```
 
-and another function to indicate if next page exists:
+and another function to check if there is a next page:
 
 ```python
 def go_next_page():
@@ -241,13 +245,13 @@ df_consolidated_data = pd.DataFrame(consolidated_data, columns=['category', 'sub
 df_consolidated_data.to_csv('./exports/consolidate_company_urls.csv', index=False)
 ```
 
-Here's what the data looks like:
+And here's what the data looks like:
 
 <p align="center">
     <img src="./assets/url_companies.png" width="80%">
 </p>
 
-### Scraping customer reviews with Scrapy
+### Scraping customer reviews with Scrapy 
 
 Ok, now we're ready to scrape the data we need with Scrapy.
 
@@ -347,7 +351,7 @@ class Pages(scrapy.Spider):
 
 Before launching the scraper you have to change the settings.py:
 
-Here are the changing I made:
+Here are the changing we made:
 
 ```python
 # Obey robots.txt rules
@@ -362,19 +366,28 @@ FEED_URI = "comments_trustpilot_en.csv"
 ```
 This indicates to the scraper to ignore robots.txt, to use 32 concurrent requests and to export the data into a csv format under the filename: ```comments_trustpilot_en.csv```
 
-To launch the scraper: 
+Now time to launch the scraper: 
 
 ```bash 
 cd src/scraping/scrapy
 scrapy crawl trustpilot
 ```
 
+We'll let it run for a little bit of time.
 
+Note that we can interrupt it at any moment since it saves the data on the fly.
+
+<u>**Disclaimer :**</u> 
+
+This script is meant for educational purposes only: scrape responsively.
 
 ## Training a sentiment classifer usig PyTorch
 
+Now the data is collected and we're ready to train a sentiment classifier.
 
-## Building an interactive web interface with Dash, Flask and PostgeSQL
+
+
+## Building an interactive web app ??with Dash, Flask and PostgeSQL 
 
 --> provide a diagram for the architecture to have a global picture first
 
@@ -386,7 +399,7 @@ scrapy crawl trustpilot
 
 --> Marwan
 
-## Where to go from here?
+## Where to go from here
 
 [Random ideas thrown in random orders]
 
@@ -394,8 +407,7 @@ scrapy crawl trustpilot
 - Deploy on multiple EC2 machines 
 - Use CI/CD 
 - Use Kubernetes to manage clusters of containers
-- 
 
 ## Contributions and pull requests
 
-This would be awesolme 😁
+This would be awesome !
