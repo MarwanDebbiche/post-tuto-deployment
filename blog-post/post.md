@@ -1,4 +1,4 @@
-# End to End Machine Learning : From Data Collection to Deployment 🚀
+# End to End Machine Learning : From Data Collection to Deployment ??
 
 ## Introduction
 
