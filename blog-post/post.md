@@ -391,11 +391,11 @@ Now the data is collected and we're ready to train a sentiment classifier.
 
 --> provide a diagram for the architecture to have a global picture first
 
-## Dockerizing the application with Docker compose 
+## Dockerizing the application with Docker compose 🐳
 
 --> Marwan
 
-## Deploying to AWS: Demo time
+## Deploying to AWS: Demo time 🚀
 
 --> Marwan
 
@@ -407,8 +407,7 @@ Now the data is collected and we're ready to train a sentiment classifier.
 - Deploy on multiple EC2 machines 
 - Use CI/CD 
 - Use Kubernetes to manage clusters of containers
-- 
 
-## Contributions and pull requests
+## Contributions and pull requests 🔧
 
 This would be awesolme 😁
