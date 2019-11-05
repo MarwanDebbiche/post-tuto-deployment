@@ -6,6 +6,9 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
+    volumes:
+      - ~/pgdata:/var/lib/postgresql/data
+    restart: always
   api:
     build:
       context: src/api
@@ -21,6 +24,7 @@ services:
       - AWS_SECRET_ACCESS_KEY
     depends_on:
       - db
+    restart: always
   dash:
     build:
       context: src/dash
@@ -32,3 +36,4 @@ services:
       - API_URL=http://api:5000/api
     depends_on:
       - api
+    restart: always
