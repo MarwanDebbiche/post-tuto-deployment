@@ -411,4 +411,4 @@ Now the data is collected and we're ready to train a sentiment classifier.
 
 ## Contributions and pull requests
 
-This would be awesolme 😁
+This would be awesome 😁 
