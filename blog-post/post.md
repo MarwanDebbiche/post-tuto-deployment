@@ -265,7 +265,7 @@ cd src/scraping/scrapy
 scrapy startproject trustpilot
 ```
 
-This last command creates a structure of a Scrapy project. It has the following structure:
+This last command creates a structure of a Scrapy project. Here's what it looks like:
 
 ```
 scrapy/
@@ -289,6 +289,19 @@ scrapy/
 Using Scrapy for the first time can be overwhelming, so to learn more about it you can visit the official <a href="http://doc.scrapy.org/en/latest/intro/tutorial.html">tutorials</a>
 
 To build our scraper we'll create a spider inside the ```spiders``` folder.
+
+What the scraper basically does is the following:
+
+- It starts from a company url
+- It goes through each customer review and extracts a dictionary of data cotaining the following items
+
+    - comment: the text review
+    - rating: the number of stars (1 to 5)
+    - url_website: the company website on trustpilot
+    - company_name: the company being reviewed
+    - company_website: the website of the company being reviewed
+    - company_logo: the logo of the company being reviewed   
+- It moves to the next page if any
 
 Here's the full script:
 
