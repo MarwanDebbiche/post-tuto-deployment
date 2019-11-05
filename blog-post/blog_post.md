@@ -28,7 +28,7 @@ All the code is available in github and organized in independant directories.
 
 Let's get started!
 
-## Scraping the data from Trustpilot with Selenium and Scrapy
+## Scraping the data from Trustpilot with Selenium and Scrapy ⛏
 
 In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as Amazon polarity or IMDB movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
 
@@ -48,9 +48,9 @@ Trustpilot is an interesting source because each customer review is associated w
 
 By leveraging this data, we are able to map each review to a sentiment class based on its number of stars so that reviews with:
 
-- 1 and 2 stars are **bad reviews**
-- 3 stars are **average reviews**
-- 4 and 5 stars are **good reviews**
+- 1 and 2 stars are **bad reviews** ❌
+- 3 stars are **average reviews** ⚠️
+- 4 and 5 stars are **good reviews** ✅
 
 
 In order to scrape customer reviews from trustpilot, we first have to understand the structure of the website. 
@@ -377,9 +377,7 @@ We'll let it run for a little bit of time.
 
 Note that we can interrupt it at any moment since it saves the data on the fly.
 
-<u>**Disclaimer :**</u> 
-
-This script is meant for educational purposes only: scrape responsively.
+❗ This script is meant for educational purposes only: scrape responsively. ❗
 
 ## Training a sentiment classifer usig PyTorch 🤖
 
@@ -399,7 +397,7 @@ Now the data is collected and we're ready to train a sentiment classifier.
 
 --> Marwan
 
-## Where to go from here
+## Where to go from here 🏍
 
 [Random ideas thrown in random orders]
 
@@ -408,6 +406,6 @@ Now the data is collected and we're ready to train a sentiment classifier.
 - Use CI/CD 
 - Use Kubernetes to manage clusters of containers
 
-## Contributions and pull requests
+## Contributions and pull requests 🛠
 
 This would be awesome !
