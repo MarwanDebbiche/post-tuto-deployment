@@ -7,7 +7,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ~/pgdata:/var/lib/postgresql/data
     restart: always
   api:
     build:
