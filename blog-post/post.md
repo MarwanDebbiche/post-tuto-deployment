@@ -131,7 +131,7 @@ Each category has its own set of sub-categories. Those are located in ```div``` 
 </p>
 
 
-Let's first loop over categories and for each one of them collect the URLs of the sub-categories.
+Let's first loop over categories and for each one of them collect the URLs of the sub-categories. This can be achieved using Beautifulsoup and requests.
 
 ```python
 data = {}
@@ -148,7 +148,9 @@ for category in soup.findAll('div', {'class': 'category-object'}):
         data[name][sub_category_name] = sub_category_uri
 ```
 
-We define a function to fetch company urls referenced in a given subcategory:
+Now comes the selenium part: we'll need to loop over the companies of each sub-category and fetch their URL. 
+
+We first define a function to fetch company urls referenced in a given subcategory:
 
 ```python
 def extract_company_urls_form_page():
@@ -158,7 +160,7 @@ def extract_company_urls_form_page():
     return dedup_urls
 ```
 
-and another function to indicate if next page exists:
+and another function to check if there is a next page:
 
 ```python
 def go_next_page():
@@ -243,7 +245,7 @@ df_consolidated_data = pd.DataFrame(consolidated_data, columns=['category', 'sub
 df_consolidated_data.to_csv('./exports/consolidate_company_urls.csv', index=False)
 ```
 
-Here's what the data looks like:
+And here's what the data looks like:
 
 <p align="center">
     <img src="./assets/url_companies.png" width="80%">
