@@ -8,5 +8,4 @@ ADD . /app
 
 EXPOSE 8050
 
-ENTRYPOINT ["python"]
-CMD ["app.py"]
+CMD ["gunicorn", "-b", "0.0.0.0:8050", "app:app.server"]
