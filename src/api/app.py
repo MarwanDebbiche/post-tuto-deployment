@@ -56,7 +56,6 @@ def predict_rating():
     review's text data.
     '''
     if request.method == 'POST':
-        print('request.from =', request.form)
         if 'review' not in request.form:
             return jsonify({'error': 'no review in body'}), 400
         else:
