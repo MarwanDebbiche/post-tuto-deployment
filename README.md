@@ -1,4 +1,4 @@
-# End 2 End Machine Learning : From Data Collection to Deployment
+# End 2 End Machine Learning : From Data Collection to Deployment 🚀 
 
 Repository for the blog post shared between [Ahmed Besbes](http://ahmedbesbes.com) and [Marwan Debbiche](http://marwandebbiche.com)
 
