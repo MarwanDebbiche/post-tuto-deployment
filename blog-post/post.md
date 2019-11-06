@@ -4,15 +4,15 @@
 
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun  😁 .
 
-Before to start, let's first look at the app we'll be building:
+Before we begin, let's have a look at the app we'll be building:
 
 <p align="center">
     <img src="./assets/app.gif">
 </p>
 
-As you see it, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
+As you can see, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
 
-The user can then fix the rating and submit.
+The user can then change the rating (in case the suggested rating does not reflect his views), and submit.
 
 You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings which the user can tweak and adapt.
 
@@ -80,7 +80,7 @@ And then each company has its own set of reviews, usually spread over many pages
 </p>
 
 
-As you see, this is a top down tree structure. In order to scrape it efficiently we'll use **Scrapy** framework, but before going that far we need a little bit of Selenium to fetch the company urls first (see previous screenshot), then feed those to Scrapy.
+As you can see, this is a top down tree structure. In order to scrape it efficiently we'll use the **Scrapy** framework, but before going that far we need a little bit of Selenium to fetch the company urls first (see previous screenshot), then feed those to Scrapy.
 
 We unfortunately need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) and cannot be accessed from the page source like Scrapy does. Selenium simulates a browser that clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
 
@@ -255,7 +255,7 @@ And here's what the data looks like:
 
 Ok, now we're ready to scrape the data we need with Scrapy.
 
-First you need to make sure Scrapy is installed. Otherwise, you can install using
+First you need to make sure Scrapy is installed. Otherwise, you can install it using
 - conda: ```conda install -c conda-forge scrapy``` 
 
 or 
@@ -269,7 +269,7 @@ cd src/scraping/scrapy
 scrapy startproject trustpilot
 ```
 
-This last command creates a structure of a Scrapy project. Here's what it looks like:
+This last command creates the structure of a Scrapy project. Here's what it looks like:
 
 ```
 scrapy/
