@@ -150,7 +150,12 @@ app.layout = html.Div(
             n_clicks_timestamp=0
         ),
         html.P(
-            "BESBES / DEBBICHE - 2019",
+            [
+                html.A("BESBES", href="https://ahmedbesbes.com", target="_blank"),
+                " / ",
+                html.A("DEBBICHE", href="http://marwandebbiche.com", target="_blank"),
+                " - 2019"
+            ],
             className="mt-5 mb-3 text-muted"
         )
     ],
