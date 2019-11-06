@@ -386,7 +386,36 @@ Note that we can interrupt it at any moment since it saves the data on the fly.
 
 ## Training a sentiment classifer usig PyTorch ??
 
-Now the data is collected and we're ready to train a sentiment classifier.
+*The code and the model we'll be using here is inspired from this github <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a> so go check it for additional information.*
+
+Now that the data is collected, we're ready to train a sentiment classifier to predict the labels we defined earlier.
+
+There are a wide range of possible models to use. The one we'll be training is a character based convolutional neural network. It's based on this <a href="https://arxiv.org/pdf/1509.01626.pdf">paper</a>.
+
+The question you'd be asking up-front is the following: how would you use CNNs for text classification ? Aren't these archiectures designed for image data ?
+
+Well, the truth is, CNN are way more versatile and their application can extend the scope of image classification. In fact, they are also able to capture sequencial information that is inherent to text data.
+
+The only only trick here is to efficiently represent the input text.
+
+To see how this is done, imagine the following tweet:
+
+<p align="center">
+    <img src="./assets/tweet.png" width="60%">
+</p>
+
+Assuming an alphabet of size 70 containing the english letters and the special characters and an arbitray maximum length of 140, one possible representation of this sentence is a (70, 140) matrix where each column is a one hot vector indiciating the position of a given character in the alphabet and 140 being the maximum length of tweets. This porcess is called **quantization**.
+
+Note that if a sentence is too long, the representation truncates up to the first 140 characters. On the other hand, if the sentence is too short 0 column vectors are padded until the (70, 140) shape is reached.
+
+So what to do now with this representation?
+
+<p align="center">
+    <img src="./assets/tweet_matrix.png" width="60%">
+</p>
+
+**Convolutions, obviously ??**
+
 
 
 ## Building an interactive web app ?? with Dash, Flask and PostgeSQL 
