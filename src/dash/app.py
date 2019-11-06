@@ -216,7 +216,8 @@ def change_brand(submit_click_ts, another_brand_click_ts, review_text, score, ra
         Output('proba', 'children'),
         Output('progress', 'value'),
         Output('progress', 'color'),
-        Output('rating', 'value')
+        Output('rating', 'value'),
+        Output('submit-button', 'disabled')
     ],
     [Input('review', 'value')]
 )
@@ -230,13 +231,13 @@ def update_proba(review):
         text_proba = f"{proba}%"
 
         if proba >= 67:
-            return text_proba, proba, 'success', suggested_rating
+            return text_proba, proba, 'success', suggested_rating, False
         elif 33 < proba < 67:
-            return text_proba, proba, 'warning', suggested_rating
+            return text_proba, proba, 'warning', suggested_rating, False
         elif proba <= 33:
-            return text_proba, proba, 'danger', suggested_rating
+            return text_proba, proba, 'danger', suggested_rating, False
     else:
-        return None, 0, None, 0
+        return None, 0, None, 0, True
 
 
 if __name__ == '__main__':
