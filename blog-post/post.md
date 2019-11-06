@@ -1,8 +1,8 @@
-# End to End Machine Learning : From Data Collection to Deployment 🚀
+# End to End Machine Learning : From Data Collection to Deployment ??
 
 ## Introduction
 
-In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun  😁 .
+In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun ??.
 
 Before we begin, let's have a look at the app we'll be building:
 
@@ -14,7 +14,7 @@ As you can see, this web app allows a user to evaluate random brands by writing 
 
 The user can then change the rating (in case the suggested rating does not reflect his views), and submit.
 
-You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings which the user can tweak and adapt.
+You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings that the user can tweak and adapt afterwards.
 
 To build this application we'll follow the following steps:
 
@@ -26,11 +26,11 @@ To build this application we'll follow the following steps:
 
 All the code is available in github and organized in independant directories.
 
-Let's get started!
+Let's get started! ?????
 
-## Scraping the data from Trustpilot with Selenium and Scrapy ⛏
+## Scraping the data from Trustpilot with Selenium and Scrapy ?
 
-In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as Amazon polarity or IMDB movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
+In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as <a href="http://jmcauley.ucsd.edu/data/amazon/"> Amazon Polarity</a> or <a href="https://www.kaggle.com/iarunava/imdb-movie-reviews-dataset">IMDB</a> movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
 
 Trustpilot.com is a consumer review website founded in Denmark in 2007. It hosts reviews of businesses worldwide and nearly 1 million new reviews are posted each month.
 
@@ -46,11 +46,13 @@ Trustpilot is an interesting source because each customer review is associated w
   <img src="./assets/review_label.png" width="70%">
 </p>
 
-By leveraging this data, we are able to map each review to a sentiment class based on its number of stars so that reviews with:
+By leveraging this data, we are able to map each review to a sentiment class. 
 
-- 1 and 2 stars are **bad reviews** ❌
-- 3 stars are **average reviews** ⚠️
-- 4 and 5 stars are **good reviews** ✅
+In fact, reviews with:
+
+- 1 and 2 stars are **bad reviews** ?
+- 3 stars are **average reviews** ??
+- 4 and 5 stars are **good reviews** ?
 
 
 In order to scrape customer reviews from trustpilot, we first have to understand the structure of the website. 
@@ -80,12 +82,11 @@ And then each company has its own set of reviews, usually spread over many pages
 </p>
 
 
-As you can see, this is a top down tree structure. In order to scrape it efficiently we'll use the **Scrapy** framework, but before going that far we need a little bit of Selenium to fetch the company urls first (see previous screenshot), then feed those to Scrapy.
+As you see, this is a top down tree structure. In order to scrape it efficiently we'll use **Scrapy** framework, but before going that far we need a to use Selenium first to fetch the company urls (see previous screenshot), then feed those to Scrapy.
 
-We unfortunately need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) and cannot be accessed from the page source like Scrapy does. Selenium simulates a browser that clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
+We need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) and cannot be accessed directly from the page source like Scrapy does. Selenium simulates a browser that clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
 
-### Collect company urls with Selenium
-
+### Scrape company urls with Selenium : step 1 
 
 Let's see how to launch Selenium to fetch the company urls.
 
@@ -230,7 +231,7 @@ for category in tqdm_notebook(data):
                     pass
 ```
 
-Once the scraping is over, we save the urls to a csv file:
+Once the scraping is over, we save the company urls to a csv file.
 
 ```python
 consolidated_data = []
@@ -251,7 +252,7 @@ And here's what the data looks like:
     <img src="./assets/url_companies.png" width="80%">
 </p>
 
-### Scraping customer reviews with Scrapy 
+### Scrape customer reviews with Scrapy : step 2
 
 Ok, now we're ready to scrape the data we need with Scrapy.
 
@@ -292,22 +293,26 @@ scrapy/
 
 Using Scrapy for the first time can be overwhelming, so to learn more about it you can visit the official <a href="http://doc.scrapy.org/en/latest/intro/tutorial.html">tutorials</a>
 
-To build our scraper we'll create a spider inside the ```spiders``` folder.
+To build our scraper, we'll have to create a spider inside the ```spiders``` folder. We'll call it ```scraper.py```.
 
-What the scraper basically does is the following:
+What the scraper will do is the following:
 
 - It starts from a company url
-- It goes through each customer review and extracts a dictionary of data cotaining the following items
+- It goes through each customer review and yields a dictionary of data cotaining the following items
 
     - comment: the text review
     - rating: the number of stars (1 to 5)
-    - url_website: the company website on trustpilot
-    - company_name: the company being reviewed
+    - url_website: the company url on trustpilot 
+    - company_name: the company name being reviewed
     - company_website: the website of the company being reviewed
-    - company_logo: the logo of the company being reviewed   
+    - company_logo: the url of logo of the company being reviewed 
 - It moves to the next page if any
 
-Here's the full script:
+Here's the full script.
+
+To fully understand it, you should inspect the source code. It's really easy to get. 
+
+In any case, if you have a question don't hesitate to post it in the comment section ??
 
 ```python
 import re
@@ -349,9 +354,9 @@ class Pages(scrapy.Spider):
 
 ```
 
-Before launching the scraper you have to change the settings.py:
+Before launching the scraper, you have to change a couple of things in the settings.py:
 
-Here are the changing we made:
+Here are the changes we made:
 
 ```python
 # Obey robots.txt rules
@@ -377,13 +382,116 @@ We'll let it run for a little bit of time.
 
 Note that we can interrupt it at any moment since it saves the data on the fly.
 
-❗ This script is meant for educational purposes only: scrape responsively. ❗
+? This script is meant for educational purposes only: scrape responsively. ?
 
-## Training a sentiment classifer usig PyTorch 🤖
+## Training a sentiment classifer usig PyTorch ??
 
-Now the data is collected and we're ready to train a sentiment classifier.
+*The code and the model we'll be using here are inspired from this github <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a> so go check it for additional information.*
+
+Now that the data is collected, we're ready to train a sentiment classifier to predict the labels we defined earlier.
+
+There are a wide range of possible models to use. The one we'll be training is a character based convolutional neural network. It's based on this <a href="https://arxiv.org/pdf/1509.01626.pdf">paper</a> and it has proven to be really good on text classification.
+
+The question you'd be asking up-front though is the following : how would you use CNNs for text classification ? Aren't these architectures designed for image data ?
+
+Well, the truth is, CNN are way more versatile and their application can extend the scope of image classification. In fact, they are also able to capture sequential information that is inherent to text data. The only only trick here is to efficiently represent the input text.
+
+To see how this is done, imagine the following tweet:
+
+<p align="center">
+    <img src="./assets/tweet.png" width="60%">
+</p>
+
+Assuming an alphabet of size 70 containing the english letters and the special characters and an arbitrary maximum length of 140, one possible representation of this sentence is a (70, 140) matrix where each column is a one hot vector indiciating the position of a given character in the alphabet and 140 being the maximum length of tweets. This porcess is called **quantization**.
+
+Note that if a sentence is too long, the representation truncates up to the first 140 characters. On the other hand, if the sentence is too short 0 column vectors are padded until the (70, 140) shape is reached.
+
+So what to do now with this representation?
+
+<p align="center">
+    <img src="./assets/tweet_matrix.png" width="60%">
+</p>
+
+**Feed it to a CNN for classification, obviously ??**
+
+But there's a small trick though. Convolutions are usually performed using 2D-shaped kernels, because these structures capture the 2D spatial information lying in the pixels. 
+Text is however not suited to this type of convolutions beacuse letters follow each other sequentially, in one dimension only, to form a meaning. To capture this 1-dimensional denpendency, we'll use **1D convolutions**.
+
+**So how does a 1-D convolution work?**
+
+Unlike 2D-convolutions that make a 2D kernel slide horizontally and vertically over the pixels, 1D-convolutions use 1D kernels that slide horizontally only over the columns (i.e. the characters) to capture the dependency between characters and their componsitions.
+
+The diagram below shows the architecture we'll be using: 
+
+<p align="center">
+    <img src="./assets/character_cnn_architecture.png" width="80%">
+</p>
+
+It has 6 convolutional layers:
+
+|Layer|Number of Kernels|Kernel size|Pool|
+|-|-|-|-|
+|1|256|7|3|
+|2|256|7|3|
+|3|256|3|N/A|
+|4|256|3|N/A|
+|5|256|3|N/A|
+|6|256|3|3|
+
+and 2 fully connected layers:
+
+|Layer|Number of neurons|
+|-|-|
+|7|1024|
+|8|1024|
+|9|3|
+
+On the raw data, convolutions with a kernel of size 7 are applied. Then the output of this layer is fed to a second convolution layer with a kernel of size 7 as well, etc.
+
+After the last convolution layer, the output is flattened and passed through two successive fully connected layers before a classification layers.
+
+Character CNN are interesting for various reasons since they have nice properties:
+
+- They are quite powerful in text classification (see paper's benchmark) even though they don't have any notion of semantics
+- You don't need to apply any text preprocessing (tokenization, lemmatization, stemming ...) while using them
+- They handle misspelled words and OOV (out-of-vocabulary) tokens
+- They are faster to train compared to recurrent neural networks
+- They are lightweight since they don't require storing a large word embedding matrix. Hence, you can deploy them in production easily
 
 
+That's all about the theory now, if you're still interested you can check this video tutorial made by me to fully understand character level CNNs.
+
+### How to train the model using PyTorch
+
+In order to train a character level cnn, you'll find all the files you need under the ```src/training/``` folder.
+
+Here's the structure of the code inside this folder:
+- ```train.py```: used for training a model
+- ```predict.py```: used for the testing and inference
+- src: a folder that contains:
+    - ```model.py```: the actual CNN model (model initialization and forward method
+    - ```dataloader.py```: the script responsible of passing the data to the training after processing 
+    - ```utils.py```: a set of utility functions for text preprocessing (url/hashtag/user_mention removal)
+
+
+To train a classifer our classifier, run the following commands:
+
+```bash
+
+cd src/training/
+
+python train.py --data_path ../src/scraping/scrapy/comments_trustpilot_en.csv \
+                --validation_split 0.1 \
+                --label_column rating \
+                --text_column comment \
+                --group_labels 1 \ 
+                --max_length 500 \
+                --dropout_input 0 \
+                --model_name trustpilot \
+                --balance 1
+```
+
+To learn more about the training arguments and options, please check out the original <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a>.
 
 ## Building an interactive web app 📲 with Dash, Flask and PostgeSQL
 
@@ -405,15 +513,15 @@ As you can see, there are four building blocks for our app:
 The Dash app will make http requests to the Flask API, wich will in turn interact with either the PostgreSQL database or the ML model, in order to respond.
 
 
-## Dockerizing the application with Docker compose 🐳
+## Dockerizing the application with Docker compose ??
 
 --> Marwan
 
-## Deploying to AWS: Demo time 💻
+## Deploying to AWS: Demo time ??
 
 --> Marwan
 
-## Where to go from here 🏍
+## Where to go from here ??
 
 [Random ideas thrown in random orders]
 
@@ -422,6 +530,6 @@ The Dash app will make http requests to the Flask API, wich will in turn interac
 - Use CI/CD 
 - Use Kubernetes to manage clusters of containers
 
-## Contributions and pull requests 🛠
+## Contributions and pull requests ??
 
 This would be awesome !
