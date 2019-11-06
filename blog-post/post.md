@@ -385,9 +385,25 @@ Now the data is collected and we're ready to train a sentiment classifier.
 
 
 
-## Building an interactive web app 📲 with Dash, Flask and PostgeSQL 
+## Building an interactive web app 📲 with Dash, Flask and PostgeSQL
 
---> provide a diagram for the architecture to have a global picture first
+Now that we have trained the sentiment classifier, let's build our application so that end-users can interact with the model and evaluate new brands.
+
+Here is a schema of our app architecture :
+
+
+<p align="center">
+    <img src="./assets/7-application_schema.png" width="80%">
+</p>
+
+As you can see, there are four building blocks for our app:
+- A visualization application built using [Dash](https://dash.plot.ly/).
+- A [Flask](https://flask.palletsprojects.com/en/1.1.x/) REST API.
+- A [PostgreSQL](https://www.postgresql.org/) database
+- Our trained Machine Learning model.
+
+The Dash app will make http requests to the Flask API, wich will in turn interact with either the PostgreSQL database or the ML model, in order to respond.
+
 
 ## Dockerizing the application with Docker compose 🐳
 
