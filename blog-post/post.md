@@ -461,9 +461,37 @@ Character CNN are interesting for various reasons since they have nice propertie
 
 That's all about the theory now, if you're still interested you can check this video tutorial made by me to fully understand character level CNNs.
 
+### How to train the model using PyTorch
+
+In order to train a character level cnn, you'll find all the files you need under the ```src/training/``` folder.
+
+Here's the structure of the code inside this folder:
+- ```train.py```: used for training a model
+- ```predict.py```: used for the testing and inference
+- src: a folder that contains:
+    - ```model.py```: the actual CNN model (model initialization and forward method
+    - ```dataloader.py```: the script responsible of passing the data to the training after processing 
+    - ```utils.py```: a set of utility functions for text preprocessing (url/hashtag/user_mention removal)
 
 
+To train a classifer our classifier, run the following commands:
 
+```bash
+
+cd src/training/
+
+python train.py --data_path ../src/scraping/scrapy/comments_trustpilot_en.csv \
+                --validation_split 0.1 \
+                --label_column rating \
+                --text_column comment \
+                --group_labels 1 \ 
+                --max_length 500 \
+                --dropout_input 0 \
+                --model_name trustpilot \
+                --balance 1
+```
+
+To learn more about the training arguments and options, please check out the original <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a>.
 
 ## Building an interactive web app ?? with Dash, Flask and PostgeSQL 
 
