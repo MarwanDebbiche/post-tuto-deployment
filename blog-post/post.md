@@ -4,15 +4,15 @@
 
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun 😁.
 
-Before to start, let's first look at the app we'll be building:
+Before we begin, let's have a look at the app we'll be building:
 
 <p align="center">
     <img src="./assets/app.gif">
 </p>
 
-As you see it, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
+As you can see, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
 
-The user can then fix the rating and submit.
+The user can then change the rating (in case the suggested rating does not reflect his views), and submit.
 
 You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings that the user can tweak and adapt afterwards.
 
@@ -256,7 +256,7 @@ And here's what the data looks like:
 
 Ok, now we're ready to scrape the data we need with Scrapy.
 
-First you need to make sure Scrapy is installed. Otherwise, you can install using
+First you need to make sure Scrapy is installed. Otherwise, you can install it using
 - conda: ```conda install -c conda-forge scrapy``` 
 
 or 
@@ -270,7 +270,7 @@ cd src/scraping/scrapy
 scrapy startproject trustpilot
 ```
 
-This last command creates a structure of a Scrapy project. Here's what it looks like:
+This last command creates the structure of a Scrapy project. Here's what it looks like:
 
 ```
 scrapy/
