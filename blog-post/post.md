@@ -512,6 +512,194 @@ As you can see, there are four building blocks for our app:
 
 The Dash app will make http requests to the Flask API, wich will in turn interact with either the PostgreSQL database or the ML model, in order to respond.
 
+If you are already familiar with Dash, you know that it is built on top of Flask. So we could basically get rid of the API and get everything done from within the Dash app.
+
+We chose not to for a very simple reason: it makes the logic and the visualization parts independant. Indeed, because we have a separated API, we could with very little effort replace the Dash app with any other frontend technology, or add a mobile or desktop app.
+
+
+Now, let's have a closer look at how those blocks are built.
+
+### PostgreSQL Database
+
+Nothnig fancy or original for the database part. We chose to use one of the most widely used relational database, PostgreSQL.
+
+To run a PostgreSQL database for local development, you can either download PostgreSQL from the [official website](https://www.postgresql.org/download/) or, more simply, launch a postgres container using [Docker](https://www.docker.com/):
+
+```
+docker run --name postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=postgres -p 5432:5432 -d postgres
+```
+
+### Flask API
+
+The RESTful API is the most important part of our app. It is responsible for the interractions with both the machine learning model and the database.
+
+Let's have a look at the routes that we need for our api:
+
+
+- Sentiment Classification : `POST /api/predict`
+- Create review : `POST /api/review`
+- Get reviews : `GET /api/predicts`
+
+**TODO: WRITE SOMETHING ABOUT THE INFERENCE CODE FOR THE SENTIMENT CLASSIFIER**
+
+In order to interact with the database, we will use the ORM [peewee](http://docs.peewee-orm.com/en/latest/). It lets us define the dataset tables using python objects, and takes care of connecting to and querying the database.
+
+This is done in the `src/api/db.py` file:
+
+```python
+import peewee as pw
+import config
+
+db = pw.PostgresqlDatabase(
+    config.POSTGRES_DB,
+    user=config.POSTGRES_USER, password=config.POSTGRES_PASSWORD,
+    host=config.POSTGRES_HOST, port=config.POSTGRES_PORT
+)
+
+
+class BaseModel(pw.Model):
+    class Meta:
+        database = db
+
+
+# Table Description
+class Review(BaseModel):
+
+    review = pw.TextField()
+    rating = pw.IntegerField()
+    suggested_rating = pw.IntegerField()
+    sentiment_score = pw.FloatField()
+    brand = pw.TextField()
+    user_agent = pw.TextField()
+    ip_address = pw.TextField()
+
+    def serialize(self):
+        data = {
+            'id': self.id,
+            'review': self.review,
+            'rating': int(self.rating),
+            'suggested_rating': int(self.suggested_rating),
+            'sentiment_score': float(self.sentiment_score),
+            'brand': self.brand,
+            'user_agent': self.user_agent,
+            'ip_address': self.ip_address
+        }
+
+        return data
+
+
+# Connection and table creation
+db.connect()
+db.create_tables([Review])
+
+```
+
+Having done all this using peewee now makes it super easy to define the api routes to save and get reviews:
+
+```python
+import db
+
+@api.route('/review', methods=['POST'])
+def post_review():
+    '''
+    Save review to database.
+    '''
+    if request.method == 'POST':
+        expected_fields = [
+            'review',
+            'rating',
+            'suggested_rating',
+            'sentiment_score',
+            'brand',
+            'user_agent',
+            'ip_address'
+        ]
+        if any(field not in request.form for field in expected_fields):
+            return jsonify({'error': 'Missing field in body'}), 400
+
+        query = db.Review.create(**request.form)
+
+        return jsonify(query.serialize())
+
+
+@api.route('/reviews', methods=['GET'])
+def get_reviews():
+    '''
+    Get all reviews.
+    '''
+    if request.method == 'GET':
+        query = db.Review.select()
+
+        return jsonify([r.serialize() for r in query])
+
+```
+
+Now we can have a closer look at the routes' request bodies and responses.
+
+**Sentiment Classification Route**
+
+Route used to predict the sentiment based on the review's text.
+
+Body:
+```
+{
+    "review": "I hate this brand..."
+}
+```
+
+Response:
+```
+0.123
+```
+
+**Create Review**
+
+Route used to save a review to database (with associated ratings and user information).
+
+Body:
+```
+{
+    "review": "I hate this brand...",
+    "rating": 2,
+    "suggested_rating": 1,
+    "sentiment_score": 0.123,
+    "brand": "Apple",
+    "user_agent": "Mozilla/...",
+    "ip_address": "127.0.0.1"
+}
+```
+
+Response:
+```
+{
+  "id": 123,
+  "review": "I hate this brand...",
+  "rating": 2,
+  "suggested_rating": 1,
+  "sentiment_score": 0.123,
+  "brand": "Apple",
+  "user_agent": "Mozilla/...",
+  "ip_address": "127.0.0.1"
+}
+```
+
+**Get Reviews**
+
+Route used to get reviews.
+
+Response:
+```
+[
+    {
+        "id": 1234,
+        "first_name": "Joe",
+        "last_name": "Bloggs",
+        "email": "joe25@example.com",
+        "uapp": "ios1_2"
+    }
+]
+```
+
 
 ## Dockerizing the application with Docker compose 🐳
 
