@@ -386,17 +386,15 @@ Note that we can interrupt it at any moment since it saves the data on the fly.
 
 ## Training a sentiment classifer usig PyTorch ??
 
-*The code and the model we'll be using here is inspired from this github <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a> so go check it for additional information.*
+*The code and the model we'll be using here are inspired from this github <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a> so go check it for additional information.*
 
 Now that the data is collected, we're ready to train a sentiment classifier to predict the labels we defined earlier.
 
-There are a wide range of possible models to use. The one we'll be training is a character based convolutional neural network. It's based on this <a href="https://arxiv.org/pdf/1509.01626.pdf">paper</a>.
+There are a wide range of possible models to use. The one we'll be training is a character based convolutional neural network. It's based on this <a href="https://arxiv.org/pdf/1509.01626.pdf">paper</a> and it has proven to be really good on text classification.
 
-The question you'd be asking up-front is the following: how would you use CNNs for text classification ? Aren't these archiectures designed for image data ?
+The question you'd be asking up-front though is the following : how would you use CNNs for text classification ? Aren't these architectures designed for image data ?
 
-Well, the truth is, CNN are way more versatile and their application can extend the scope of image classification. In fact, they are also able to capture sequencial information that is inherent to text data.
-
-The only only trick here is to efficiently represent the input text.
+Well, the truth is, CNN are way more versatile and their application can extend the scope of image classification. In fact, they are also able to capture sequential information that is inherent to text data. The only only trick here is to efficiently represent the input text.
 
 To see how this is done, imagine the following tweet:
 
@@ -404,7 +402,7 @@ To see how this is done, imagine the following tweet:
     <img src="./assets/tweet.png" width="60%">
 </p>
 
-Assuming an alphabet of size 70 containing the english letters and the special characters and an arbitray maximum length of 140, one possible representation of this sentence is a (70, 140) matrix where each column is a one hot vector indiciating the position of a given character in the alphabet and 140 being the maximum length of tweets. This porcess is called **quantization**.
+Assuming an alphabet of size 70 containing the english letters and the special characters and an arbitrary maximum length of 140, one possible representation of this sentence is a (70, 140) matrix where each column is a one hot vector indiciating the position of a given character in the alphabet and 140 being the maximum length of tweets. This porcess is called **quantization**.
 
 Note that if a sentence is too long, the representation truncates up to the first 140 characters. On the other hand, if the sentence is too short 0 column vectors are padded until the (70, 140) shape is reached.
 
@@ -414,7 +412,56 @@ So what to do now with this representation?
     <img src="./assets/tweet_matrix.png" width="60%">
 </p>
 
-**Convolutions, obviously ??**
+**Feed it to a CNN for classification, obviously ??**
+
+But there's a small trick though. Convolutions are usually performed using 2D-shaped kernels, because these structures capture the 2D spatial information lying in the pixels. 
+Text is however not suited to this type of convolutions beacuse letters follow each other sequentially, in one dimension only, to form a meaning. To capture this 1-dimensional denpendency, we'll use **1D convolutions**.
+
+**So how does a 1-D convolution work?**
+
+Unlike 2D-convolutions that make a 2D kernel slide horizontally and vertically over the pixels, 1D-convolutions use 1D kernels that slide horizontally only over the columns (i.e. the characters) to capture the dependency between characters and their componsitions.
+
+The diagram below shows the architecture we'll be using: 
+
+<p align="center">
+    <img src="./assets/character_cnn_architecture.png" width="80%">
+</p>
+
+It has 6 convolutional layers:
+
+|Layer|Number of Kernels|Kernel size|Pool|
+|-|-|-|-|
+|1|256|7|3|
+|2|256|7|3|
+|3|256|3|N/A|
+|4|256|3|N/A|
+|5|256|3|N/A|
+|6|256|3|3|
+
+and 2 fully connected layers:
+
+|Layer|Number of neurons|
+|-|-|
+|7|1024|
+|8|1024|
+|9|3|
+
+On the raw data, convolutions with a kernel of size 7 are applied. Then the output of this layer is fed to a second convolution layer with a kernel of size 7 as well, etc.
+
+After the last convolution layer, the output is flattened and passed through two successive fully connected layers before a classification layers.
+
+Character CNN are interesting for various reasons since they have nice properties:
+
+- They are quite powerful in text classification (see paper's benchmark) even though they don't have any notion of semantics
+- You don't need to apply any text preprocessing (tokenization, lemmatization, stemming ...) while using them
+- They handle misspelled words and OOV (out-of-vocabulary) tokens
+- They are faster to train compared to recurrent neural networks
+- They are lightweight since they don't require storing a large word embedding matrix. Hence, you can deploy them in production easily
+
+
+That's all about the theory now, if you're still interested you can check this video tutorial made by me to fully understand character level CNNs.
+
+
 
 
 
