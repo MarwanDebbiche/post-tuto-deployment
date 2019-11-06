@@ -120,13 +120,13 @@ def get_soup(url):
 
 We start by fetching the sub-category URLs nested inside each category.
 
-If you open up your browser and inspect the source code, you'll find out 22 category blocks (on the right) located in ```div``` objects that have a ```class``` attribute equal to  ```category-object```
+If you open up your browser and inspect the source code, you'll find out 22 category blocks (on the right) located in `div` objects that have a `class` attribute equal to  `category-object`
 
 <p align="center">
     <img src="./assets/5-category_block.png" width="80%">
 </p>
 
-Each category has its own set of sub-categories. Those are located in ```div``` objects that have ```class``` attributes equal to ```child-category```.
+Each category has its own set of sub-categories. Those are located in `div` objects that have `class` attributes equal to `child-category`.
 <p align="center">
     <img src="./assets/6-nested_urls.png" width="80%">
 </p>
@@ -257,11 +257,11 @@ And here's what the data looks like:
 Ok, now we're ready to scrape the data we need with Scrapy.
 
 First you need to make sure Scrapy is installed. Otherwise, you can install it using
-- conda: ```conda install -c conda-forge scrapy``` 
+- conda: `conda install -c conda-forge scrapy` 
 
 or 
 
-- pip: ```pip install scrapy```
+- pip: `pip install scrapy`
 
 Then, you'll need to start a scrapy project:
 
@@ -293,7 +293,7 @@ scrapy/
 
 Using Scrapy for the first time can be overwhelming, so to learn more about it you can visit the official <a href="http://doc.scrapy.org/en/latest/intro/tutorial.html">tutorials</a>
 
-To build our scraper, we'll have to create a spider inside the ```spiders``` folder. We'll call it ```scraper.py```.
+To build our scraper, we'll have to create a spider inside the `spiders` folder. We'll call it `scraper.py`.
 
 What the scraper will do is the following:
 
@@ -369,7 +369,7 @@ CONCURRENT_REQUESTS = 32
 FEED_FORMAT = "csv"
 FEED_URI = "comments_trustpilot_en.csv"
 ```
-This indicates to the scraper to ignore robots.txt, to use 32 concurrent requests and to export the data into a csv format under the filename: ```comments_trustpilot_en.csv```
+This indicates to the scraper to ignore robots.txt, to use 32 concurrent requests and to export the data into a csv format under the filename: `comments_trustpilot_en.csv`
 
 Now time to launch the scraper: 
 
@@ -463,15 +463,15 @@ That's all about the theory now, if you're still interested you can check this v
 
 ### How to train the model using PyTorch
 
-In order to train a character level cnn, you'll find all the files you need under the ```src/training/``` folder.
+In order to train a character level cnn, you'll find all the files you need under the `src/training/` folder.
 
 Here's the structure of the code inside this folder:
-- ```train.py```: used for training a model
-- ```predict.py```: used for the testing and inference
+- `train.py`: used for training a model
+- `predict.py`: used for the testing and inference
 - src: a folder that contains:
-    - ```model.py```: the actual CNN model (model initialization and forward method
-    - ```dataloader.py```: the script responsible of passing the data to the training after processing 
-    - ```utils.py```: a set of utility functions for text preprocessing (url/hashtag/user_mention removal)
+    - `model.py`: the actual CNN model (model initialization and forward method
+    - `dataloader.py`: the script responsible of passing the data to the training after processing 
+    - `utils.py`: a set of utility functions for text preprocessing (url/hashtag/user_mention removal)
 
 
 To train a classifer our classifier, run the following commands:
