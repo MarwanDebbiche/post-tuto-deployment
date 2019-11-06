@@ -20,8 +20,8 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY
+      # - AWS_ACCESS_KEY_ID
+      # - AWS_SECRET_ACCESS_KEY
     depends_on:
       - db
     restart: always
