@@ -382,7 +382,7 @@ We'll let it run for a little bit of time.
 
 Note that we can interrupt it at any moment since it saves the data on the fly.
 
-? This script is meant for educational purposes only: scrape responsively. ?
+❗ This script is meant for educational purposes only: scrape responsively. ❗
 
 ## Training a sentiment classifer usig PyTorch 🤖
 
