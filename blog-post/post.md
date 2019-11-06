@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun ??.
+In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun 😀.
 
 Before we begin, let's have a look at the app we'll be building:
 
@@ -26,7 +26,7 @@ To build this application we'll follow the following steps:
 
 All the code is available in github and organized in independant directories.
 
-Let's get started! ?????
+Let's get started! 💻
 
 ## Scraping the data from Trustpilot with Selenium and Scrapy ?
 
@@ -50,9 +50,9 @@ By leveraging this data, we are able to map each review to a sentiment class.
 
 In fact, reviews with:
 
-- 1 and 2 stars are **bad reviews** ?
-- 3 stars are **average reviews** ??
-- 4 and 5 stars are **good reviews** ?
+- 1 and 2 stars are **bad reviews** ❌
+- 3 stars are **average reviews** ⚠️
+- 4 and 5 stars are **good reviews** ✅
 
 
 In order to scrape customer reviews from trustpilot, we first have to understand the structure of the website. 
@@ -312,7 +312,7 @@ Here's the full script.
 
 To fully understand it, you should inspect the source code. It's really easy to get. 
 
-In any case, if you have a question don't hesitate to post it in the comment section ??
+In any case, if you have a question don't hesitate to post it in the comment section ⬇
 
 ```python
 import re
@@ -384,7 +384,7 @@ Note that we can interrupt it at any moment since it saves the data on the fly.
 
 ? This script is meant for educational purposes only: scrape responsively. ?
 
-## Training a sentiment classifer usig PyTorch ??
+## Training a sentiment classifer usig PyTorch 🤖
 
 *The code and the model we'll be using here are inspired from this github <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a> so go check it for additional information.*
 
@@ -412,7 +412,7 @@ So what to do now with this representation?
     <img src="./assets/tweet_matrix.png" width="60%">
 </p>
 
-**Feed it to a CNN for classification, obviously ??**
+**Feed it to a CNN for classification, obviously 😁**
 
 But there's a small trick though. Convolutions are usually performed using 2D-shaped kernels, because these structures capture the 2D spatial information lying in the pixels. 
 Text is however not suited to this type of convolutions beacuse letters follow each other sequentially, in one dimension only, to form a meaning. To capture this 1-dimensional denpendency, we'll use **1D convolutions**.
@@ -513,15 +513,15 @@ As you can see, there are four building blocks for our app:
 The Dash app will make http requests to the Flask API, wich will in turn interact with either the PostgreSQL database or the ML model, in order to respond.
 
 
-## Dockerizing the application with Docker compose ??
+## Dockerizing the application with Docker compose 🐳
 
 --> Marwan
 
-## Deploying to AWS: Demo time ??
+## Deploying to AWS: Demo time 💻
 
 --> Marwan
 
-## Where to go from here ??
+## Where to go from here 🏍
 
 [Random ideas thrown in random orders]
 
@@ -530,6 +530,6 @@ The Dash app will make http requests to the Flask API, wich will in turn interac
 - Use CI/CD 
 - Use Kubernetes to manage clusters of containers
 
-## Contributions and pull requests ??
+## Contributions and pull requests  🛠
 
 This would be awesome !
