@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun  😁 .
+In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun 😁.
 
 Before to start, let's first look at the app we'll be building:
 
@@ -14,7 +14,7 @@ As you see it, this web app allows a user to evaluate random brands by writing r
 
 The user can then fix the rating and submit.
 
-You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings which the user can tweak and adapt.
+You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings that the user can tweak and adapt afterwards.
 
 To build this application we'll follow the following steps:
 
@@ -26,11 +26,11 @@ To build this application we'll follow the following steps:
 
 All the code is available in github and organized in independant directories.
 
-Let's get started!
+Let's get started! 👨‍💻
 
 ## Scraping the data from Trustpilot with Selenium and Scrapy ⛏
 
-In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as Amazon polarity or IMDB movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
+In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as <a href="http://jmcauley.ucsd.edu/data/amazon/"> Amazon Polarity</a> or <a href="https://www.kaggle.com/iarunava/imdb-movie-reviews-dataset">IMDB</a> movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
 
 Trustpilot.com is a consumer review website founded in Denmark in 2007. It hosts reviews of businesses worldwide and nearly 1 million new reviews are posted each month.
 
@@ -46,7 +46,9 @@ Trustpilot is an interesting source because each customer review is associated w
   <img src="./assets/review_label.png" width="70%">
 </p>
 
-By leveraging this data, we are able to map each review to a sentiment class based on its number of stars so that reviews with:
+By leveraging this data, we are able to map each review to a sentiment class. 
+
+In fact, reviews with:
 
 - 1 and 2 stars are **bad reviews** ❌
 - 3 stars are **average reviews** ⚠️
@@ -80,12 +82,11 @@ And then each company has its own set of reviews, usually spread over many pages
 </p>
 
 
-As you see, this is a top down tree structure. In order to scrape it efficiently we'll use **Scrapy** framework, but before going that far we need a little bit of Selenium to fetch the company urls first (see previous screenshot), then feed those to Scrapy.
+As you see, this is a top down tree structure. In order to scrape it efficiently we'll use **Scrapy** framework, but before going that far we need a to use Selenium first to fetch the company urls (see previous screenshot), then feed those to Scrapy.
 
-We unfortunately need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) and cannot be accessed from the page source like Scrapy does. Selenium simulates a browser that clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
+We need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) and cannot be accessed directly from the page source like Scrapy does. Selenium simulates a browser that clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
 
-### Collect company urls with Selenium
-
+### Scrape company urls with Selenium : step 1 
 
 Let's see how to launch Selenium to fetch the company urls.
 
@@ -230,7 +231,7 @@ for category in tqdm_notebook(data):
                     pass
 ```
 
-Once the scraping is over, we save the urls to a csv file:
+Once the scraping is over, we save the company urls to a csv file.
 
 ```python
 consolidated_data = []
@@ -251,7 +252,7 @@ And here's what the data looks like:
     <img src="./assets/url_companies.png" width="80%">
 </p>
 
-### Scraping customer reviews with Scrapy 
+### Scrape customer reviews with Scrapy : step 2
 
 Ok, now we're ready to scrape the data we need with Scrapy.
 
@@ -292,22 +293,26 @@ scrapy/
 
 Using Scrapy for the first time can be overwhelming, so to learn more about it you can visit the official <a href="http://doc.scrapy.org/en/latest/intro/tutorial.html">tutorials</a>
 
-To build our scraper we'll create a spider inside the ```spiders``` folder.
+To build our scraper, we'll have to create a spider inside the ```spiders``` folder. We'll call it ```scraper.py```.
 
-What the scraper basically does is the following:
+What the scraper will do is the following:
 
 - It starts from a company url
-- It goes through each customer review and extracts a dictionary of data cotaining the following items
+- It goes through each customer review and yields a dictionary of data cotaining the following items
 
     - comment: the text review
     - rating: the number of stars (1 to 5)
-    - url_website: the company website on trustpilot
-    - company_name: the company being reviewed
+    - url_website: the company url on trustpilot 
+    - company_name: the company name being reviewed
     - company_website: the website of the company being reviewed
-    - company_logo: the logo of the company being reviewed   
+    - company_logo: the url of logo of the company being reviewed 
 - It moves to the next page if any
 
-Here's the full script:
+Here's the full script.
+
+To fully understand it, you should inspect the source code. It's really easy to get. 
+
+In any case, if you have a question don't hesitate to post it in the comment section ⬇️
 
 ```python
 import re
@@ -349,9 +354,9 @@ class Pages(scrapy.Spider):
 
 ```
 
-Before launching the scraper you have to change the settings.py:
+Before launching the scraper, you have to change a couple of things in the settings.py:
 
-Here are the changing we made:
+Here are the changes we made:
 
 ```python
 # Obey robots.txt rules
