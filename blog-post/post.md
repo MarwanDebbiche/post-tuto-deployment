@@ -389,7 +389,6 @@ Note that we can interrupt it at any moment since it saves the data on the fly.
 Now the data is collected and we're ready to train a sentiment classifier.
 
 
-
 ## Building an interactive web app ?? with Dash, Flask and PostgeSQL 
 
 --> provide a diagram for the architecture to have a global picture first
