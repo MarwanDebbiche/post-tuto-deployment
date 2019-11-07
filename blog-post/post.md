@@ -30,7 +30,7 @@ All the code is available in github and organized in independant directories, so
 
 Let's get started! 💻
 
-## 1 - Scraping the data from Trustpilot with Selenium and Scrapy ?
+## 1 - Scraping the data from Trustpilot with Selenium and Scrapy 🧹
 
 In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as <a href="http://jmcauley.ucsd.edu/data/amazon/"> Amazon Polarity</a> or <a href="https://www.kaggle.com/iarunava/imdb-movie-reviews-dataset">IMDB</a> movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
 
@@ -89,6 +89,8 @@ As you see, this is a top down tree structure. In order to scrape it efficiently
 We need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) and cannot be accessed directly from the page source like Scrapy does. Selenium simulates a browser that clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
 
 ### Scrape company urls with Selenium : step 1 
+
+<i>All the Selenium code is available in this <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/blob/master/src/scraping/selenium/scrape_website_urls.ipynb">notebook</a></i> 📓
 
 Let's see how to launch Selenium to fetch the company urls.
 
@@ -255,6 +257,8 @@ And here's what the data looks like:
 </p>
 
 ### Scrape customer reviews with Scrapy : step 2
+
+<i>All the scrapy code can be found in this <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/scraping/scrapy">folder</a></i> 📁
 
 Ok, now we're ready to scrape the data we need with Scrapy.
 
@@ -501,6 +505,8 @@ To learn more about the training arguments and options, please check out the ori
 
 ## 3 - Building an interactive web app 📲 with Dash, Flask and PostgeSQL
 
+<i> The dash code can be found <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/dash">here</a> and the api code <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/api">here</a></i>
+
 Now that we have trained the sentiment classifier, let's build our application so that end-users can interact with the model and evaluate new brands.
 
 Here is a schema of our app architecture :
@@ -532,7 +538,12 @@ Nothnig fancy or original for regarding the database part. We chose to use one o
 To run a PostgreSQL database for local development, you can either download PostgreSQL from the [official website](https://www.postgresql.org/download/) or, more simply, launch a postgres container using [Docker](https://www.docker.com/):
 
 ```
-docker run --name postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=postgres -p 5432:5432 -d postgres
+docker run --name postgres \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=password \
+            -e POSTGRES_DB=postgres \
+            -p 5432:5432 \
+            -d postgres
 ```
 
 ### Flask API
@@ -729,6 +740,6 @@ Response:
 
 We're aware that many improvements could be added to this project and this is one of the reason we're relasing it.
 If you think of any feature that could be added don't hesitate to fork the repo and create a pull request.
-If you're also facing an issue running the app do not hesitate to report it: we'll try to fix it as soon as possible.
+If you're also facing an issue running the app do not hesitate to <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/issues">report</a> it: we'll try to fix it as soon as possible.
 
 That's all folks! 🎉 
