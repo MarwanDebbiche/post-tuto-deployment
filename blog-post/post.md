@@ -24,7 +24,7 @@ To build this application we'll follow the following steps:
 - Containerization
 - App deployment
 
-All the code is available in github and organized in independant directories.
+All the code is available in github and organized in independant directories, so you can check, run it and improve it.
 
 Let's get started! 💻
 
@@ -382,7 +382,7 @@ We'll let it run for a little bit of time.
 
 Note that we can interrupt it at any moment since it saves the data on the fly.
 
-❗ This script is meant for educational purposes only: scrape responsively. ❗
+    ❗ This script is meant for educational purposes only: scrape responsively. ❗
 
 ## Training a sentiment classifer usig PyTorch 🤖
 
@@ -419,7 +419,7 @@ Text is however not suited to this type of convolutions beacuse letters follow e
 
 **So how does a 1-D convolution work?**
 
-Unlike 2D-convolutions that make a 2D kernel slide horizontally and vertically over the pixels, 1D-convolutions use 1D kernels that slide horizontally only over the columns (i.e. the characters) to capture the dependency between characters and their componsitions.
+Unlike 2D-convolutions that make a 2D kernel slide horizontally and vertically over the pixels, 1D-convolutions use 1D kernels that slide horizontally only over the columns (i.e. the characters) to capture the dependency between characters and their compositions.
 
 The diagram below shows the architecture we'll be using: 
 
@@ -446,9 +446,13 @@ and 2 fully connected layers:
 |8|1024|
 |9|3|
 
-On the raw data, convolutions with a kernel of size 7 are applied. Then the output of this layer is fed to a second convolution layer with a kernel of size 7 as well, etc.
+On the raw data, i.e. the matrix representation of a sentence, convolutions with a kernel of size 7 are applied. Then the output of this layer is fed to a second convolution layer with a kernel of size 7 as well, etc, until the last conv layer that has a kernl of size 3.
 
-After the last convolution layer, the output is flattened and passed through two successive fully connected layers before a classification layers.
+After the last convolution layer, the output is flattened and passed through two successive fully connected layers before a the output layer.
+
+To learn more about character level CNN and how they work, you can watch this video
+
+<!-- insert my youtube video here -->
 
 Character CNN are interesting for various reasons since they have nice properties:
 
@@ -459,7 +463,7 @@ Character CNN are interesting for various reasons since they have nice propertie
 - They are lightweight since they don't require storing a large word embedding matrix. Hence, you can deploy them in production easily
 
 
-That's all about the theory now, if you're still interested you can check this video tutorial made by me to fully understand character level CNNs.
+That's all about the theory now !
 
 ### How to train the model using PyTorch
 
