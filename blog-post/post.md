@@ -405,13 +405,13 @@ Note that we can interrupt it at any moment since it saves the data on the fly o
 
 ## 2 - Training a sentiment classifer usig PyTorch 🤖
 
-*The code and the model we'll be using here are inspired from this github <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a> so go check it for additional information.*
+*The code and the model we'll be using here are inspired from this github <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a> so go check it for additional information. If you want to stick to this project's repo you can look at this <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/training">link</a>*.
 
 Now that the data is collected, we're ready to train a sentiment classifier to predict the labels we defined earlier.
 
-There are a wide range of possible models to use. The one we'll be training is a character based convolutional neural network. It's based on this <a href="https://arxiv.org/pdf/1509.01626.pdf">paper</a> and it has proven to be really good on text classification.
+There are a wide range of possible models to use. The one we'll be training is a character based convolutional neural network. It's based on this <a href="https://arxiv.org/pdf/1509.01626.pdf">paper</a> and it proved to be really good on text classification tasks such as binary classification of Amazon Reviews datasets.
 
-The question you'd be asking up-front though is the following : how would you use CNNs for text classification ? Aren't these architectures designed for image data ?
+The question you'd be asking up-front though is the following : how would you use CNNs for text classification ? Aren't these architectures specifically designed for image data ?
 
 Well, the truth is, CNN are way more versatile and their application can extend the scope of image classification. In fact, they are also able to capture sequential information that is inherent to text data. The only only trick here is to efficiently represent the input text.
 
@@ -438,7 +438,7 @@ Text is however not suited to this type of convolutions beacuse letters follow e
 
 **So how does a 1-D convolution work?**
 
-Unlike 2D-convolutions that make a 2D kernel slide horizontally and vertically over the pixels, 1D-convolutions use 1D kernels that slide horizontally only over the columns (i.e. the characters) to capture the dependency between characters and their compositions.
+Unlike 2D-convolutions that make a 2D kernel slide horizontally and vertically over the pixels, 1D-convolutions use 1D kernels that slide horizontally only over the columns (i.e. the characters) to capture the dependency between characters and their compositions. You could think for example about a 1D kernel of size 3 as a character 3-gram detector that fires when it detects a composition of three sucessive letters relevant to the prediction.
 
 The diagram below shows the architecture we'll be using: 
 
