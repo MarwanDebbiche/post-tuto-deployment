@@ -2,6 +2,8 @@
 
 ## Introduction
 
+*This started out as a challenge. With a <a href="http://marwandebbiche.com/">friend</a> of mine, we wanted to see if it was possible to build something and push it to production. In 3 weeks. This is our story.*
+
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun 😀.
 
 Before we begin, let's have a look at the app we'll be building:
@@ -10,25 +12,25 @@ Before we begin, let's have a look at the app we'll be building:
     <img src="./assets/app.gif">
 </p>
 
-As you can see, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
+As you see, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
 
-The user can then change the rating (in case the suggested rating does not reflect his views), and submit.
+The user can then change the rating in case the suggested rating does not reflect his views, and submit.
 
 You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings that the user can tweak and adapt afterwards.
 
 To build this application we'll follow the following steps:
 
 - Data collection
-- Model training
+- Sentiment analysis model training
 - App development
-- Containerization
-- App deployment
+- Containerization with Docker-compoose
+- App deployment 
 
 All the code is available in github and organized in independant directories, so you can check, run it and improve it.
 
 Let's get started! 💻
 
-## Scraping the data from Trustpilot with Selenium and Scrapy ?
+## 1 - Scraping the data from Trustpilot with Selenium and Scrapy ?
 
 In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as <a href="http://jmcauley.ucsd.edu/data/amazon/"> Amazon Polarity</a> or <a href="https://www.kaggle.com/iarunava/imdb-movie-reviews-dataset">IMDB</a> movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
 
@@ -384,7 +386,7 @@ Note that we can interrupt it at any moment since it saves the data on the fly.
 
     ❗ This script is meant for educational purposes only: scrape responsively. ❗
 
-## Training a sentiment classifer usig PyTorch 🤖
+## 2 - Training a sentiment classifer usig PyTorch 🤖
 
 *The code and the model we'll be using here are inspired from this github <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a> so go check it for additional information.*
 
@@ -497,7 +499,7 @@ python train.py --data_path ../src/scraping/scrapy/comments_trustpilot_en.csv \
 
 To learn more about the training arguments and options, please check out the original <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a>.
 
-## Building an interactive web app 📲 with Dash, Flask and PostgeSQL
+## 3 - Building an interactive web app 📲 with Dash, Flask and PostgeSQL
 
 Now that we have trained the sentiment classifier, let's build our application so that end-users can interact with the model and evaluate new brands.
 
@@ -704,24 +706,29 @@ Response:
 ]
 ```
 
-
-## Dockerizing the application with Docker compose 🐳
-
---> Marwan
-
-## Deploying to AWS: Demo time 💻
+## 4 - Dockerizing the application with Docker compose 🐳
 
 --> Marwan
 
-## Where to go from here 🏍
+## 5 - Deploying to AWS: Demo time 💻
+
+--> Marwan
+
+## 6 - Where to go from here 🏍
 
 [Random ideas thrown in random orders]
 
-- How to manage multiple concurrent sessions
+- Manage multiple concurrent sessions
 - Deploy on multiple EC2 machines 
-- Use CI/CD 
-- Use Kubernetes to manage clusters of containers
+- Use continuous integration with <a href="https://travis-ci.org/">Travis CI </a>
+- Use <a href="https://kubernetes.io/">Kubernetes</a> to manage clusters of containers
+- Add an admin interface to the dash application to quickly check users' reviews
 
-## Contributions and pull requests  🛠
 
-This would be awesome !
+## 7 - Contributions and next steps  🛠
+
+We're aware that many improvements could be added to this project and this is one of the reason we're relasing it.
+If you think of any feature that could be added don't hesitate to fork the repo and create a pull request.
+If you're also facing an issue running the app do not hesitate to report it: we'll try to fix it as soon as possible.
+
+That's all folks! 🎉 
