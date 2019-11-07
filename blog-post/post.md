@@ -438,7 +438,7 @@ Text is however not suited to this type of convolutions beacuse letters follow e
 
 **So how does a 1-D convolution work?**
 
-Unlike 2D-convolutions that make a 2D kernel slide horizontally and vertically over the pixels, 1D-convolutions use 1D kernels that slide horizontally only over the columns (i.e. the characters) to capture the dependency between characters and their compositions. You could think for example about a 1D kernel of size 3 as a character 3-gram detector that fires when it detects a composition of three sucessive letters relevant to the prediction.
+Unlike 2D-convolutions that make a 2D kernel slide horizontally and vertically over the pixels, 1D-convolutions use 1D kernels that slide horizontally only over the columns (i.e. the characters) to capture the dependency between characters and their compositions. You could think for example about a 1D kernel of size 3 as a character 3-gram detector that fires when it detects a composition of three sucessive letters that is relevant to the prediction.
 
 The diagram below shows the architecture we'll be using: 
 
@@ -465,15 +465,15 @@ and 2 fully connected layers:
 |8|1024|
 |9|3|
 
-On the raw data, i.e. the matrix representation of a sentence, convolutions with a kernel of size 7 are applied. Then the output of this layer is fed to a second convolution layer with a kernel of size 7 as well, etc, until the last conv layer that has a kernl of size 3.
+On the raw data, i.e. the matrix representation of a sentence, convolutions with a kernel of size 7 are applied. Then the output of this layer is fed to a second convolution layer with a kernel of size 7 as well, etc, until the last conv layer that has a kernel of size 3.
 
-After the last convolution layer, the output is flattened and passed through two successive fully connected layers before a the output layer.
+After the last convolution layer, the output is flattened and passed through two successive fully connected layers that act as a classifier.
 
 To learn more about character level CNN and how they work, you can watch this video
 
 <!-- insert my youtube video here -->
 
-Character CNN are interesting for various reasons since they have nice properties:
+Character CNN are interesting for various reasons since they have nice properties 💡
 
 - They are quite powerful in text classification (see paper's benchmark) even though they don't have any notion of semantics
 - You don't need to apply any text preprocessing (tokenization, lemmatization, stemming ...) while using them
@@ -484,7 +484,7 @@ Character CNN are interesting for various reasons since they have nice propertie
 
 That's all about the theory now !
 
-### How to train the model using PyTorch
+### How to train the model using PyTorch to achieve 95% accuracy 🔥
 
 In order to train a character level cnn, you'll find all the files you need under the `src/training/` folder.
 
@@ -497,7 +497,7 @@ Here's the structure of the code inside this folder:
     - `utils.py`: a set of utility functions for text preprocessing (url/hashtag/user_mention removal)
 
 
-To train a classifer our classifier, run the following commands:
+To train our classifier, run the following commands:
 
 ```bash
 
@@ -513,6 +513,10 @@ python train.py --data_path ../src/scraping/scrapy/comments_trustpilot_en.csv \
                 --model_name trustpilot \
                 --balance 1
 ```
+
+When it's done, you can find the trained models in ```src/training/models``` directory.
+
+In terms of model performance on the data we collected we collected for training, the best model was able to achieve **95% of accuracy** on the three classes on the validation set, which is pretty amazing.
 
 To learn more about the training arguments and options, please check out the original <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a>.
 
