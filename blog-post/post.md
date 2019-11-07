@@ -508,9 +508,9 @@ As you can see, there are four building blocks for our app:
 - A visualization application built using [Dash](https://dash.plot.ly/).
 - A [Flask](https://flask.palletsprojects.com/en/1.1.x/) REST API.
 - A [PostgreSQL](https://www.postgresql.org/) database
-- Our trained Machine Learning model.
+- Our trained Machine Learning [model](https://github.com/ahmedbesbes/character-based-cnn/releases/download/english/model_en.pth).
 
-The Dash app will make http requests to the Flask API, wich will in turn interact with either the PostgreSQL database or the ML model, in order to respond.
+The Dash app will make http requests to the Flask API, wich will in turn interact with either the PostgreSQL database by writing or reading records to it, or the ML model by serving it.
 
 If you are already familiar with Dash, you know that it is built on top of Flask. So we could basically get rid of the API and get everything done from within the Dash app.
 
@@ -521,7 +521,7 @@ Now, let's have a closer look at how those blocks are built.
 
 ### PostgreSQL Database
 
-Nothnig fancy or original for the database part. We chose to use one of the most widely used relational database, PostgreSQL.
+Nothnig fancy or original for regarding the database part. We chose to use one of the most widely used relational database, PostgreSQL.
 
 To run a PostgreSQL database for local development, you can either download PostgreSQL from the [official website](https://www.postgresql.org/download/) or, more simply, launch a postgres container using [Docker](https://www.docker.com/):
 
