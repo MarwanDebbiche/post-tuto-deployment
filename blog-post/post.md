@@ -737,9 +737,11 @@ Response:
 
 --> Marwan
 
-## 6 - Where to go from here 🏍
+## 6 - What we wanted to do but hadn't time to🛠
 
-[Random ideas thrown in random orders]
+When building this application, we thought of many improvements that we hadn't time to successfully add.
+
+In particular we wanted to:
 
 - Manage multiple concurrent sessions
 - Deploy on multiple EC2 machines 
@@ -748,10 +750,14 @@ Response:
 - Add an admin interface to the dash application to quickly check users' reviews
 
 
-## 7 - Contributions and next steps  🛠
+## 7 - Conclusion  👋
+
+Throughout this tutorial you learned how to build a machine learning application from scratch by going through the data collection and scraping, model training, web app development and deployment.
+
+Every block of the app is independently packaged and easily reusable for in similar use cases.
 
 We're aware that many improvements could be added to this project and this is one of the reason we're relasing it.
-If you think of any feature that could be added don't hesitate to fork the repo and create a pull request.
-If you're also facing an issue running the app do not hesitate to <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/issues">report</a> it: we'll try to fix it as soon as possible.
+So if you think of any feature that could be added don't hesitate to fork the repo and create a pull request.
+If you're also facing an issue running the app do not hesitate to <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/issues">report</a> it. We'll try to fix the problem it as soon as possible.
 
 That's all folks! 🎉 
