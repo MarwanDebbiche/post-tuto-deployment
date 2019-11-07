@@ -641,7 +641,7 @@ Now we can have a closer look at the routes' request bodies and responses.
 Route used to predict the sentiment based on the review's text.
 
 Body:
-```
+```python
 {
     "review": "I hate this brand..."
 }
@@ -657,7 +657,7 @@ Response:
 Route used to save a review to database (with associated ratings and user information).
 
 Body:
-```
+```python
 {
     "review": "I hate this brand...",
     "rating": 2,
@@ -670,7 +670,7 @@ Body:
 ```
 
 Response:
-```
+```python
 {
   "id": 123,
   "review": "I hate this brand...",
@@ -688,7 +688,7 @@ Response:
 Route used to get reviews.
 
 Response:
-```
+```python
 [
     {
         "id": 1234,
