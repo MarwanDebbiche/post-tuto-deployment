@@ -23,10 +23,10 @@ To build this application we'll follow the following steps:
 - Data collection
 - Sentiment analysis model training
 - App development
-- Containerization with Docker-compoose
+- Containerization with Docker
 - App deployment 
 
-All the code is available in github and organized in independant directories, so you can check, run it and improve it.
+All the code is available in github and organized in independant directories, so you can check it, run it and improve it.
 
 Let's get started! 💻
 
@@ -84,11 +84,13 @@ And then each company has its own set of reviews, usually spread over many pages
 </p>
 
 
-As you see, this is a top down tree structure. In order to scrape it efficiently we'll use **Scrapy** framework, but before going that far we need a to use Selenium first to fetch the company urls (see previous screenshot), then feed those to Scrapy.
+As you see, this is a top down tree structure. In order to scrape it efficiently we'll use **Scrapy** which is an efficient and scalable scraping framework, but before going that far we need a to use Selenium first to fetch the company urls (see previous screenshot), then feed those to Scrapy.
 
-We need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) and cannot be accessed directly from the page source like Scrapy does. Selenium simulates a browser that clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
+We need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) which means that those urls cannot be accessed directly from the page source like Scrapy does. 
 
-### Scrape company urls with Selenium : step 1 
+Selenium however simulates a browser that interprets javascript rendered content. It clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
+
+### Scrape company urls with Selenium : step 1️⃣ 
 
 <i>All the Selenium code is available in this <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/blob/master/src/scraping/selenium/scrape_website_urls.ipynb">notebook</a></i> 📓
 
@@ -122,7 +124,7 @@ def get_soup(url):
     
 ```
 
-We start by fetching the sub-category URLs nested inside each category.
+We first start by fetching the sub-category URLs nested inside each category.
 
 If you open up your browser and inspect the source code, you'll find out 22 category blocks (on the right) located in `div` objects that have a `class` attribute equal to  `category-object`
 
@@ -130,7 +132,7 @@ If you open up your browser and inspect the source code, you'll find out 22 cate
     <img src="./assets/5-category_block.png" width="80%">
 </p>
 
-Each category has its own set of sub-categories. Those are located in `div` objects that have `class` attributes equal to `child-category`.
+Each category has its own set of sub-categories. Those are located in `div` objects that have `class` attributes equal to `child-category`. We are interested in finding the urls of these subcategories.
 <p align="center">
     <img src="./assets/6-nested_urls.png" width="80%">
 </p>
@@ -155,6 +157,12 @@ for category in soup.findAll('div', {'class': 'category-object'}):
 
 Now comes the selenium part: we'll need to loop over the companies of each sub-category and fetch their URL. 
 
+Remember, companies are presented inside each sub-category like this:
+
+<p align="center">
+    <img src="./assets/3-companies.png" width="80%">
+</p>
+
 We first define a function to fetch company urls referenced in a given subcategory:
 
 ```python
@@ -176,9 +184,9 @@ def go_next_page():
         return False, None
 ```
 
-Now we initialize Selenium with a headless Chromedriver. 
+Now we initialize Selenium with a headless Chromedriver. This prevents Selenium from opening up a Chrome window thus accelerating the scraping.
 
-PS: You'll have to donwload Chromedrive from this <a href="https://chromedriver.chromium.org/">link</a> 
+PS: You'll have to donwload Chromedriver from this <a href="https://chromedriver.chromium.org/">link</a> and choose the one that matches your operatig system. 
 
 
 ```python
@@ -197,7 +205,9 @@ driver = webdriver.Chrome('./driver/chromedriver', options=options)
 timeout = 3
 ```
 
-and launch the scraping. This approximatively takes 50 minutes with good internet connexion:
+and launch the scraping. This approximatively takes 50 minutes with good internet connexion.
+
+The timeout variable is set in order to make Selenium wait for the page to completely load.
 
 ```python
 company_urls = {}
@@ -256,13 +266,14 @@ And here's what the data looks like:
     <img src="./assets/url_companies.png" width="80%">
 </p>
 
-### Scrape customer reviews with Scrapy : step 2
+### Scrape customer reviews with Scrapy : step 2️⃣ 
 
 <i>All the scrapy code can be found in this <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/scraping/scrapy">folder</a></i> 📁
 
-Ok, now we're ready to scrape the data we need with Scrapy.
+Ok, now we're ready to use Scrapy to fetch the customer reviews listed inside each company url.
 
-First you need to make sure Scrapy is installed. Otherwise, you can install it using
+First, you need to install Scrapy either using:
+
 - conda: `conda install -c conda-forge scrapy` 
 
 or 
@@ -276,7 +287,7 @@ cd src/scraping/scrapy
 scrapy startproject trustpilot
 ```
 
-This last command creates the structure of a Scrapy project. Here's what it looks like:
+This command creates the structure of a Scrapy project. Here's what it looks like:
 
 ```
 scrapy/
@@ -297,14 +308,15 @@ scrapy/
             __init__.py
 ```
 
-Using Scrapy for the first time can be overwhelming, so to learn more about it you can visit the official <a href="http://doc.scrapy.org/en/latest/intro/tutorial.html">tutorials</a>
+Using Scrapy for the first time can be overwhelming, so to learn more about it, you can visit the official <a href="http://doc.scrapy.org/en/latest/intro/tutorial.html">tutorials</a>.
 
-To build our scraper, we'll have to create a spider inside the `spiders` folder. We'll call it `scraper.py`.
+
+To build our scraper, we'll have to create a spider inside the `spiders` folder. We'll call it `scraper.py` and change some parameters in `settings.py`. We won't change the other files.
 
 What the scraper will do is the following:
 
 - It starts from a company url
-- It goes through each customer review and yields a dictionary of data cotaining the following items
+- It goes through each customer review and yields a dictionary of data containing the following items
 
     - comment: the text review
     - rating: the number of stars (1 to 5)
