@@ -516,7 +516,7 @@ python train.py --data_path ../src/scraping/scrapy/comments_trustpilot_en.csv \
 
 When it's done, you can find the trained models in ```src/training/models``` directory.
 
-In terms of model performance on the data we collected we collected for training, the best model was able to achieve **95% of accuracy** on the three classes on the validation set, which is pretty amazing.
+In terms of model performance on the data we collected for training, the best model was able to achieve **95% of accuracy** on the three classes on the validation set, which is pretty amazing.
 
 To learn more about the training arguments and options, please check out the original <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a>.
 
