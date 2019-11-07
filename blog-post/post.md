@@ -32,7 +32,7 @@ Let's get started! 💻
 
 ## 1 - Scraping the data from Trustpilot with Selenium and Scrapy 🧹
 
-**A little disclaimer❗This script is meant for educational purposes only: scrape responsively.**
+***❗Disclaimer: The scripts below are meant for educational purposes only: scrape responsibly.***
 
 In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as <a href="http://jmcauley.ucsd.edu/data/amazon/"> Amazon Polarity</a> or <a href="https://www.kaggle.com/iarunava/imdb-movie-reviews-dataset">IMDB</a> movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
 
@@ -52,11 +52,11 @@ Trustpilot is an interesting source because each customer review is associated w
 
 By leveraging this data, we are able to map each review to a sentiment class. 
 
-In fact, reviews with:
+In fact, we defined reviews with:
 
-- 1 and 2 stars are **bad reviews** ❌
-- 3 stars are **average reviews** ⚠️
-- 4 and 5 stars are **good reviews** ✅
+- 1 and 2 stars as **bad reviews** ❌
+- 3 stars as **average reviews** ⚠️
+- 4 and 5 stars as **good reviews** ✅
 
 
 In order to scrape customer reviews from trustpilot, we first have to understand the structure of the website. 
@@ -85,18 +85,21 @@ And then each company has its own set of reviews, usually spread over many pages
   <img src="./assets/4-reviews.png" width="80%">
 </p>
 
+As you see, this is a top down tree structure. In order to scrape the reviews out of it, we'll proceed in two steps.
 
-As you see, this is a top down tree structure. In order to scrape it efficiently we'll use **Scrapy** which is an efficient and scalable scraping framework, but before going that far we need a to use Selenium first to fetch the company urls (see previous screenshot), then feed those to Scrapy.
+- Step 1️⃣: use Selenium to fetch the reviews pages of each company
 
-We need to use Selenium because the content of the website that renders those urls is dynamic (but the rest is not) which means that those urls cannot be accessed directly from the page source like Scrapy does. 
-
-Selenium however simulates a browser that interprets javascript rendered content. It clicks on each category, narrows down to each sub-category and finally goes through all the companies one by one and fetches their urls. When it's done, the script saves these urls to a csv file and the Scrapy part can be launched.
+- Step 2️⃣: use Scrapy to extract reviews of all companies
 
 ### Scrape company urls with Selenium : step 1️⃣ 
 
-<i>All the Selenium code is available in this <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/blob/master/src/scraping/selenium/scrape_website_urls.ipynb">notebook</a></i> 📓
+<i>All the Selenium code is available and runnable from this <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/blob/master/src/scraping/selenium/scrape_website_urls.ipynb">notebook</a></i> 📓
 
-Let's see how to launch Selenium to fetch the company urls.
+We first use Selenium because the content of the website that renders the urls of each company is dynamic  which means that it cannot be directly accessed from the page source. It's rather rendered on the front end of the website through Ajax calls.
+
+Selenium does a good job extracting this type of data: it simulates a browser that interprets javascript rendered content. When launched, it clicks on each category, narrows down to each sub-category and goes through all the companies one by one and extracts their urls. When it's done, the script saves these urls to a csv file.
+
+Let's see how this is done:
 
 We'll first import Selenium dependencies along with other utility packages.
 
@@ -125,7 +128,7 @@ def get_soup(url):
     return BeautifulSoup(requests.get(url).content, 'lxml')
 ```
 
-We first start by fetching the sub-category URLs nested inside each category.
+We start by fetching the sub-category URLs nested inside each category.
 
 If you open up your browser and inspect the source code, you'll find out 22 category blocks (on the right) located in `div` objects that have a `class` attribute equal to  `category-object`
 
@@ -156,7 +159,7 @@ for category in soup.findAll('div', {'class': 'category-object'}):
         data[name][sub_category_name] = sub_category_uri
 ```
 
-Now comes the selenium part: we'll need to loop over the companies of each sub-category and fetch their URL. 
+Now comes the selenium part: we'll need to loop over the companies of each sub-category and fetch their URLs. 
 
 Remember, companies are presented inside each sub-category like this:
 
@@ -164,7 +167,7 @@ Remember, companies are presented inside each sub-category like this:
     <img src="./assets/3-companies.png" width="80%">
 </p>
 
-We first define a function to fetch company urls referenced in a given subcategory:
+We first define a function to fetch company urls of a given subcategory:
 
 ```python
 def extract_company_urls_form_page():
@@ -174,7 +177,7 @@ def extract_company_urls_form_page():
     return dedup_urls
 ```
 
-and another function to check if there is a next page:
+and another function to check if a next page button exists:
 
 ```python
 def go_next_page():
@@ -187,8 +190,7 @@ def go_next_page():
 
 Now we initialize Selenium with a headless Chromedriver. This prevents Selenium from opening up a Chrome window thus accelerating the scraping.
 
-PS: You'll have to donwload Chromedriver from this <a href="https://chromedriver.chromium.org/">link</a> and choose the one that matches your operatig system. 
-
+PS: You'll have to donwload Chromedriver from this <a href="https://chromedriver.chromium.org/">link</a> and choose the one that matches your operatig system. It's basically a binary of a Chrome browser that Selenium uses to start.
 
 ```python
 options = Options()
@@ -205,10 +207,9 @@ driver = webdriver.Chrome('./driver/chromedriver', options=options)
 
 timeout = 3
 ```
+The timeout variable is the time (in seconds) Selenium waits for a page to completely load.
 
-and launch the scraping. This approximatively takes 50 minutes with good internet connexion.
-
-The timeout variable is set in order to make Selenium wait for the page to completely load.
+Now we launch the scraping. This approximatively takes 50 minutes with good internet connexion.
 
 ```python
 company_urls = {}
@@ -267,13 +268,15 @@ And here's what the data looks like:
     <img src="./assets/url_companies.png" width="80%">
 </p>
 
+Pretty neat right? Now we'll have to go through the reviews listed in each one of those urls.
+
 ### Scrape customer reviews with Scrapy : step 2️⃣ 
 
 <i>All the scrapy code can be found in this <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/scraping/scrapy">folder</a></i> 📁
 
-Ok, now we're ready to use Scrapy to fetch the customer reviews listed inside each company url.
+Ok, now we're ready to use Scrapy.
 
-First, you need to install Scrapy either using:
+First, you need to install it either using:
 
 - conda: `conda install -c conda-forge scrapy` 
 
@@ -281,7 +284,7 @@ or
 
 - pip: `pip install scrapy`
 
-Then, you'll need to start a scrapy project:
+Then, you'll need to start a project:
 
 ```bash
 cd src/scraping/scrapy
@@ -290,7 +293,7 @@ scrapy startproject trustpilot
 
 This command creates the structure of a Scrapy project. Here's what it looks like:
 
-```
+```python
 scrapy/
     scrapy.cfg            # deploy configuration file
 
@@ -310,7 +313,6 @@ scrapy/
 ```
 
 Using Scrapy for the first time can be overwhelming, so to learn more about it, you can visit the official <a href="http://doc.scrapy.org/en/latest/intro/tutorial.html">tutorials</a>.
-
 
 To build our scraper, we'll have to create a spider inside the `spiders` folder. We'll call it `scraper.py` and change some parameters in `settings.py`. We won't change the other files.
 
@@ -388,7 +390,7 @@ CONCURRENT_REQUESTS = 32
 FEED_FORMAT = "csv"
 FEED_URI = "comments_trustpilot_en.csv"
 ```
-This indicates to the scraper to ignore robots.txt, to use 32 concurrent requests and to export the data into a csv format under the filename: `comments_trustpilot_en.csv`
+This indicates to the scraper to ignore robots.txt, to use 32 concurrent requests and to export the data into a csv format under the filename: `comments_trustpilot_en.csv`.
 
 Now time to launch the scraper: 
 
@@ -399,7 +401,7 @@ scrapy crawl trustpilot
 
 We'll let it run for a little bit of time.
 
-Note that we can interrupt it at any moment since it saves the data on the fly.
+Note that we can interrupt it at any moment since it saves the data on the fly on this output folder is ```src/scraping/scrapy```.
 
 ## 2 - Training a sentiment classifer usig PyTorch 🤖
 
