@@ -26,11 +26,13 @@ To build this application we'll follow the following steps:
 - Containerization with Docker
 - App deployment 
 
-All the code is available in github and organized in independant directories, so you can check it, run it and improve it.
+All the code is available in our github <a href="https://github.com/MarwanDebbiche/post-tuto-deployment">repository</a> and organized in independant directories, so you can check it, run it and improve it.
 
 Let's get started! 💻
 
 ## 1 - Scraping the data from Trustpilot with Selenium and Scrapy 🧹
+
+**A little disclaimer❗This script is meant for educational purposes only: scrape responsively.**
 
 In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as <a href="http://jmcauley.ucsd.edu/data/amazon/"> Amazon Polarity</a> or <a href="https://www.kaggle.com/iarunava/imdb-movie-reviews-dataset">IMDB</a> movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
 
@@ -121,7 +123,6 @@ base_url = "https://trustpilot.com"
 
 def get_soup(url):
     return BeautifulSoup(requests.get(url).content, 'lxml')
-    
 ```
 
 We first start by fetching the sub-category URLs nested inside each category.
@@ -399,8 +400,6 @@ scrapy crawl trustpilot
 We'll let it run for a little bit of time.
 
 Note that we can interrupt it at any moment since it saves the data on the fly.
-
-    ❗ This script is meant for educational purposes only: scrape responsively. ❗
 
 ## 2 - Training a sentiment classifer usig PyTorch 🤖
 
@@ -754,7 +753,7 @@ In particular we wanted to:
 
 Throughout this tutorial you learned how to build a machine learning application from scratch by going through the data collection and scraping, model training, web app development and deployment.
 
-Every block of the app is independently packaged and easily reusable for in similar use cases.
+Every block of this app is independently packaged and easily reusable for other similar use cases.
 
 We're aware that many improvements could be added to this project and this is one of the reason we're relasing it.
 So if you think of any feature that could be added don't hesitate to fork the repo and create a pull request.
