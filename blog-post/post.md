@@ -524,6 +524,8 @@ In terms of model performance on the data we collected for training, the best mo
 
 To learn more about the training arguments and options, please check out the original <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a>.
 
+From now on, we'll use the trained model that is saved as a release <a href="https://github.com/ahmedbesbes/character-based-cnn/releases/download/english/model_en.pth">here</a>. When running the app for the first time, it'll get downloaded from that link and locally saved (in the container) for the inference.
+
 ## 3 - Building an interactive web app 📲 with Dash, Flask and PostgeSQL
 
 <i> The dash code can be found <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/dash">here</a> and the api code <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/api">here</a></i>
@@ -537,28 +539,28 @@ Here is a schema of our app architecture :
     <img src="./assets/7-application_schema.png" width="80%">
 </p>
 
-As you can see, there are four building blocks for our app:
+As you can see, there are four building blocks in our app:
 - A visualization application built using [Dash](https://dash.plot.ly/).
 - A [Flask](https://flask.palletsprojects.com/en/1.1.x/) REST API.
 - A [PostgreSQL](https://www.postgresql.org/) database
 - Our trained Machine Learning [model](https://github.com/ahmedbesbes/character-based-cnn/releases/download/english/model_en.pth).
 
-The Dash app will make http requests to the Flask API, wich will in turn interact with either the PostgreSQL database by writing or reading records to it, or the ML model by serving it.
+The Dash app will make http requests to the Flask API, wich will in turn interact with either the PostgreSQL database by writing or reading records to it, or the ML model by serving it for real-time inference.
 
-If you are already familiar with Dash, you know that it is built on top of Flask. So we could basically get rid of the API and get everything done from within the Dash app.
+If you are already familiar with Dash, you know that it is built on top of Flask. So we could've basically got rid of the API and put everything within the dash code.
 
-We chose not to for a very simple reason: it makes the logic and the visualization parts independant. Indeed, because we have a separated API, we could with very little effort replace the Dash app with any other frontend technology, or add a mobile or desktop app.
+We chose not to do this for a very simple reason: **making the logic and the visualization parts independant**. Indeed when having a separated API, we could with very little effort replace the Dash app with any other frontend technology, or add a mobile or desktop app.
 
-
-Now, let's have a closer look at how those blocks are built.
+Now, let's have a closer look at how those blocks are built. 
 
 ### PostgreSQL Database
 
-Nothnig fancy or original for regarding the database part. We chose to use one of the most widely used relational database, PostgreSQL.
+Nothnig fancy or original regarding the database part. We chose to use one of the most widely used relational databases: PostgreSQL.
 
-To run a PostgreSQL database for local development, you can either download PostgreSQL from the [official website](https://www.postgresql.org/download/) or, more simply, launch a postgres container using [Docker](https://www.docker.com/):
+To run a PostgreSQL database for local development, you can either download PostgreSQL from the [official website](https://www.postgresql.org/download/) or, more simply, launch a postgres container using [Docker](https://hub.docker.com/_/postgres):
 
 ```
+docker pull postgres
 docker run --name postgres \
             -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=password \
@@ -566,6 +568,10 @@ docker run --name postgres \
             -p 5432:5432 \
             -d postgres
 ```
+
+The two following commands allow to:
+- pull a postgres docker image locally from Dockerhub
+- run this image in a container
 
 ### Flask API
 
@@ -590,15 +596,15 @@ import config
 
 db = pw.PostgresqlDatabase(
     config.POSTGRES_DB,
-    user=config.POSTGRES_USER, password=config.POSTGRES_PASSWORD,
-    host=config.POSTGRES_HOST, port=config.POSTGRES_PORT
+    user=config.POSTGRES_USER, 
+    password=config.POSTGRES_PASSWORD,
+    host=config.POSTGRES_HOST, 
+    port=config.POSTGRES_PORT
 )
-
 
 class BaseModel(pw.Model):
     class Meta:
         database = db
-
 
 # Table Description
 class Review(BaseModel):
@@ -625,11 +631,9 @@ class Review(BaseModel):
 
         return data
 
-
 # Connection and table creation
 db.connect()
 db.create_tables([Review])
-
 ```
 
 Having done all this using peewee now makes it super easy to define the api routes to save and get reviews:
