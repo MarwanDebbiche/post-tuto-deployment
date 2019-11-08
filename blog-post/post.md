@@ -23,8 +23,9 @@ To build this application we'll follow these steps:
 - Collecting the data
 - Training a sentiment classifier
 - Building the web app
+- Setting a REST API and a database
 - Dockerizing the app
-- Deploying
+- Deploying to AWS
 
 All the code is available in our github <a href="https://github.com/MarwanDebbiche/post-tuto-deployment">repository</a> and organized in independant directories, so you can check it, run it and improve it.
 
@@ -472,6 +473,9 @@ After the last convolution layer, the output is flattened and passed through two
 To learn more about character level CNN and how they work, you can watch this video
 
 <!-- insert my youtube video here -->
+<p align="center">
+    <iframe width="600" height="400" src="https://www.youtube.com/embed/CNY8VjJt-iQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</p>
 
 Character CNN are interesting for various reasons since they have nice properties 💡
 
