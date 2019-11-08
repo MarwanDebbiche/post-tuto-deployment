@@ -40,7 +40,7 @@ app.layout = html.Div(
                             'padding': '5px'
                         }
                     ),
-                    id="button_company",
+                    id="company_link",
                     target="_blank"
                 )
             ],
@@ -130,7 +130,7 @@ app.layout = html.Div(
             ],
             className="btn btn-lg btn-primary btn-block",
             role="submit",
-            id="submit-button",
+            id="submit_button",
             n_clicks_timestamp=0
         ),
         html.Button(
@@ -146,7 +146,7 @@ app.layout = html.Div(
                 )
             ],
             className="btn btn-lg btn-secondary btn-block",
-            id='another-brand',
+            id='switch_button',
             n_clicks_timestamp=0
         ),
         html.P(
@@ -168,11 +168,11 @@ app.layout = html.Div(
         Output('company_logo', 'src'),
         Output('company_name', 'children'),
         Output('review', 'value'),
-        Output('button_company', 'href')
+        Output('company_link', 'href')
     ],
     [
-        Input('submit-button', 'n_clicks_timestamp'),
-        Input('another-brand', 'n_clicks_timestamp')
+        Input('submit_button', 'n_clicks_timestamp'),
+        Input('switch_button', 'n_clicks_timestamp')
     ],
     [
         State('review', 'value'),
@@ -222,7 +222,7 @@ def change_brand(submit_click_ts, another_brand_click_ts, review_text, score, ra
         Output('progress', 'value'),
         Output('progress', 'color'),
         Output('rating', 'value'),
-        Output('submit-button', 'disabled')
+        Output('submit_button', 'disabled')
     ],
     [Input('review', 'value')]
 )
