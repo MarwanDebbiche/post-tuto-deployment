@@ -14,17 +14,17 @@ Before we begin, let's have a look at the app we'll be building:
 
 As you see, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
 
-The user can then change the rating in case the suggested rating does not reflect his views, and submit.
+The user can then change the rating in case the suggested one does not reflect his views, and submit.
 
 You can think of this as a crowd sourcing app of brand reviews with a sentiment analysis model that suggests ratings that the user can tweak and adapt afterwards.
 
-To build this application we'll follow the following steps:
+To build this application we'll follow these steps:
 
-- Data collection
-- Sentiment analysis model training
-- App development
-- Containerization with Docker
-- App deployment 
+- Collecting the data
+- Training a sentiment classifier
+- Building the web app
+- Dockerizing the app
+- Deploying
 
 All the code is available in our github <a href="https://github.com/MarwanDebbiche/post-tuto-deployment">repository</a> and organized in independant directories, so you can check it, run it and improve it.
 
