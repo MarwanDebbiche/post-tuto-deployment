@@ -24,20 +24,8 @@ model_path = f'./ml/models/{model_name}'
 model = CharacterLevelCNN()
 
 
-def hook(t):
-    def inner(bytes_amount):
-        t.update(bytes_amount)
-    return inner
-
-
 if model_name not in os.listdir('./ml/models/'):
     print(f'downloading the trained model {model_name}')
-    # s3 = boto3.resource('s3')
-    # bucket = s3.Bucket('tuto-e2e-ml-trustpilot')
-    # file_object = s3.Object('tuto-e2e-ml-trustpilot', f'models/{model_name}')
-    # filesize = file_object.content_length
-    # with tqdm(total=filesize, unit='B', unit_scale=True, desc=model_name) as t:
-    #     bucket.download_file(f'models/{model_name}', model_path, Callback=hook(t))
     wget.download(
         "https://github.com/ahmedbesbes/character-based-cnn/releases/download/english/model_en.pth",
         out=model_path

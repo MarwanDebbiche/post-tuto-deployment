@@ -2,7 +2,7 @@
 
 ## Introduction
 
-*This started out as a challenge. With a <a href="http://marwandebbiche.com/">friend</a> of mine, we wanted to see if it was possible to build something and push it to production. In 3 weeks. This is our story.*
+*This started out as a challenge. With a [friend](marwandebbiche.com) of mine, we wanted to see if it was possible to build something and push it to production. In 3 weeks. This is our story.*
 
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun 😀.
 
@@ -577,16 +577,87 @@ The two following commands allow to:
 
 The RESTful API is the most important part of our app. It is responsible for the interractions with both the machine learning model and the database.
 
-Let's have a look at the routes that we need for our api:
-
+Let's have a look at the routes that we need in our api:
 
 - Sentiment Classification : `POST /api/predict`
 - Create review : `POST /api/review`
 - Get reviews : `GET /api/predicts`
 
-**TODO: WRITE SOMETHING ABOUT THE INFERENCE CODE FOR THE SENTIMENT CLASSIFIER**
+The most important route the API handles is `POST /api/predict`. It allows to post a review and return a sentiment score.
 
-In order to interact with the database, we will use the ORM [peewee](http://docs.peewee-orm.com/en/latest/). It lets us define the dataset tables using python objects, and takes care of connecting to and querying the database.
+It starts by downloading the trained model from github and saving it to disk. Then it loads it and pass it to GPU or CPU.
+
+When the api recieves an input review it passes it to the `predict_sentiment` function. This function is responsible of representing the raw text in a matrix format and feeding it to the model.
+ 
+```python
+from ml.model import CharacterLevelCNN
+from ml.utils import predict_sentiment
+
+model_name = 'model_en.pth'
+model_path = f'./ml/models/{model_name}'
+model = CharacterLevelCNN()
+
+# download the trained PyTorch model from Github
+# and save it at src/api/ml/models/
+# this is done at the first run of the API
+
+if model_name not in os.listdir('./ml/models/'):
+    print(f'downloading the trained model {model_name}')
+    wget.download(
+        "https://github.com/ahmedbesbes/character-based-cnn/releases/download/english/model_en.pth",
+        out=model_path
+    )
+else:
+    print('model already saved to api/ml/models')
+
+#####
+
+# load the model
+# pass it to GPU / CPU
+
+if torch.cuda.is_available():
+    trained_weights = torch.load(model_path)
+else:
+    trained_weights = torch.load(model_path, map_location='cpu')
+model.load_state_dict(trained_weights)
+model.eval()
+print('PyTorch model loaded !')
+
+#####
+
+@api.route('/predict', methods=['POST'])
+def predict_rating():
+    '''
+    Endpoint to predict the rating using the
+    review's text data.
+    '''
+    if request.method == 'POST':
+        if 'review' not in request.form:
+            return jsonify({'error': 'no review in body'}), 400
+        else:
+            parameters = model.get_model_parameters()
+            review = request.form['review']
+            output = predict_sentiment(model, review, **parameters)
+            return jsonify(float(output))
+```
+
+**Sentiment Classification Route**
+
+Route used to predict the sentiment based on the review's text.
+
+Body:
+```python
+{
+    "review": "I hate this brand..."
+}
+```
+
+Response:
+```
+0.123
+```
+
+In order to interact with the database, we will use the Object Relational Mapping (ORM) [peewee](http://docs.peewee-orm.com/en/latest/). It lets us define the dataset tables using python objects, and takes care of connecting to the database and querying it.
 
 This is done in the `src/api/db.py` file:
 
@@ -636,7 +707,7 @@ db.connect()
 db.create_tables([Review])
 ```
 
-Having done all this using peewee now makes it super easy to define the api routes to save and get reviews:
+Having done all this using peewee makes it super easy to define the api routes to save and get reviews:
 
 ```python
 import db
@@ -660,7 +731,6 @@ def post_review():
             return jsonify({'error': 'Missing field in body'}), 400
 
         query = db.Review.create(**request.form)
-
         return jsonify(query.serialize())
 
 
@@ -671,28 +741,10 @@ def get_reviews():
     '''
     if request.method == 'GET':
         query = db.Review.select()
-
         return jsonify([r.serialize() for r in query])
-
 ```
 
 Now we can have a closer look at the routes' request bodies and responses.
-
-**Sentiment Classification Route**
-
-Route used to predict the sentiment based on the review's text.
-
-Body:
-```python
-{
-    "review": "I hate this brand..."
-}
-```
-
-Response:
-```
-0.123
-```
 
 **Create Review**
 
@@ -733,24 +785,113 @@ Response:
 ```python
 [
     {
-        "id": 1234,
-        "first_name": "Joe",
-        "last_name": "Bloggs",
-        "email": "joe25@example.com",
-        "uapp": "ios1_2"
+    "id": 123,
+    "review": "I hate this brand...",
+    "rating": 2,
+    "suggested_rating": 1,
+    "sentiment_score": 0.123,
+    "brand": "Apple",
+    "user_agent": "Mozilla/...",
+    "ip_address": "127.0.0.1"
     }
 ]
 ```
 
-## 4 - Dockerizing the application with Docker compose 🐳
+## 4 - Dockerizing the application with Docker Compose 🐳
 
---> Marwan
+We separated our project in multiple containers, each one being responsible for each of these micro services.
+
+- `api`: contains all the dependencies to run the api to communicate with the postgres database and serve the model for inference
+- `dash`: contains the dependencies to run the dash application
+- `db`: is based on the postgres official image to run the database
+
+To manage these three containers we'll use Docker Compose. With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration.
+
+Here's our configuration file:
+
+```yml
+version: '3'
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ~/pgdata:/var/lib/postgresql/data
+    restart: always
+  api:
+    build:
+      context: src/api
+      dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=prod
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    depends_on:
+      - db
+    restart: always
+  dash:
+    build:
+      context: src/dash
+      dockerfile: Dockerfile
+    ports:
+      - "8050:8050"
+    environment:
+      - ENVIRONMENT=prod
+      - API_URL=http://api:5000/api
+    depends_on:
+      - api
+    restart: always
+```
+
+The api Dockerfile:
+
+```Dockerfile
+FROM python:3.6
+
+ADD requirements.txt /app/
+WORKDIR /app
+
+RUN pip install -r requirements.txt
+
+ADD . /app
+
+EXPOSE 5000
+
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+```
+
+The dash Dockerfile:
+
+```Dockerfile
+FROM python:3
+
+ADD requirements.txt /app/
+WORKDIR /app
+RUN pip install -r requirements.txt
+
+ADD . /app
+
+EXPOSE 8050
+
+CMD ["gunicorn", "-b", "0.0.0.0:8050", "app:app.server"]
+```
+
+
+
 
 ## 5 - Deploying to AWS: Demo time 💻
 
---> Marwan
+- Creating an EC2 virtual machine
+- Buying a hostname
+- Setting up an SSL certificate
 
-## 6 - What we wanted to do but hadn't time to🛠
+## 6 - Next steps 🛠
 
 When building this application, we thought of many improvements that we hadn't time to successfully add.
 

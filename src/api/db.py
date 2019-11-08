@@ -7,7 +7,6 @@ db = pw.PostgresqlDatabase(
     host=config.POSTGRES_HOST, port=config.POSTGRES_PORT
 )
 
-
 class BaseModel(pw.Model):
     class Meta:
         database = db
