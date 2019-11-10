@@ -20,9 +20,18 @@ In order to launch the API, you will first need to run a local postgres db using
 docker run --name postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=postgres -p 5432:5432 -d postgres
 ```
 
-You can then launch the API by running the following commands:
+Then you'll have to type the following commands:
 
+- to run the api: for database interaction and model serving
+
+```shell
+cd src/api/
+python app.py
 ```
-cd src/dash
+
+- to run the dash server: for visualizing the web app
+
+```shell
+cd src/dash/
 python app.py
 ```
