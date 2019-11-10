@@ -2,7 +2,7 @@
 
 Repository for the blog post shared between [Ahmed Besbes](http://ahmedbesbes.com) and [Marwan Debbiche](http://marwandebbiche.com)
 
-To run this project locally, run : 
+To run this project locally using Docker Compose run : 
 
 ```
 docker-compose build
@@ -11,6 +11,8 @@ docker-compose up
 You can then access the dash app at [http://localhost:8050](http://localhost:8050)
 
 ## Development
+
+If you want to contribute to this project and run each service independently:
 
 ### Launch API
 
@@ -22,14 +24,14 @@ docker run --name postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=passwo
 
 Then you'll have to type the following commands:
 
-- to run the api: for database interaction and model serving
-
 ```shell
 cd src/api/
 python app.py
 ```
 
-- to run the dash server: for visualizing the web app
+### Launch Dash app
+
+In order to run the dash server to visualize the output:
 
 ```shell
 cd src/dash/
