@@ -797,6 +797,217 @@ Response:
 ]
 ```
 
+### Dash front-end
+
+Dash is a visualization library that allows you to write html elements such divs, paragraphs and headers in a python syntax that get later rendered into React components.
+This allows a great freedom to those who want to quickly craft a little web app but don't have front-end expertise.
+
+Dash is easy to grasp. Here's a small hello world example:
+
+```python
+
+# -*- coding: utf-8 -*-
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+app.layout = html.Div(children=[
+    html.H1(children='Hello Dash'),
+
+    html.Div(children='''
+        Dash: A web application framework for Python.
+    '''),
+
+    dcc.Graph(
+        id='example-graph',
+        figure={
+            'data': [
+                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
+                {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
+            ],
+            'layout': {
+                'title': 'Dash Data Visualization'
+            }
+        }
+    )
+])
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
+```
+
+As you see, html elements get imported from `dash_core_components` and `dash_html_components` and inserted into lists and dictionaries, then affected to the `layout` attribute of the dash `app`.
+If you're experienced with Flask, you'll notice some similarities here. If fact, Dash is build on top of Flask.
+
+Here's what the app looks like in the browser when you visit: localhost:8050
+
+<p align="center">
+    <img src="./assets/dash_hello_world.png" width="90%">
+</p>
+
+Pretty neat right ?
+
+Dash allows you to add many other UI components very easily such as buttons, sliders, multi selectors etc. You can learn about them <a href="https://dash.plot.ly/dash-core-components"> here</a> and <a href="https://dash.plot.ly/dash-core-components"> here</a>
+In our app, we also used dash bootstrap <a href="https://dash-bootstrap-components.opensource.faculty.ai/l/">components</a> to make the UI mobile responsive.
+
+#### Callbacks
+
+To make these components interact between each other other, dash introduced the concept of `callback`. Callbacks are functions that get called to affect the appearance of an html element (the **Output**) everytime the value of another element (the **Input**) changes.
+Imagine the following situation: you have an html input field of id="A" and you want when everytime it gets an input to copy it inside a paragraph element of id="B", dynamically, without reloading the page. 
+
+Here's how you'd do it with a callback:
+
+```python
+from dash.dependencies import Input, Output
+
+@app.callback(
+    [
+        Output('A', 'value'),
+    ],
+    [
+        Input('B', 'value')
+    ]
+)
+def copie_from_A_to_B(A_input):
+    B_input = A_input
+    return B_input
+```
+This callback listens to any change of input value inside the element of id A to affect it to the input value of the element of id B. This is done, again, dynamically.
+
+Now I'll let you imagine what you can do with callbacks when you can handle many inputs to outputs and interact with other attributes than `value`.
+You can learn more about callbacks <a href="https://dash.plot.ly/getting-started-part-2">here</a> or <a href="https://www.youtube.com/watch?v=o5fgj1AIq4s"> here</a>.
+
+<hr>
+
+Now back to our app !
+
+Here's what it looks like. Each red arrow indicates the id of each html element.
+
+<p align="center">
+    <img src="./assets/app_with_elements.png" width="70%">
+</p>
+
+These elements obviously interact between each other. To materialize this, we defined two callback functions which can be visualized in the following graph.
+
+<p align="center">
+    <img src="./assets/callbacks.png" width="70%">
+</p>
+
+
+**callback 1**
+
+At every change of the input value of the text area of id `review`, the whole text review is sent through and http post request to API on the route `api/predict/` to recieve a sentiment score.
+Then this score is used by the callback to update the value (in percentage) inside the progress bar (proba), the length and the color of the progress bar again, the rating from 1 to 5 on the slider, as well as the state of the submit button (which is disabled by default when no text is present inside the text area.)
+What you'll have out of all this is a dynamic progress bar that fluctuates (with a color code) at every change of input as well as a suggested rating from 1 to 5 that follows the progress bar.
+
+Here's how you'd do it in code:
+
+```python
+@app.callback(
+    [
+        Output('proba', 'children'),
+        Output('progress', 'value'),
+        Output('progress', 'color'),
+        Output('rating', 'value'),
+        Output('submit_button', 'disabled')
+    ],
+    [Input('review', 'value')]
+)
+def update_proba(review):
+    if review is not None and review.strip() != '':
+        response = requests.post(
+            f"{config.API_URL}/predict", data={'review': review})
+        proba = response.json()
+        proba = round(proba * 100, 2)
+        suggested_rating = min(int((proba / 100) * 5 + 1), 5)
+        text_proba = f"{proba}%"
+
+        if proba >= 67:
+            return text_proba, proba, 'success', suggested_rating, False
+        elif 33 < proba < 67:
+            return text_proba, proba, 'warning', suggested_rating, False
+        elif proba <= 33:
+            return text_proba, proba, 'danger', suggested_rating, False
+    else:
+        return None, 0, None, 0, True
+```
+
+**callback 2**
+
+This callback does two things. 
+
+1. Once it recieves a click from `switch_button`, it inserts a row in the database (through the api). The row contains the current data of the brand being reviewed (brand name, review, sentiment, etc) as well as the user agent and the user ip.
+
+2. Then is randomly changes the brand by switching the name, the logo and the url.
+
+Here's the code:
+
+```python
+@app.callback(
+    [
+        Output('company_logo', 'src'),
+        Output('company_name', 'children'),
+        Output('review', 'value'),
+        Output('company_link', 'href')
+    ],
+    [
+        Input('submit_button', 'n_clicks_timestamp'),
+        Input('switch_button', 'n_clicks_timestamp')
+    ],
+    [
+        State('review', 'value'),
+        State('progress', 'value'),
+        State('rating', 'value'),
+        State('company_name', 'children')
+    ]
+)
+def change_brand(submit_click_ts, another_brand_click_ts, review_text, score, rating, brand_name):
+    if submit_click_ts > another_brand_click_ts:
+        sentiment_score = float(score) / 100
+        ip_address = request.remote_addr
+        user_agent = request.headers.get('User-Agent')
+        response = requests.post(
+            f"{config.API_URL}/review",
+            data={
+                'review': review_text,
+                'rating': rating,
+                'suggested_rating': min(int(sentiment_score * 5 + 1), 5),
+                'sentiment_score': sentiment_score,
+                'brand': brand_name,
+                'user_agent': user_agent,
+                'ip_address': ip_address
+            }
+        )
+
+        if response.ok:
+            print("Review Saved")
+        else:
+            print("Error Saving Review")
+
+    random_company = companies.sample(1).to_dict(orient="records")[0]
+
+    company_logo_url = random_company['company_logo']
+    if not company_logo_url.startswith('http'):
+        company_logo_url = 'https://' + company_logo_url
+
+    company_name = random_company['company_name']
+    company_website = random_company['company_website']
+
+    return company_logo_url, company_name, '', company_website
+```
+
+
+
+
+
+
+
+
+
 ## 4 - Dockerizing the application with Docker Compose 🐳
 
 We separated our project in multiple containers, each one being responsible for each of these micro services.
