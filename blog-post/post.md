@@ -1002,7 +1002,7 @@ def change_brand(submit_click_ts, another_brand_click_ts, review_text, score, ra
 
 We'll skip the definition of the html components. You can check it directly from the source code on the repo. 
 
-If you have a question you can ask, as always, it the comment section below ⬇.
+If you have a question you can ask it, as always, the comment section below ⬇.
 
 ## 4 - Dockerizing the application with Docker Compose 🐳
 
