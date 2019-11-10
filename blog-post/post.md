@@ -900,7 +900,7 @@ These elements obviously interact between each other. To materialize this, we de
 
 **callback 1**
 
-At every change of the input value of the text area of id `review`, the whole text review is sent through and http post request to API on the route `api/predict/` to recieve a sentiment score.
+At every change of the input value of the text area of id `review`, the whole text review is sent through an http post request to the api on the route `api/predict/` to recieve a sentiment score.
 Then this score is used by the callback to update the value (in percentage) inside the progress bar (proba), the length and the color of the progress bar again, the rating from 1 to 5 on the slider, as well as the state of the submit button (which is disabled by default when no text is present inside the text area.)
 What you'll have out of all this is a dynamic progress bar that fluctuates (with a color code) at every change of input as well as a suggested rating from 1 to 5 that follows the progress bar.
 
@@ -942,7 +942,7 @@ This callback does two things.
 
 1. Once it recieves a click from `switch_button`, it inserts a row in the database (through the api). The row contains the current data of the brand being reviewed (brand name, review, sentiment, etc) as well as the user agent and the user ip.
 
-2. Then is randomly changes the brand by switching the name, the logo and the url.
+2. Then it randomly changes the brand by switching the name, the logo and the url.
 
 Here's the code:
 
@@ -1000,13 +1000,9 @@ def change_brand(submit_click_ts, another_brand_click_ts, review_text, score, ra
     return company_logo_url, company_name, '', company_website
 ```
 
+We'll skip the definition of the html components. You can check it directly from the source code on the repo. 
 
-
-
-
-
-
-
+If you have a question you can ask, as always, it the comment section below ⬇.
 
 ## 4 - Dockerizing the application with Docker Compose 🐳
 
@@ -1117,7 +1113,7 @@ In particular we wanted to:
 
 ## 7 - Conclusion  👋
 
-Throughout this tutorial you learned how to build a machine learning application from scratch by going through the data collection and scraping, model training, web app development and deployment.
+Throughout this tutorial you learned how to build a machine learning application from scratch by going through the data collection and scraping, model training, web app development, docker and deployment.
 
 Every block of this app is independently packaged and easily reusable for other similar use cases.
 
