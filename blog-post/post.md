@@ -1096,6 +1096,7 @@ CMD ["gunicorn", "-b", "0.0.0.0:8050", "app:app.server"]
 
 - Creating an EC2 virtual machine
 - Buying a hostname
+- Setting up a sub domain
 - Setting up an SSL certificate
 
 ## 6 - Next steps 🛠
