@@ -1,4 +1,4 @@
-# End to End Machine Learning : From Data Collection to Deployment 🚀
+# End to End Machine Learning: From Data Collection to Deployment 🚀
 
 ## Introduction
 
@@ -92,7 +92,7 @@ As you see, this is a top down tree structure. In order to scrape the reviews ou
 
 - Step 2️⃣: use Scrapy to extract reviews of all companies
 
-### Scrape company urls with Selenium : step 1️⃣ 
+### Scrape company urls with Selenium: step 1️⃣ 
 
 <i>All the Selenium code is available and runnable from this <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/blob/master/src/scraping/selenium/scrape_website_urls.ipynb">notebook</a></i> 📓
 
@@ -271,7 +271,7 @@ And here's what the data looks like:
 
 Pretty neat right? Now we'll have to go through the reviews listed in each one of those urls.
 
-### Scrape customer reviews with Scrapy : step 2️⃣ 
+### Scrape customer reviews with Scrapy: step 2️⃣ 
 
 <i>All the scrapy code can be found in this <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/scraping/scrapy">folder</a></i> 📁
 
@@ -363,7 +363,7 @@ class Pages(scrapy.Spider):
             yield {
                 'comment': comment,
                 'rating': rating,
-                'url_website' : response.url,
+                'url_website': response.url,
                 'company_name': company_name,
                 'company_website': company_website,
                 'company_logo': company_logo
@@ -412,7 +412,7 @@ Now that the data is collected, we're ready to train a sentiment classifier to p
 
 There are a wide range of possible models to use. The one we'll be training is a character based convolutional neural network. It's based on this <a href="https://arxiv.org/pdf/1509.01626.pdf">paper</a> and it proved to be really good on text classification tasks such as binary classification of Amazon Reviews datasets.
 
-The question you'd be asking up-front though is the following : how would you use CNNs for text classification ? Aren't these architectures specifically designed for image data ?
+The question you'd be asking up-front though is the following: how would you use CNNs for text classification ? Aren't these architectures specifically designed for image data ?
 
 Well, the truth is, CNN are way more versatile and their application can extend the scope of image classification. In fact, they are also able to capture sequential information that is inherent to text data. The only only trick here is to efficiently represent the input text.
 
@@ -528,11 +528,11 @@ From now on, we'll use the trained model that is saved as a release <a href="htt
 
 ## 3 - Building an interactive web app 📲 with Dash, Flask and PostgeSQL
 
-<i> The dash code can be found <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/dash">here</a> and the api code <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/api">here</a></i>
+*The dash code can be found [here](https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/dash) and the api code [here](https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/api)*
 
 Now that we have trained the sentiment classifier, let's build our application so that end-users can interact with the model and evaluate new brands.
 
-Here is a schema of our app architecture :
+Here is a schema of our app architecture:
 
 
 <p align="center">
@@ -547,9 +547,9 @@ As you can see, there are four building blocks in our app:
 
 The Dash app will make http requests to the Flask API, wich will in turn interact with either the PostgreSQL database by writing or reading records to it, or the ML model by serving it for real-time inference.
 
-If you are already familiar with Dash, you know that it is built on top of Flask. So we could've basically got rid of the API and put everything within the dash code.
+If you are already familiar with Dash, you know that it is built on top of Flask. So we could basically get rid of the API and put everything within the dash code.
 
-We chose not to do this for a very simple reason: **making the logic and the visualization parts independant**. Indeed when having a separated API, we could with very little effort replace the Dash app with any other frontend technology, or add a mobile or desktop app.
+We chose not to for a very simple reason: **it makes the logic and the visualization parts independant**. Indeed, because we have a separated API, we can with very little effort replace the Dash app with any other frontend technology, or add a mobile or desktop app.
 
 Now, let's have a closer look at how those blocks are built. 
 
@@ -561,29 +561,43 @@ To run a PostgreSQL database for local development, you can either download Post
 
 ```
 docker pull postgres
-docker run --name postgres \
-            -e POSTGRES_USER=postgres \
-            -e POSTGRES_PASSWORD=password \
-            -e POSTGRES_DB=postgres \
-            -p 5432:5432 \
-            -d postgres
+docker run --name postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=postgres -p 5432:5432 -d postgres
 ```
 
 The two following commands allow to:
-- pull a postgres docker image locally from Dockerhub
+- pull a [postgres docker image](https://hub.docker.com/_/postgres)  from Docker Hub
 - run this image in a container
 
 ### Flask API
 
 The RESTful API is the most important part of our app. It is responsible for the interractions with both the machine learning model and the database.
 
-Let's have a look at the routes that we need in our api:
+Let's have a look at the routes needed for our api:
 
-- Sentiment Classification : `POST /api/predict`
-- Create review : `POST /api/review`
-- Get reviews : `GET /api/predicts`
+- Sentiment Classification: `POST /api/predict`
+- Create review: `POST /api/review`
+- Get reviews: `GET /api/predicts`
 
-The most important route the API handles is `POST /api/predict`. It allows to post a review and return a sentiment score.
+**Sentiment Classification Route**
+
+`POST /api/predict`
+
+This route used to predict the sentiment based on the review's text.
+
+Body:
+```JSON
+{
+    "review": "I hate this brand..."
+}
+```
+
+Response:
+```JSON
+0.123
+```
+
+
+As you can see, this route gets a text field called `review` and returns a sentiment score based on that text.
 
 It starts by downloading the trained model from github and saving it to disk. Then it loads it and pass it to GPU or CPU.
 
@@ -641,23 +655,40 @@ def predict_rating():
             return jsonify(float(output))
 ```
 
-**Sentiment Classification Route**
+**Create Review**
 
-Route used to predict the sentiment based on the review's text.
+`POST /api/review`
+
+This route is used to save a review to the database (with associated ratings and user information).
 
 Body:
-```python
+```JSON
 {
-    "review": "I hate this brand..."
+    "review": "I hate this brand...",
+    "rating": 2,
+    "suggested_rating": 1,
+    "sentiment_score": 0.123,
+    "brand": "Apple",
+    "user_agent": "Mozilla/...",
+    "ip_address": "127.0.0.1"
 }
 ```
 
 Response:
-```
-0.123
+```JSON
+{
+  "id": 123,
+  "review": "I hate this brand...",
+  "rating": 2,
+  "suggested_rating": 1,
+  "sentiment_score": 0.123,
+  "brand": "Apple",
+  "user_agent": "Mozilla/...",
+  "ip_address": "127.0.0.1"
+}
 ```
 
-In order to interact with the database, we will use the Object Relational Mapping (ORM) [peewee](http://docs.peewee-orm.com/en/latest/). It lets us define the dataset tables using python objects, and takes care of connecting to the database and querying it.
+In order to interact with the database, we will use the Object Relational Mapping (ORM) [peewee](http://docs.peewee-orm.com/en/latest/). It lets us define the database tables using python objects, and takes care of connecting to the database and querying it.
 
 This is done in the `src/api/db.py` file:
 
@@ -732,57 +763,16 @@ def post_review():
 
         query = db.Review.create(**request.form)
         return jsonify(query.serialize())
-
-
-@api.route('/reviews', methods=['GET'])
-def get_reviews():
-    '''
-    Get all reviews.
-    '''
-    if request.method == 'GET':
-        query = db.Review.select()
-        return jsonify([r.serialize() for r in query])
-```
-
-Now we can have a closer look at the routes' request bodies and responses.
-
-**Create Review**
-
-Route used to save a review to database (with associated ratings and user information).
-
-Body:
-```python
-{
-    "review": "I hate this brand...",
-    "rating": 2,
-    "suggested_rating": 1,
-    "sentiment_score": 0.123,
-    "brand": "Apple",
-    "user_agent": "Mozilla/...",
-    "ip_address": "127.0.0.1"
-}
-```
-
-Response:
-```python
-{
-  "id": 123,
-  "review": "I hate this brand...",
-  "rating": 2,
-  "suggested_rating": 1,
-  "sentiment_score": 0.123,
-  "brand": "Apple",
-  "user_agent": "Mozilla/...",
-  "ip_address": "127.0.0.1"
-}
 ```
 
 **Get Reviews**
 
-Route used to get reviews.
+`GET /api/reviews`
+
+This route is used to get reviews from database.
 
 Response:
-```python
+```JSON
 [
     {
     "id": 123,
@@ -795,6 +785,19 @@ Response:
     "ip_address": "127.0.0.1"
     }
 ]
+```
+
+Similarly to what we have done for the route `POST /api/review`, we use peewee to query the database. This makes the route's code quite simple:
+
+```python
+@api.route('/reviews', methods=['GET'])
+def get_reviews():
+    '''
+    Get all reviews.
+    '''
+    if request.method == 'GET':
+        query = db.Review.select()
+        return jsonify([r.serialize() for r in query])
 ```
 
 ### Dash front-end
@@ -840,7 +843,7 @@ if __name__ == '__main__':
     app.run_server(debug=True)
 ```
 
-As you see, html elements get imported from `dash_core_components` and `dash_html_components` and inserted into lists and dictionaries, then affected to the `layout` attribute of the dash `app`.
+As you see, components are imported from `dash_core_components` and `dash_html_components` and inserted into lists and dictionaries, then affected to the `layout` attribute of the dash `app`.
 If you're experienced with Flask, you'll notice some similarities here. If fact, Dash is build on top of Flask.
 
 Here's what the app looks like in the browser when you visit: localhost:8050
@@ -851,12 +854,13 @@ Here's what the app looks like in the browser when you visit: localhost:8050
 
 Pretty neat right ?
 
-Dash allows you to add many other UI components very easily such as buttons, sliders, multi selectors etc. You can learn about them <a href="https://dash.plot.ly/dash-core-components"> here</a> and <a href="https://dash.plot.ly/dash-core-components"> here</a>
-In our app, we also used dash bootstrap <a href="https://dash-bootstrap-components.opensource.faculty.ai/l/">components</a> to make the UI mobile responsive.
+Dash allows you to add many other UI components very easily such as buttons, sliders, multi selectors etc. You can learn more about [dash-core-components](https://dash.plot.ly/dash-core-components) and [dash-html-components](https://dash.plot.ly/dash-html-components) from the official documentation.
+
+In our app, we also used [dash bootstrap components](https://dash-bootstrap-components.opensource.faculty.ai/l/) to make the UI mobile responsive.
 
 #### Callbacks
 
-To make these components interact between each other other, dash introduced the concept of `callback`. Callbacks are functions that get called to affect the appearance of an html element (the **Output**) everytime the value of another element (the **Input**) changes.
+To make these components interact with each other, dash introduced the concept of `callback`. Callbacks are functions that get called to affect the appearance of an html element (the **Output**) everytime the value of another element (the **Input**) changes.
 Imagine the following situation: you have an html input field of id="A" and you want when everytime it gets an input to copy it inside a paragraph element of id="B", dynamically, without reloading the page. 
 
 Here's how you'd do it with a callback:
@@ -879,9 +883,9 @@ def copie_from_A_to_B(A_input):
 This callback listens to any change of input value inside the element of id A to affect it to the input value of the element of id B. This is done, again, dynamically.
 
 Now I'll let you imagine what you can do with callbacks when you can handle many inputs to outputs and interact with other attributes than `value`.
-You can learn more about callbacks <a href="https://dash.plot.ly/getting-started-part-2">here</a> or <a href="https://www.youtube.com/watch?v=o5fgj1AIq4s"> here</a>.
+You can learn more about callbacks [here](https://dash.plot.ly/getting-started-part-2) or [here](https://www.youtube.com/watch?v=o5fgj1AIq4s).
 
-<hr>
+<hr/>
 
 Now back to our app !
 
@@ -898,9 +902,9 @@ These elements obviously interact between each other. To materialize this, we de
 </p>
 
 
-**callback 1**
+**Callback 1**
 
-At every change of the input value of the text area of id `review`, the whole text review is sent through an http post request to the api on the route `api/predict/` to recieve a sentiment score.
+At every change of the input value of the text area of id `review`, the whole text review is sent through an http post request to the api route `POST /api/predict/` to receive a sentiment score.
 Then this score is used by the callback to update the value (in percentage) inside the progress bar (proba), the length and the color of the progress bar again, the rating from 1 to 5 on the slider, as well as the state of the submit button (which is disabled by default when no text is present inside the text area.)
 What you'll have out of all this is a dynamic progress bar that fluctuates (with a color code) at every change of input as well as a suggested rating from 1 to 5 that follows the progress bar.
 
@@ -936,13 +940,15 @@ def update_proba(review):
         return None, 0, None, 0, True
 ```
 
-**callback 2**
+**Callback 2**
 
 This callback does two things. 
 
-1. Once it recieves a click from `switch_button`, it inserts a row in the database (through the api). The row contains the current data of the brand being reviewed (brand name, review, sentiment, etc) as well as the user agent and the user ip.
+1. When the `submit_button` is clicked, it inserts a row in the database (through the api). The row contains the current data of the brand being reviewed (brand name, review, sentiment, etc) as well as the user agent and the user ip.
+Then it randomly changes the brand by switching the name, the logo and the url, and resetting the review textarea.
 
-2. Then it randomly changes the brand by switching the name, the logo and the url.
+2. You can also change the brand without submitting the review to the database, by clicking on the `switch_button` instead.
+
 
 Here's the code:
 
@@ -1000,9 +1006,9 @@ def change_brand(submit_click_ts, another_brand_click_ts, review_text, score, ra
     return company_logo_url, company_name, '', company_website
 ```
 
-We'll skip the definition of the html components. You can check it directly from the source code on the repo. 
+We'll skip the definition of the dash app layout. You can check it directly from the source code on the repo. 
 
-If you have a question you can ask it, as always, in the comment section below ⬇.
+If you have any question you can ask it, as always, in the comment section below ⬇.
 
 ## 4 - Dockerizing the application with Docker Compose 🐳
 
@@ -1088,9 +1094,6 @@ EXPOSE 8050
 
 CMD ["gunicorn", "-b", "0.0.0.0:8050", "app:app.server"]
 ```
-
-
-
 
 ## 5 - Deploying to AWS: Demo time 💻
 
