@@ -156,7 +156,7 @@ home_layout = html.Div(
             n_clicks_timestamp=0
         ),
         html.P(
-            dcc.Link("Go to Admin", id="admin-link", href="/admin"),
+            dcc.Link("Go to Admin 🔑", id="admin-link", href="/admin"),
             className="mt-2"
 
         ),
@@ -164,7 +164,8 @@ home_layout = html.Div(
             [
                 html.A("BESBES", href="https://ahmedbesbes.com", target="_blank"),
                 " / ",
-                html.A("DEBBICHE", href="https://marwandebbiche.com", target="_blank"),
+                html.A("DEBBICHE", href="https://marwandebbiche.com",
+                       target="_blank"),
                 " - 2019"
             ],
             className="mt-3 mb-2 text-muted"
@@ -175,10 +176,10 @@ home_layout = html.Div(
 
 admin_layout = html.Div(
     [
-        html.H1("Admin Page"),
+        html.H1("Admin Page 🔑"),
         html.Div(id="admin-page-content"),
         html.P(
-            dcc.Link("Go to Home", href="/"),
+            dcc.Link("Go to Home 🏡", href="/"),
             style={"marginTop": "20px"}
         )
     ]
@@ -280,48 +281,22 @@ def load_review_table(pathname):
 
     reviews = pd.DataFrame(response.json())
 
-    return html.Div(
-        dash_table.DataTable(
-            columns=[
-                {"name": col, "id": col}
-                for col in ["id", "brand", "created_date", "review", "rating", "suggested_rating", "sentiment_score"]
-            ],
-            data=reviews.to_dict(orient="records"),
-            style_as_list_view=True,
-            style_header={
-                'backgroundColor': '#f5f5f5',
-                'fontWeight': 'bold'
-            },
-            style_cell={'textAlign': 'right', 'padding': '5px'},
+    table = dbc.Table.from_dataframe(reviews,
+                                     striped=True,
+                                     bordered=True,
+                                     hover=True,
+                                     responsive=True,
+                                     header=["id", "brand", "created_date", "review",
+                                             "rating", "suggested_rating", "sentiment_score"],
+                                     columns=["id", "brand", "created_date", "review",
+                                              "rating", "suggested_rating", "sentiment_score"]
+                                     )
 
-            style_cell_conditional=(
-                [
-                    {
-                        'if': {'column_id': c},
-                        'textAlign': 'left'
-                    } for c in ['id', 'brand', 'review', 'created_date']
-                ] +
-                [
-                    {'if': {'column_id': 'suggested_rating'}, 'width': '140px'},
-                    {'if': {'column_id': 'sentiment_score'}, 'width': '140px'},
-                    {'if': {'column_id': 'created_date'}, 'width': '180px'},
-                    {'if': {'column_id': 'rating'}, 'width': '80px'},
-                    {'if': {'column_id': 'brand'}, 'width': '100px'},
-                    {'if': {'column_id': 'id'}, 'width': '40px'},
-                ]
-            ),
-            style_data={
-                'whiteSpace': 'normal',
-                'height': 'auto',
-                'maxWidth': 0,
-                'backgroundColor': '#f5f5f5'
-            },
-        ),
-        style={"width": "90%", "marginLeft": "auto", "marginRight": "auto"}
-    )
-
+    return table
 
 # Update page layout
+
+
 @app.callback(
     Output('page-content', 'children'),
     [Input('url', 'pathname')]
@@ -333,8 +308,18 @@ def display_page(pathname):
         return admin_layout
     else:
         return [
-            html.P("Not found."),
-            dcc.Link("Go to Home", href="/")
+            html.Div(
+                [
+                    html.Img(
+                        src="./assets/404.png",
+                        style={
+                            "width": "50%"
+                        }
+                    ),
+                ],
+                className="form-review"
+            ),
+            dcc.Link("Go to Home", href="/"),
         ]
 
 
