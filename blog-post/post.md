@@ -1108,11 +1108,9 @@ When building this application, we thought of many improvements that we hadn't t
 
 In particular we wanted to:
 
-- Manage multiple concurrent sessions
-- Deploy on multiple EC2 machines 
-- Use continuous integration with <a href="https://travis-ci.org/">Travis CI </a>
-- Use <a href="https://kubernetes.io/">Kubernetes</a> to manage clusters of containers
-- Add an admin interface to the dash application to quickly check users' reviews
+- Add server-side pagination for Admin Page and `GET /api/reviews` route.
+- Either use [Kubernetes](https://kubernetes.io) or [Amazon ECS](https://aws.amazon.com/ecs) to deploy the app on a cluster of containers, instead of on one single EC2 instance.
+- Use continuous deployment with [Travis CI](https://travis-ci.org)
 
 
 ## 7 - Conclusion  👋
@@ -1121,8 +1119,8 @@ Throughout this tutorial you learned how to build a machine learning application
 
 Every block of this app is independently packaged and easily reusable for other similar use cases.
 
-We're aware that many improvements could be added to this project and this is one of the reason we're relasing it.
+We're aware that many improvements could be added to this project and this is one of the reason we're releasing it.
 So if you think of any feature that could be added don't hesitate to fork the repo and create a pull request.
-If you're also facing an issue running the app do not hesitate to <a href="https://github.com/MarwanDebbiche/post-tuto-deployment/issues">report</a> it. We'll try to fix the problem it as soon as possible.
+If you're also facing an issue running the app do not hesitate to [report it](https://github.com/MarwanDebbiche/post-tuto-deployment/issues). We'll try to fix the problem as soon as possible.
 
 That's all folks! 🎉 
