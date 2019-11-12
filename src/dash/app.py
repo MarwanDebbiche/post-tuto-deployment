@@ -156,15 +156,19 @@ home_layout = html.Div(
             n_clicks_timestamp=0
         ),
         html.P(
+            dcc.Link("Go to Admin", id="admin-link", href="/admin"),
+            className="mt-2"
+
+        ),
+        html.P(
             [
                 html.A("BESBES", href="https://ahmedbesbes.com", target="_blank"),
                 " / ",
-                html.A("DEBBICHE", href="http://marwandebbiche.com", target="_blank"),
+                html.A("DEBBICHE", href="https://marwandebbiche.com", target="_blank"),
                 " - 2019"
             ],
-            className="mt-5 mb-3 text-muted"
+            className="mt-3 mb-2 text-muted"
         ),
-        dcc.Link("Admin", id="admin-link", href="/admin", style={"fontSize": "14px"})
     ],
     className="form-review",
 )
@@ -280,7 +284,7 @@ def load_review_table(pathname):
         dash_table.DataTable(
             columns=[
                 {"name": col, "id": col}
-                for col in ["id", "brand", "review", "rating", "suggested_rating", "sentiment_score"]
+                for col in ["id", "brand", "created_date", "review", "rating", "suggested_rating", "sentiment_score"]
             ],
             data=reviews.to_dict(orient="records"),
             style_as_list_view=True,
@@ -295,11 +299,12 @@ def load_review_table(pathname):
                     {
                         'if': {'column_id': c},
                         'textAlign': 'left'
-                    } for c in ['id', 'brand', 'review']
+                    } for c in ['id', 'brand', 'review', 'created_date']
                 ] +
                 [
                     {'if': {'column_id': 'suggested_rating'}, 'width': '140px'},
                     {'if': {'column_id': 'sentiment_score'}, 'width': '140px'},
+                    {'if': {'column_id': 'created_date'}, 'width': '180px'},
                     {'if': {'column_id': 'rating'}, 'width': '80px'},
                     {'if': {'column_id': 'brand'}, 'width': '100px'},
                     {'if': {'column_id': 'id'}, 'width': '40px'},

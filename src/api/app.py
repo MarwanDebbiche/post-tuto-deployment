@@ -88,7 +88,7 @@ def get_reviews():
     Get all reviews.
     '''
     if request.method == 'GET':
-        query = db.Review.select()
+        query = db.Review.select().order_by(db.Review.created_date.desc())
 
         return jsonify([r.serialize() for r in query])
 

@@ -1,11 +1,15 @@
 import peewee as pw
 import config
+from datetime import datetime
+from playhouse.shortcuts import model_to_dict
+
 
 db = pw.PostgresqlDatabase(
     config.POSTGRES_DB,
     user=config.POSTGRES_USER, password=config.POSTGRES_PASSWORD,
     host=config.POSTGRES_HOST, port=config.POSTGRES_PORT
 )
+
 
 class BaseModel(pw.Model):
     class Meta:
@@ -22,20 +26,15 @@ class Review(BaseModel):
     brand = pw.TextField()
     user_agent = pw.TextField()
     ip_address = pw.TextField()
+    created_date = pw.DateTimeField(default=datetime.now)
 
     def serialize(self):
-        data = {
-            'id': self.id,
-            'review': self.review,
-            'rating': int(self.rating),
-            'suggested_rating': int(self.suggested_rating),
-            'sentiment_score': float(self.sentiment_score),
-            'brand': self.brand,
-            'user_agent': self.user_agent,
-            'ip_address': self.ip_address
-        }
+        review_dict = model_to_dict(self)
+        review_dict["created_date"] = (
+            review_dict["created_date"].strftime('%Y-%m-%d %H:%M:%S')
+        )
 
-        return data
+        return review_dict
 
 
 # Connection and table creation
