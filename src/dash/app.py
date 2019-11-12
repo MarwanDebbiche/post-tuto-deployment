@@ -8,27 +8,33 @@ import dash
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
+import dash_table
 from dash.dependencies import Input, Output, State
 
 external_stylesheets = [
     "https://use.fontawesome.com/releases/v5.0.7/css/all.css",
     'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
-    'https://fonts.googleapis.com/css?family=Roboto&display=swap',
-    'https://raw.githubusercontent.com/ahmedbesbes/stylesheets/master/form-signin.css'
+    'https://fonts.googleapis.com/css?family=Roboto&display=swap'
 ]
 
 app = dash.Dash(
     __name__, external_stylesheets=external_stylesheets,
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-    ]
+    ],
+    suppress_callback_exceptions=True
 )
 app.title = 'Reviews AI2Prod'
 
 companies = pd.read_csv('./csv/companies_forbes.csv')
 random_reviews = pd.read_csv('./csv/random_reviews.csv')
 
-app.layout = html.Div(
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
+
+home_layout = html.Div(
     [
         html.Div(
             [
@@ -46,10 +52,10 @@ app.layout = html.Div(
             ],
             style={
                 'height': '100px',
-                'background-color': 'white',
-                'border-style': 'solid',
-                'border-radius': '100px',
-                'border-width': 'thin'
+                'backgroundColor': 'white',
+                'borderStyle': 'solid',
+                'borderRadius': '100px',
+                'borderWidth': 'thin'
             }
         ),
 
@@ -63,7 +69,7 @@ app.layout = html.Div(
             ],
             className="h3 mb-3 font-weight-normal",
             style={
-                'margin-top': '5px'
+                'marginTop': '5px'
             }
         ),
 
@@ -88,14 +94,14 @@ app.layout = html.Div(
                 id='proba',
                 style={
                     'color': 'black',
-                    'font-weight': 'bold'
+                    'fontWeight': 'bold'
                 }
             ),
             id="progress",
             striped=False,
             animated=False,
             style={
-                'margin-bottom': '10px'
+                'marginBottom': '10px'
             }
         ),
 
@@ -113,7 +119,7 @@ app.layout = html.Div(
                     marks={i: f'{i}' for i in range(1, 6)}
                 ),
             ],
-            style={'margin-bottom': '30px'}
+            style={'marginBottom': '30px'}
         ),
 
         html.Button(
@@ -121,7 +127,7 @@ app.layout = html.Div(
                 html.Span(
                     "Submit",
                     style={
-                        "margin-right": "10px"
+                        "marginRight": "10px"
                     }
                 ),
                 html.I(
@@ -138,7 +144,7 @@ app.layout = html.Div(
                 html.Span(
                     "Review another brand",
                     style={
-                        "margin-right": "10px"
+                        "marginRight": "10px"
                     }
                 ),
                 html.I(
@@ -157,9 +163,21 @@ app.layout = html.Div(
                 " - 2019"
             ],
             className="mt-5 mb-3 text-muted"
-        )
+        ),
+        dcc.Link("Admin", id="admin-link", href="/admin", style={"fontSize": "14px"})
     ],
-    className="form-signin",
+    className="form-review",
+)
+
+admin_layout = html.Div(
+    [
+        html.H1("Admin Page"),
+        html.Div(id="admin-page-content"),
+        html.P(
+            dcc.Link("Go to Home", href="/"),
+            style={"marginTop": "20px"}
+        )
+    ]
 )
 
 
@@ -243,6 +261,76 @@ def update_proba(review):
             return text_proba, proba, 'danger', suggested_rating, False
     else:
         return None, 0, None, 0, True
+
+
+# Load review table
+@app.callback(
+    Output('admin-page-content', 'children'),
+    [Input('url', 'pathname')]
+)
+def load_review_table(pathname):
+    if pathname != "/admin":
+        return None
+
+    response = requests.get(f"{config.API_URL}/reviews")
+
+    reviews = pd.DataFrame(response.json())
+
+    return html.Div(
+        dash_table.DataTable(
+            columns=[
+                {"name": col, "id": col}
+                for col in ["id", "brand", "review", "rating", "suggested_rating", "sentiment_score"]
+            ],
+            data=reviews.to_dict(orient="records"),
+            style_as_list_view=True,
+            style_header={
+                'backgroundColor': '#f5f5f5',
+                'fontWeight': 'bold'
+            },
+            style_cell={'textAlign': 'right', 'padding': '5px'},
+
+            style_cell_conditional=(
+                [
+                    {
+                        'if': {'column_id': c},
+                        'textAlign': 'left'
+                    } for c in ['id', 'brand', 'review']
+                ] +
+                [
+                    {'if': {'column_id': 'suggested_rating'}, 'width': '140px'},
+                    {'if': {'column_id': 'sentiment_score'}, 'width': '140px'},
+                    {'if': {'column_id': 'rating'}, 'width': '80px'},
+                    {'if': {'column_id': 'brand'}, 'width': '100px'},
+                    {'if': {'column_id': 'id'}, 'width': '40px'},
+                ]
+            ),
+            style_data={
+                'whiteSpace': 'normal',
+                'height': 'auto',
+                'maxWidth': 0,
+                'backgroundColor': '#f5f5f5'
+            },
+        ),
+        style={"width": "90%", "marginLeft": "auto", "marginRight": "auto"}
+    )
+
+
+# Update page layout
+@app.callback(
+    Output('page-content', 'children'),
+    [Input('url', 'pathname')]
+)
+def display_page(pathname):
+    if pathname == '/':
+        return home_layout
+    if pathname == "/admin":
+        return admin_layout
+    else:
+        return [
+            html.P("Not found."),
+            dcc.Link("Go to Home", href="/")
+        ]
 
 
 if __name__ == '__main__':
