@@ -1208,9 +1208,11 @@ CMD ["gunicorn", "-b", "0.0.0.0:8050", "app:app.server"]
 
 ## 5 - Deploying to AWS: Demo time 💻
 
-- Creating an EC2 virtual machine
-- Buying a hostname
-- Setting up a sub domain
+- Setting up an EC2 virtual machine based on an Ubuntu AMI:
+    - installing docker
+    - installing docker-compose 
+    - setting up security groups for inbound traffic
+- Setting up hostname
 - Setting up an SSL certificate
 
 ## 6 - Next steps 🛠
