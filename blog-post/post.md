@@ -1014,20 +1014,20 @@ If you have any question you can ask it, as always, in the comment section below
 ## 4 - Dockerizing the application with Docker Compose 🐳
 
 
-Now that we have built our app, we wan't to deploy it. But it's actually easier said than done. Why ?
+Now that we have built our app, we're going to deploy it. But it's actually easier said than done. Why ?
 
-Well, installing all our dependencies (Flask, Peewee, PyTorch, and so on...) can be tedious, and this process can differ based on the host's OS. We also need to install a PostgreSQL database, wich can be laborious as well. Not to mention the services that you have to manually create to run all the processes.
+Well, installing all our dependencies (Flask, Peewee, PyTorch, and so on...) can be tedious, and this process can differ based on the host's OS (yours or any other cloud instance's). We also need to install a PostgreSQL database, wich can be laborious as well. Not to mention the services that you have to manually create to run all the processes.
 
-Wouldn'it be nice to have a tool that takes care of all this ? Here is where [Docker](https://www.docker.com/) comes in.
+Wouldn't it be nice to have a tool that takes care of all this ? Here is where [Docker](https://www.docker.com/) comes in.
 
 <p align="center" style="margin: 50px">
-    <img src="./assets/docker-logo.svg" width="25%">
+    <img src="./assets/docker-logo.svg" width="30%">
 </p>
 
 
 Docker is a popular tool to make it easier to build, deploy and run applications using containers. Containers allow us to package all the things that our application needs like such as libraries and other dependencies and ship it all as a single package. In this way, **our application can be run on any machine and have the same behavior**.
 
-Docker also provides a great tool to manage multi-containers applications: docker-compose.
+Docker also provides a great tool to manage multi-containers applications: **docker-compose**.
 With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration.
 
 Here is an example of a simple Docker Compose that runs two services (`web` and `redis`):
@@ -1047,12 +1047,15 @@ To learn more about Docker and Docker Compose, have a look at this [great tutori
 
 <hr/>
 
-So now let's see how we dockerized our app.
+Let's see now how we dockerized our app.
 
-First of all, we separated our project in three containers, each one being responsible for one of the app's services (`dash`, `api`, `db`).
+First of all, we separated our project in three containers, each one being responsible for one of the app's services 
 
+- **`db`**
+- **`api`** 
+- **`dash`** 
 
-To manage these containers we'll use Docker Compose. 
+To manage these containers we'll use, as you expect, Docker Compose.
 
 Here's our docker-compose.yml file, located at the root of our projet:
 
@@ -1097,47 +1100,56 @@ services:
 ```
 
 Let's have a closer look at our services. 
-**db :**
+- **```db```**
 
-For the database, docker-compose just pulls an official image from the [postgres dockerhub repository](https://hub.docker.com/_/postgres)
+To manage the database service, docker-compose first pulls an official image from the [postgres dockerhub repository](https://hub.docker.com/_/postgres)
 
 ```yml
-  db:
-    image: postgres # official postgres image
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    volumes:
-      - ~/pgdata:/var/lib/postgresql/data
-    restart: always
+db:
+  image: postgres # official postgres image 
+  environment:
+    - POSTGRES_DB=postgres
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=password
+  volumes:
+    - ~/pgdata:/var/lib/postgresql/data
+  restart: always
 ```
-We also pass connection information to the container as environment variables, and we map the `/var/lib/postgresql/data` directory of our container to the `~/pgdata` directory of the host. This allows data persistence.
+It then passes connection information to the container as environment variables, and maps the `/var/lib/postgresql/data` directory of the container to the `~/pgdata` directory of the host. This allows data persistence.
 
 You can also notice the `restart: always` policy, which ensures that our service will restart if it fails or if the host reboots.
 
 
-**api :**
+- **```api```**
+
+To manage the api service, docker-compose first launches a build of a custom image based on the Dockerfile located at `src/api`.
+Then it passes environment variables for the database connection.
 
 ```yml
-
-  api:
-    build:
-      context: src/api
-      dockerfile: Dockerfile
-    environment:
-      - ENVIRONMENT=prod
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    depends_on:
-      - db
-    restart: always
+api:
+  build:
+    context: src/api
+    dockerfile: Dockerfile
+  environment:
+    - ENVIRONMENT=prod
+    - POSTGRES_HOST=db
+    - POSTGRES_PORT=5432
+    - POSTGRES_DB=postgres
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=password
+  depends_on:
+    - db 
+  restart: always
 ```
 
-The api Dockerfile:
+This api service depends on the database service that has to start before, which we can expressed by 
+
+```yml
+depends_on:
+  - db
+```
+
+Now here's the Dockerfile to build the API docker image.
 
 ```Dockerfile
 FROM python:3.6
@@ -1153,10 +1165,32 @@ EXPOSE 5000
 
 CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
 ```
+When running this file, docker will pull an official python image from Dockerhub, copy a requirements.txt to /app/, install the dependencies, expose a port and run a web server.
 
-**dash :**
 
-The dash Dockerfile:
+- **```dash```**
+
+To manage the dash service, docker-compose first launches a build of a custom image based on the Dockerfile located at `src/dash`.
+Then it passes two environment variables. One of them is `API_URL`
+**Notice that the hostname of `API_URL` is exactly the service name `api`** 
+
+
+```yml
+dash:
+  build:
+    context: src/dash
+    dockerfile: Dockerfile
+  ports:
+    - "8050:8050"
+  environment:
+    - ENVIRONMENT=prod
+    - API_URL=http://api:5000/api
+  depends_on:
+    - api
+  restart: always
+```
+
+To build the image, Docker will be running this file, which basically the same as the previous one, except for the port.
 
 ```Dockerfile
 FROM python:3
@@ -1189,7 +1223,7 @@ In particular we wanted to:
 - Protect admin page with authentication.
 - Either use [Kubernetes](https://kubernetes.io) or [Amazon ECS](https://aws.amazon.com/ecs) to deploy the app on a cluster of containers, instead of on one single EC2 instance.
 - Use continuous deployment with [Travis CI](https://travis-ci.org)
-
+- Use a managed service such as [RDD](https://aws.amazon.com/rds/) for the database
 
 ## 7 - Conclusion  👋
 
