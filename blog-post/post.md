@@ -563,6 +563,7 @@ To run a PostgreSQL database for local development, you can either download Post
 docker pull postgres
 docker run --name postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=postgres -p 5432:5432 -d postgres
 ```
+If you are not familiar with docker yet, don't worry, we'll talk about it very soon.
 
 The two following commands allow to:
 - pull a [postgres docker image](https://hub.docker.com/_/postgres)  from Docker Hub
@@ -1012,15 +1013,48 @@ If you have any question you can ask it, as always, in the comment section below
 
 ## 4 - Dockerizing the application with Docker Compose 🐳
 
-We separated our project in multiple containers, each one being responsible for each of these micro services.
 
-- `api`: contains all the dependencies to run the api to communicate with the postgres database and serve the model for inference
-- `dash`: contains the dependencies to run the dash application
-- `db`: is based on the postgres official image to run the database
+Now that we have built our app, we wan't to deploy it. But it's actually easier said than done. Why ?
 
-To manage these three containers we'll use Docker Compose. With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration.
+Well, installing all our dependencies (Flask, Peewee, PyTorch, and so on...) can be tedious, and this process can differ based on the host's OS. We also need to install a PostgreSQL database, wich can be laborious as well. Not to mention the services that you have to manually create to run all the processes.
 
-Here's our configuration file:
+Wouldn'it be nice to have a tool that takes care of all this ? Here is where [Docker](https://www.docker.com/) comes in.
+
+<p align="center" style="margin: 50px">
+    <img src="./assets/docker-logo.svg" width="25%">
+</p>
+
+
+Docker is a popular tool to make it easier to build, deploy and run applications using containers. Containers allow us to package all the things that our application needs like such as libraries and other dependencies and ship it all as a single package. In this way, **our application can be run on any machine and have the same behavior**.
+
+Docker also provides a great tool to manage multi-containers applications: docker-compose.
+With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration.
+
+Here is an example of a simple Docker Compose that runs two services (`web` and `redis`):
+
+```yml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+  redis:
+    image: "redis:alpine"
+```
+
+To learn more about Docker and Docker Compose, have a look at this [great tutorial](https://docs.docker.com/compose/gettingstarted/)
+
+<hr/>
+
+So now let's see how we dockerized our app.
+
+First of all, we separated our project in three containers, each one being responsible for one of the app's services (`dash`, `api`, `db`).
+
+
+To manage these containers we'll use Docker Compose. 
+
+Here's our docker-compose.yml file, located at the root of our projet:
 
 ```yml
 version: '3'
@@ -1062,6 +1096,47 @@ services:
     restart: always
 ```
 
+Let's have a closer look at our services. 
+**db :**
+
+For the database, docker-compose just pulls an official image from the [postgres dockerhub repository](https://hub.docker.com/_/postgres)
+
+```yml
+  db:
+    image: postgres # official postgres image
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ~/pgdata:/var/lib/postgresql/data
+    restart: always
+```
+We also pass connection information to the container as environment variables, and we map the `/var/lib/postgresql/data` directory of our container to the `~/pgdata` directory of the host. This allows data persistence.
+
+You can also notice the `restart: always` policy, which ensures that our service will restart if it fails or if the host reboots.
+
+
+**api :**
+
+```yml
+
+  api:
+    build:
+      context: src/api
+      dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=prod
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    depends_on:
+      - db
+    restart: always
+```
+
 The api Dockerfile:
 
 ```Dockerfile
@@ -1078,6 +1153,8 @@ EXPOSE 5000
 
 CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
 ```
+
+**dash :**
 
 The dash Dockerfile:
 
@@ -1109,6 +1186,7 @@ When building this application, we thought of many improvements that we hadn't t
 In particular we wanted to:
 
 - Add server-side pagination for Admin Page and `GET /api/reviews` route.
+- Protect admin page with authentication.
 - Either use [Kubernetes](https://kubernetes.io) or [Amazon ECS](https://aws.amazon.com/ecs) to deploy the app on a cluster of containers, instead of on one single EC2 instance.
 - Use continuous deployment with [Travis CI](https://travis-ci.org)
 
