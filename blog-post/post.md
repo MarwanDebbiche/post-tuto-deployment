@@ -1057,7 +1057,7 @@ First of all, we separated our project in three containers, each one being respo
 
 To manage these containers we'll use, as you expect, Docker Compose.
 
-Here's our docker-compose.yml file, located at the root of our projet:
+Here's our docker-compose.yml file, located at the root of our project:
 
 ```yml
 version: '3'
@@ -1119,7 +1119,6 @@ It then passes connection information to the container as environment variables,
 
 You can also notice the `restart: always` policy, which ensures that our service will restart if it fails or if the host reboots.
 
-
 - **```api```**
 
 To manage the api service, docker-compose first launches a build of a custom image based on the Dockerfile located at `src/api`.
@@ -1142,7 +1141,7 @@ api:
   restart: always
 ```
 
-This api service depends on the database service that has to start before, which we can expressed by 
+This service depends on the database service, that has to start before the API. This is ensured by the `depends_on` clause:
 
 ```yml
 depends_on:
@@ -1152,7 +1151,7 @@ depends_on:
 Now here's the Dockerfile to build the API docker image.
 
 ```Dockerfile
-FROM python:3.6
+FROM python:3
 
 ADD requirements.txt /app/
 WORKDIR /app
@@ -1165,14 +1164,23 @@ EXPOSE 5000
 
 CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
 ```
-When running this file, docker will pull an official python image from Dockerhub, copy a requirements.txt to /app/, install the dependencies, expose a port and run a web server.
+When running this file, docker will pull an official python image from Dockerhub, copy a requirements.txt to /app/, install the dependencies using pip, expose a port and run a web server.
 
+Notice that we are using [gunicorn](https://gunicorn.org/) instead of just launching the flask app using the `python app.py` command.
+
+Indeed, Falsk's built-in server is a development only server, and should not be used in production.
+
+From the official [deployment documentation](https://flask.palletsprojects.com/en/1.1.x/tutorial/deploy/):
+
+*When running publicly rather than in development, you should not use the built-in development server (flask run). The development server is provided by Werkzeug for convenience, but is not designed to be particularly efficient, stable, or secure.*
+
+You can use any python production web server (tornado, gunicorn, ...) instead.
 
 - **```dash```**
 
-To manage the dash service, docker-compose first launches a build of a custom image based on the Dockerfile located at `src/dash`.
-Then it passes two environment variables. One of them is `API_URL`
-**Notice that the hostname of `API_URL` is exactly the service name `api`** 
+For the dash service, similarly to what has been done for the API, docker-compose launches a build of a custom image based on the Dockerfile located at `src/dash`.
+Then it passes two environment variables. One of them is `API_URL`.
+**Notice that the hostname of `API_URL` is the name of the `api` service**. 
 
 
 ```yml
@@ -1190,7 +1198,7 @@ dash:
   restart: always
 ```
 
-To build the image, Docker will be running this file, which basically the same as the previous one, except for the port.
+To build the image, Docker will be running this file, which is basically the same as the previous one, except for the port.
 
 ```Dockerfile
 FROM python:3
@@ -1208,12 +1216,101 @@ CMD ["gunicorn", "-b", "0.0.0.0:8050", "app:app.server"]
 
 ## 5 - Deploying to AWS: Demo time 💻
 
-- Setting up an EC2 virtual machine based on an Ubuntu AMI:
-    - installing docker
-    - installing docker-compose 
-    - setting up security groups for inbound traffic
-- Setting up hostname
-- Setting up an SSL certificate
+Let's first have a look at the global deployment architecture we designed: 
+
+<p align="center">
+    <img src="./assets/deployment-schema.png" width="100%">
+</p>
+
+Here's the workflow:
+
+When a user goes to [reviews.ai2prod.com](http://reviews.ai2prod.com) from his browser, a request is sent to the DNS server which in turn redirects it to a load balancer.
+
+The load balancer redirects its request to an EC2 instance inside a target group.
+
+Finally, when docker-compose receives the request on port 8050, it redirects it to the Dash container.
+
+So how did we build this workflow?
+
+Below are the main steps.
+
+**Deploy the app on an EC2 instance**
+
+So the very first step to our deployment journey is launching an instance to deploy our app on.
+
+
+To do this, go to the EC2 page of the [AWS Console](https://console.aws.amazon.com/ec2), and click n the "launch Instance".
+
+You will need to select an AMI. We used Amazon Linux 2, but you can choose any Linux based instance.
+
+<p align="center">
+    <img src="./assets/screenshot-launch-ec2-instance.png" width="100%">
+</p>
+
+Then you will need to choose an instance type. We went for a t3a.large but you could probably select a smaller one.
+
+You will also need to configure a security group as follows, so that you can ssh into your instance, and access the 8050 port, on which our dash app runs.
+
+<p align="center">
+    <img src="./assets/screenshot-security-group.png" width="100%">
+</p>
+
+Then you can finally launch the instance. If you need more explanations on how to launch an EC2 instance you can read [this tutorial](https://www.guru99.com/creating-amazon-ec2-instance.html).
+
+Now that we have our instance, let's ssh into it:
+```
+ssh -i path/to/key.pem ec2-user@public-ip-address
+```
+
+We can then install docker. Below are the installation instructions for Amazon Linux 2 instances. Please refer to the official Docker installation instructions for other OS.
+
+```
+sudo yum update -y
+sudo amazon-linux-extras install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+```
+You will need to log out and log back in.
+
+Then install docker compose:
+
+```
+sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+And test the install
+
+```
+$ docker-compose --version
+docker-compose version 1.24.1, build 4667896b
+```
+
+
+Then clone the git repository:
+```
+sudo yum install git
+git clone https://github.com/MarwanDebbiche/post-tuto-deployment.git
+```
+
+And finally we can run our app:
+```
+cd post-tuto-deployment
+docker-compose up --build -d
+```
+
+**Put the app behind a load balancer**
+Why :
+- loa
+
+- Create a load balancer (with a target group and a)
+
+**Use your own domain name**
+- Buying a domain name on Route 53
+- DNS registration on Route 53
+- Certificate on ACM
+
+The DNS registration is made using the [Route 53](https://aws.amazon.com/route53/) service.
 
 ## 6 - Next steps 🛠
 
