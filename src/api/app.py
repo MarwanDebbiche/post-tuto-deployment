@@ -7,7 +7,6 @@ from tqdm import tqdm
 from flask import Blueprint, request, jsonify, Flask
 import torch
 import torch.nn.functional as F
-import boto3
 import wget
 
 import db
