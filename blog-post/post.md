@@ -1225,19 +1225,14 @@ Let's first have a look at the global deployment architecture we designed:
 Here's the workflow:
 
 When a user goes to [reviews.ai2prod.com](http://reviews.ai2prod.com) from his browser, a request is sent to the DNS server which in turn redirects it to a load balancer.
-
 The load balancer redirects its request to an EC2 instance inside a target group.
-
 Finally, when docker-compose receives the request on port 8050, it redirects it to the Dash container.
 
-So how did we build this workflow?
-
-Below are the main steps.
+So how did we build this workflow? Below are the main steps.
 
 **Deploy the app on an EC2 instance**
 
-So the very first step to our deployment journey is launching an instance to deploy our app on.
-
+The very first step to our deployment journey is launching an instance to deploy our app on.
 
 To do this, go to the EC2 page of the [AWS Console](https://console.aws.amazon.com/ec2), and click n the "launch Instance".
 
@@ -1247,15 +1242,16 @@ You will need to select an AMI. We used Amazon Linux 2, but you can choose any L
     <img src="./assets/screenshot-launch-ec2-instance.png" width="100%">
 </p>
 
-Then you will need to choose an instance type. We went for a t3a.large but you could probably select a smaller one.
+You will then need to choose an instance type. We went for a t3a.large but you could probably select a smaller one.
 
-You will also need to configure a security group as follows, so that you can ssh into your instance, and access the 8050 port, on which our dash app runs.
+You will also need to configure a security group so that you can ssh into your instance, and access the 8050 port on which our dash app runs.
+Thisi is done as follows:
 
 <p align="center">
     <img src="./assets/screenshot-security-group.png" width="100%">
 </p>
 
-Then you can finally launch the instance. If you need more explanations on how to launch an EC2 instance you can read [this tutorial](https://www.guru99.com/creating-amazon-ec2-instance.html).
+You can finally launch the instance. If you need more explanations on how to launch an EC2 instance you can read [this tutorial](https://www.guru99.com/creating-amazon-ec2-instance.html).
 
 Now that we have our instance, let's ssh into it:
 ```
@@ -1270,7 +1266,8 @@ sudo amazon-linux-extras install docker
 sudo service docker start
 sudo usermod -a -G docker ec2-user
 ```
-You will need to log out and log back in.
+
+**You will need to log out and log back in.**
 
 Then install docker compose:
 
@@ -1300,10 +1297,6 @@ docker-compose up --build -d
 ```
 
 **Put the app behind a load balancer**
-Why :
-- loa
-
-- Create a load balancer (with a target group and a)
 
 **Use your own domain name**
 - Buying a domain name on Route 53
