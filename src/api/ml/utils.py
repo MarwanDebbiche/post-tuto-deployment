@@ -36,7 +36,7 @@ def predict_sentiment(model, text, alphabet, extra_characters, number_of_charact
     if num_classes == 3:
 
         if index == 0:
-            score = (0.33 - 0) * proba + 0
+            score = (0.33 - 0) * (1 - proba) + 0
 
         elif index == 1:
             score = (0.67 - 0.33) * proba + 0.33
