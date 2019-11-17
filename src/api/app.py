@@ -26,7 +26,7 @@ model = CharacterLevelCNN()
 if model_name not in os.listdir('./ml/models/'):
     print(f'downloading the trained model {model_name}')
     wget.download(
-        "https://github.com/ahmedbesbes/character-based-cnn/releases/download/english/model_en.pth",
+        "https://github.com/ahmedbesbes/character-based-cnn/releases/download/model_en_tp_amazon/model_tp_amazon_1014.pth",
         out=model_path
     )
 else:
