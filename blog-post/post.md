@@ -1283,7 +1283,7 @@ You will need to select an AMI. We used Amazon Linux 2, but you can choose any L
 You will then need to choose an instance type. We went for a t3a.large but you could probably select a smaller one.
 
 You will also need to configure a security group so that you can ssh into your instance, and access the 8050 port on which our dash app runs.
-Thisi is done as follows:
+This is done as follows:
 
 <p align="center">
     <img src="./assets/screenshot-security-group.png" width="100%">
@@ -1328,11 +1328,17 @@ sudo yum install git
 git clone https://github.com/MarwanDebbiche/post-tuto-deployment.git
 ```
 
-And finally we can run our app:
+And finally run the app:
 ```
 cd post-tuto-deployment
 docker-compose up --build -d
 ```
+
+Once it's running, you can access the dashboard from the browser by typing the following address:
+
+- http://your-ec2-public-DNS:8050
+
+We could stop here, but we wanted to use a cooler domain name, a subdomain for this app instead of a port, and an SSL certificate. These are optional configuration steps, but they're recommended if you want a polished product.
 
 **Put the app behind a load balancer**
 
