@@ -31,53 +31,55 @@ def load_data(args):
     labels = []
     for df_chunk in tqdm(chunks):
         aux_df = df_chunk.copy()
+        aux_df = aux_df.sample(frac=1)
         aux_df = aux_df[~aux_df[args.text_column].isnull()]
-        aux_df = aux_df[(aux_df[args.text_column].map(len) > 3)]
-                        # & (aux_df[args.text_column].map(len) < 600)]
+        aux_df = aux_df[(aux_df[args.text_column].map(len) > 1)]
         aux_df['processed_text'] = (aux_df[args.text_column]
                                     .map(lambda text: utils.process_text(args.steps, text)))
         texts += aux_df['processed_text'].tolist()
         labels += aux_df[args.label_column].tolist()
 
-    if args.group_labels == 'binarize':
-        '''
-        This part is adapted to the data I was dealing with
-        where I basically convert 5-star ratings to binary 
-        by discarding the number 3 and 4 and keeping 1, 2 and 5
+    if bool(args.group_labels):
 
-        1, 2 become the negative label
-        5 becomes the positive one
+        if bool(args.ignore_center):
 
-        '''
+            label_ignored = args.label_ignored
 
-        clean_data = [(text, label) for (text, label) in zip(
-            texts, labels) if label not in [3]]
+            clean_data = [(text, label) for (text, label) in zip(
+                texts, labels) if label not in [label_ignored]]
 
-        texts = [text for (text, label) in clean_data]
-        labels = [label for (text, label) in clean_data]
+            texts = [text for (text, label) in clean_data]
+            labels = [label for (text, label) in clean_data]
 
-        labels = list(
-            map(lambda l: {1: 0, 2: 0, 4:1, 5: 1}[l], labels))
+            labels = list(
+                map(lambda l: {1: 0, 2: 0, 4: 1, 5: 1}[l], labels))
 
-        count_minority = labels.count(0)
+        else:
+            labels = list(
+                map(lambda l: {1: 0, 2: 0, 3: 1, 4: 2, 5: 2}[l], labels))
+        
+    if bool(args.balance):
 
-        if bool(args.balance):
+        counter = Counter(labels)
+        keys = list(counter.keys())
+        values = list(counter.values())
+        count_minority = np.min(values)
 
-            balanced_texts = ([text for text, label in zip(texts, labels) if label == 0] +
-                              [text for text, label in zip(texts, labels) if label == 1][:int(args.ratio * count_minority)])
-            balanced_labels = ([label for text, label in zip(texts, labels) if label == 0] +
-                               [label for text, label in zip(texts, labels) if label == 1][:int(args.ratio * count_minority)])
+        balanced_labels = []
+        balanced_texts = []
 
-            texts = balanced_texts
-            labels = balanced_labels
+        for key in keys: 
+            balanced_texts += [text for text, label in zip(texts, labels) if label == key][:int(args.ratio * count_minority)]
+            balanced_labels += [label for text, label in zip(texts, labels) if label == key][:int(args.ratio * count_minority)] 
+
+        texts = balanced_texts
+        labels = balanced_labels
 
     number_of_classes = len(set(labels))
 
-    if number_of_classes > 2:
-        labels = [label - 1 for label in labels]
-
     print(
         f'data loaded successfully with {len(texts)} rows and {number_of_classes} labels')
+    print('Distribution of the classes', Counter(labels))
 
     sample_weights = get_sample_weights(labels)
 

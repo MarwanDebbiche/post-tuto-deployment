@@ -20,9 +20,9 @@ You can think of this as a crowd sourcing app of brand reviews with a sentiment 
 
 To build this application we'll follow these steps:
 
-- Collecting the data
-- Training a sentiment classifier
-- Building the web app
+- Collecting and scraping customer reviews data
+- Training a sentiment classifier using this data
+- Building a web app using Dash
 - Setting a REST API and a database
 - Dockerizing the app
 - Deploying to AWS
@@ -90,7 +90,7 @@ As you see, this is a top down tree structure. In order to scrape the reviews ou
 
 - Step 1️⃣: use Selenium to fetch the reviews pages of each company
 
-- Step 2️⃣: use Scrapy to extract reviews of all companies
+- Step 2️⃣: use Scrapy to extract reviews from each company page
 
 ### Scrape company urls with Selenium: step 1️⃣ 
 
@@ -488,7 +488,7 @@ Character CNN are interesting for various reasons since they have nice propertie
 
 That's all about the theory now !
 
-### How to train the model using PyTorch to achieve 95% accuracy 🔥
+### How to train the model using PyTorch  🔥
 
 In order to train a character level cnn, you'll find all the files you need under the `src/training/` folder.
 
@@ -507,20 +507,58 @@ To train our classifier, run the following commands:
 
 cd src/training/
 
-python train.py --data_path ../src/scraping/scrapy/comments_trustpilot_en.csv \
+python train.py --data_path ./data/tp_amazon.csv \ 
                 --validation_split 0.1 \
                 --label_column rating \
                 --text_column comment \
-                --group_labels 1 \ 
-                --max_length 500 \
+                --max_length 1014 \
                 --dropout_input 0 \
-                --model_name trustpilot \
-                --balance 1
+                --group_labels 1  \
+                --balance 1 \
+                --ignore_center 0 \
+                --model_name en_trustpilot \
+                --log_every 250
 ```
 
 When it's done, you can find the trained models in ```src/training/models``` directory.
 
-In terms of model performance on the data we collected for training, the best model was able to achieve **95% of accuracy** on the three classes on the validation set, which is pretty amazing.
+#### Model performance
+
+**On training set**
+
+On the training set we report the following metrics for the best model (epoch 5):
+
+<p align="center">
+    <img src="./assets/metrics_train.png" width="70%">
+</p>
+
+Here's the corresponding tensorboard training logs:
+
+<p align="center">
+    <img src="./assets/tensorboard_train.png" width="90%">
+</p>
+
+**On validation set**
+
+On the validation set we report the following metrics for the best model (epoch 5):
+
+<p align="center">
+    <img src="./assets/metrics_val.png" width="70%">
+</p>
+
+Here's the corresponding validation tensorboard logs:
+
+<p align="center">
+    <img src="./assets/tensorboard_test.png" width="90%">
+</p>
+
+<hr>
+
+Few remarks according to these figures:
+
+- The model is learning and correctly converging as we see it through the decreasing losses
+- The model is very good at identifying good and bad reviews. It has a slightly lower performance on average reviews though. This can be explained by the core nature of these reviews. They are more nuanced in general and easily, even for a human, mis-interpreted as bad or good reviews.
+- A three class classification problem is more difficult than a binary one. In fact, if you focus on a binary classification problem, you can reach 95% accuracy. Nevertheless, training a 3 class classifier has the advantage of identifying mitigated reviews which can be interesting.
 
 To learn more about the training arguments and options, please check out the original <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a>.
 

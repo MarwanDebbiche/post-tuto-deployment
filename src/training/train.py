@@ -23,7 +23,7 @@ from src.model import CharacterLevelCNN
 from src.focal_loss import FocalLoss
 
 
-def train(model, training_generator, optimizer, criterion, epoch, writer, log_file, scheduler, args, print_every=25):
+def train(model, training_generator, optimizer, criterion, epoch, writer, log_file, scheduler, class_names, args, print_every=25):
     model.train()
     losses = utils.AverageMeter()
     accuracies = utils.AverageMeter()
@@ -86,6 +86,16 @@ def train(model, training_generator, optimizer, criterion, epoch, writer, log_fi
                 losses.avg,
                 accuracies.avg
             ))
+
+            if bool(args.log_f1):
+                intermediate_report = classification_report(
+                    y_true, y_pred, output_dict=True)
+
+                f1_by_class = 'F1 Scores by class: '
+                for class_name in class_names:
+                    f1_by_class += f"{class_name} : {np.round(intermediate_report[class_name]['f1-score'], 4)} |"
+
+                print(f1_by_class)
 
     f1_train = f1_score(y_true, y_pred, average='weighted')
 
@@ -208,6 +218,9 @@ def run(args, both_cases=False):
 
     texts, labels, number_of_classes, sample_weights = load_data(args)
 
+    class_names = sorted(list(set(labels)))
+    class_names = [str(class_name) for class_name in class_names]
+
     train_texts, val_texts, train_labels, val_labels, train_sample_weights, _ = train_test_split(texts,
                                                                                                  labels,
                                                                                                  sample_weights,
@@ -289,6 +302,7 @@ def run(args, both_cases=False):
                                                            writer,
                                                            log_file,
                                                            scheduler,
+                                                           class_names,
                                                            args,
                                                            args.log_every)
 
@@ -321,17 +335,17 @@ def run(args, both_cases=False):
             best_epoch = epoch
             if args.checkpoint == 1:
                 torch.save(model.state_dict(), args.output + 'model_{}_epoch_{}_maxlen_{}_lr_{}_loss_{}_acc_{}_f1_{}.pth'.format(args.model_name,
-                                                                                                                                  epoch,
-                                                                                                                                  args.max_length,
-                                                                                                                                  optimizer.state_dict()[
-                                                                                                                                      'param_groups'][0]['lr'],
-                                                                                                                                  round(
-                                                                                                                                      validation_loss, 4),
-                                                                                                                                  round(
-                                                                                                                                      validation_accuracy, 4),
-                                                                                                                                  round(
-                                                                                                                                      validation_f1, 4)
-                                                                                                                                  ))
+                                                                                                                                 epoch,
+                                                                                                                                 args.max_length,
+                                                                                                                                 optimizer.state_dict()[
+                                                                                                                                     'param_groups'][0]['lr'],
+                                                                                                                                 round(
+                                                                                                                                     validation_loss, 4),
+                                                                                                                                 round(
+                                                                                                                                     validation_accuracy, 4),
+                                                                                                                                 round(
+                                                                                                                                     validation_f1, 4)
+                                                                                                                                 ))
 
         if bool(args.early_stopping):
             if epoch - best_epoch > args.patience > 0:
@@ -353,8 +367,9 @@ if __name__ == "__main__":
     parser.add_argument('--encoding', type=str, default='utf-8')
     parser.add_argument('--sep', type=str, default=',')
     parser.add_argument('--steps', nargs='+', default=['lower'])
-    parser.add_argument('--group_labels', type=str,
-                        default=None, choices=[None, 'binarize'])
+    parser.add_argument('--group_labels', type=int, default=1, choices=[0, 1])
+    parser.add_argument('--ignore_center', type=int, default=1, choices=[0, 1])
+    parser.add_argument('--label_ignored', type=int, default=None)
     parser.add_argument('--ratio', type=float, default=1)
     parser.add_argument('--balance', type=int, default=0, choices=[0, 1])
     parser.add_argument('--use_sampler', type=int,
@@ -390,6 +405,7 @@ if __name__ == "__main__":
     parser.add_argument('--workers', type=int, default=1)
     parser.add_argument('--log_path', type=str, default='./logs/')
     parser.add_argument('--log_every', type=int, default=100)
+    parser.add_argument('--log_f1', type=int, default=1, choices=[0, 1])
     parser.add_argument('--flush_history', type=int,
                         default=1, choices=[0, 1])
     parser.add_argument('--output', type=str, default='./models/')
