@@ -522,7 +522,7 @@ python train.py --data_path ./data/tp_amazon.csv \
 
 When it's done, you can find the trained models in ```src/training/models``` directory.
 
-#### Model performance
+#### Model performance 🎯
 
 **On training set**
 
@@ -556,13 +556,13 @@ Here's the corresponding validation tensorboard logs:
 
 Few remarks according to these figures:
 
-- The model is learning and correctly converging as we see it through the decreasing losses
+- The model is learning and correctly converging as we see it in the decreasing losses
 - The model is very good at identifying good and bad reviews. It has a slightly lower performance on average reviews though. This can be explained by the core nature of these reviews. They are more nuanced in general and easily, even for a human, mis-interpreted as bad or good reviews.
 - A three class classification problem is more difficult than a binary one. In fact, if you focus on a binary classification problem, you can reach 95% accuracy. Nevertheless, training a 3 class classifier has the advantage of identifying mitigated reviews which can be interesting.
 
 To learn more about the training arguments and options, please check out the original <a href="https://github.com/ahmedbesbes/character-based-cnn">repo</a>.
 
-From now on, we'll use the trained model that is saved as a release <a href="https://github.com/ahmedbesbes/character-based-cnn/releases/download/english/model_en.pth">here</a>. When running the app for the first time, it'll get downloaded from that link and locally saved (in the container) for the inference.
+From now on, we'll use the trained model that is saved as a release <a href="https://github.com/ahmedbesbes/character-based-cnn/releases/download/model_en_tp_amazon/model_tp_amazon_1014.pth">here</a>. When running the app for the first time, it'll get downloaded from that link and locally saved (in the container) for the inference.
 
 ## 3 - Building an interactive web app 📲 with Dash, Flask and PostgeSQL
 
