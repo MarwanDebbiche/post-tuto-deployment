@@ -412,7 +412,7 @@ Now that the data is collected, we're ready to train a sentiment classifier to p
 
 There are a wide range of possible models to use. The one we'll be training is a character based convolutional neural network. It's based on this <a href="https://arxiv.org/pdf/1509.01626.pdf">paper</a> and it proved to be really good on text classification tasks such as binary classification of Amazon Reviews datasets.
 
-The question you'd be asking up-front though is the following: how would you use CNNs for text classification ? Aren't these architectures specifically designed for image data ?
+The question you'd be asking up-front though is the following: how would you use CNNs for text classification? Aren't these architectures specifically designed for image data?
 
 Well, the truth is, CNN are way more versatile and their application can extend the scope of image classification. In fact, they are also able to capture sequential information that is inherent to text data. The only only trick here is to efficiently represent the input text.
 
@@ -891,7 +891,7 @@ Here's what the app looks like in the browser when you visit: localhost:8050
     <img src="./assets/dash_hello_world.png" width="90%">
 </p>
 
-Pretty neat right ?
+Pretty neat right?
 
 Dash allows you to add many other UI components very easily such as buttons, sliders, multi selectors etc. You can learn more about [dash-core-components](https://dash.plot.ly/dash-core-components) and [dash-html-components](https://dash.plot.ly/dash-html-components) from the official documentation.
 
@@ -1052,11 +1052,11 @@ If you have any question you can ask it, as always, in the comment section below
 ## 4 - Dockerizing the application with Docker Compose 🐳
 
 
-Now that we have built our app, we're going to deploy it. But it's actually easier said than done. Why ?
+Now that we have built our app, we're going to deploy it. But it's actually easier said than done. Why?
 
 Well, installing all our dependencies (Flask, Peewee, PyTorch, and so on...) can be tedious, and this process can differ based on the host's OS (yours or any other cloud instance's). We also need to install a PostgreSQL database, wich can be laborious as well. Not to mention the services that you have to manually create to run all the processes.
 
-Wouldn't it be nice to have a tool that takes care of all this ? Here is where [Docker](https://www.docker.com/) comes in.
+Wouldn't it be nice to have a tool that takes care of all this? Here is where [Docker](https://www.docker.com/) comes in.
 
 <p align="center" style="margin: 50px">
     <img src="./assets/docker-logo.svg" width="30%">
@@ -1305,7 +1305,7 @@ sudo service docker start
 sudo usermod -a -G docker ec2-user
 ```
 
-**You will need to log out and log back in.**
+⚠️ You will need to log out and log back in. ⚠️
 
 Then install docker compose:
 
@@ -1338,9 +1338,52 @@ Once it's running, you can access the dashboard from the browser by typing the f
 
 - http://your-ec2-public-DNS:8050
 
-We could stop here, but we wanted to use a cooler domain name, a subdomain for this app instead of a port, and an SSL certificate. These are optional configuration steps, but they're recommended if you want a polished product.
+We could stop here, but we wanted to use a cooler domain name, a subdomain for this app, and an SSL certificate. These are optional configuration steps, but they're recommended if you want a polished product.
 
-**Put the app behind a load balancer**
+**Buy your own domain name**
+
+First, you will need to buy a cool domain name. You can choose any domain registrar, but using AWS [Route53](https://aws.amazon.com/route53) will make things easier as we are deploying the app on AWS.
+
+Go the Route53 page of the AWS console, and click on "Domain registration".
+
+<p align="center">
+    <img src="./assets/screenshot-route53-homepage.png" width="100%">
+</p>
+
+Then, follow the domain purchase process which is quite straightforward. The hardest step is finding an available name that you like.
+
+**Request an SSL certificate using ACM**
+
+Once you have purchased your own domain name on Route53, you can easily request an SSL certificate using [AWS Certificate Manager](https://aws.amazon.com/certificate-manager).
+
+
+
+**Put the app behind an Application Load Balancer**
+
+Load balancers are, as their names suggest, usually used to balance the load between several instances. However, in our case, we deployed our app to one instance only, so we didn't need any load balancing. In fact, we used an [AWS ALB](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) (Application Load Balancer) as a reverse proxy, to redirect from HTTPS and HTTP ports (443 and 80 respectively) to our Dash app port (8050).
+
+It also makes it super easy to register a record set on Route53 to associate a subdomain with our ALB. We will talk about that very soon.
+
+
+To create and configure your Application Load Balancer go to the [Load Balancing tab]() of the EC2 page in the AWS console and click on the "Create Load Balancer" button:
+
+
+<p align="center">
+    <img src="./assets/screenshot-create-a-load-balancer.png" width="80%">
+</p>
+
+Then you will need to select the type of load balancer you want. We won't go into too much details here, but for most use-cases you will need an Application Load Balancer.
+
+<p align="center">
+    <img src="./assets/screenshot-select-load-balancer-type.png" width="80%">
+</p>
+
+Then you will have to:
+- Give a name the load balancer
+- Select the "internet-facing" scheme
+- Add listeners for both HTTP and HTTPS
+- Select the Availability Zones to enable for your load balancer (if in doubt you can select them all)
+
 
 **Use your own domain name**
 - Buying a domain name on Route 53
