@@ -1350,7 +1350,7 @@ Go the Route53 page of the AWS console, and click on "Domain registration".
     <img src="./assets/screenshot-route53-homepage.png" width="100%">
 </p>
 
-Then, follow the domain purchase process which is quite straightforward. The hardest step is finding an available name that you like.
+Then, follow the domain purchase process which is quite straightforward. The hardest step is finding an available domain ame that you like.
 
 **Request an SSL certificate using ACM**
 
