@@ -1356,14 +1356,27 @@ Then, follow the domain purchase process which is quite straightforward. The har
 
 Once you have purchased your own domain name on Route53, you can easily request an SSL certificate using [AWS Certificate Manager](https://aws.amazon.com/certificate-manager).
 
+<p align="center">
+    <img src="./assets/screenshot-request-certificate-acm.png" width="100%">
+</p>
 
+You will need to enter the list of subdomains that you wish to protect with the certificate (for exemple `mycooldomain.com` and `*.mycooldomain.com`).
+
+Then, if you registered your domain on Route53, the remainder of the process is quite simple:
+
+- Choose DNS Validation
+- Confirm
+- Then AWS will offer to automatically create a CNAME record in Route53 to validate the certificate.
+
+<p align="center">
+    <img src="./assets/screenshot-acm-create-record.png" width="100%">
+</p>
+
+According to the [documentation](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html), it can then take a few hours for the certificate to be issued. Although from our own experience, it usually doesn't take longer than 30 minutes.
 
 **Put the app behind an Application Load Balancer**
 
-Load balancers are, as their names suggest, usually used to balance the load between several instances. However, in our case, we deployed our app to one instance only, so we didn't need any load balancing. In fact, we used an [AWS ALB](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) (Application Load Balancer) as a reverse proxy, to redirect from HTTPS and HTTP ports (443 and 80 respectively) to our Dash app port (8050).
-
-It also makes it super easy to register a record set on Route53 to associate a subdomain with our ALB. We will talk about that very soon.
-
+Load balancers are, as their names suggest, usually used to balance the load between several instances. However, in our case, we deployed our app to one instance only, so we didn't need any load balancing. In fact, we used an [AWS ALB](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) (Application Load Balancer) as a reverse proxy, to route the traffic from HTTPS and HTTP ports (443 and 80 respectively) to our Dash app port (8050).
 
 To create and configure your Application Load Balancer go to the [Load Balancing tab]() of the EC2 page in the AWS console and click on the "Create Load Balancer" button:
 
@@ -1384,13 +1397,48 @@ Then you will have to:
 - Add listeners for both HTTP and HTTPS
 - Select the Availability Zones to enable for your load balancer (if in doubt you can select them all)
 
+As you added an HTTPS listener, you will be asked to select or import a certificate. Select the one you requested using ACM:
 
-**Use your own domain name**
-- Buying a domain name on Route 53
-- DNS registration on Route 53
-- Certificate on ACM
+<p align="center">
+    <img src="./assets/screenshot-load-balancer-select-certificate.png" width="100%">
+</p>
 
-The DNS registration is made using the [Route 53](https://aws.amazon.com/route53/) service.
+Then you will need to configure the security groups for your ALB. Create a new security group for your load balancer, with ports 80 (HTTP) and 443 (HTTPS) opened.
+
+Once this is done, remains the final step: creating your target group for your load balancer.
+
+**TBC**
+
+<p align="center">
+    <img src="./assets/screenshot-target-group-configure.png" width="100%">
+</p>
+
+**TBC**
+
+<p align="center">
+    <img src="./assets/screenshot-target-group-add-instance.png" width="100%">
+</p>
+
+You can finally create your load balancer.
+
+You can test it by goint to your-load-balancer-dns-name-amazonaws.com, you should see your app!
+
+BUT, despite the fact that we have used the certificate issued by ACM, it still says that the connection is not secure!
+
+Don't worry, that's perfectly fine. If you remember correctly, the certificate we requested protects `mycooldomain.com`, not `your-load-balancer-dns-name-amazonaws.com`.
+
+So we need to create a record set in Route53 ... **TBC**
+
+**Create a record set in Route53**
+
+**TBC**
+
+Final recap schema :
+
+<p align="center">
+    <img src="./assets/schema-dns-load-balancer.png" width="100%">
+</p>
+
 
 ## 6 - Next steps 🛠
 
