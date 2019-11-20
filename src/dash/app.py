@@ -17,13 +17,21 @@ external_stylesheets = [
     'https://fonts.googleapis.com/css?family=Roboto&display=swap'
 ]
 
+external_script = "https://raw.githubusercontent.com/MarwanDebbiche/post-tuto-deployment/master/src/dash/assets/gtag.js"
+
 app = dash.Dash(
-    __name__, external_stylesheets=external_stylesheets,
+    __name__, 
+    external_stylesheets=external_stylesheets,
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ],
     suppress_callback_exceptions=True
 )
+
+app.scripts.append_script({
+    "external_url": external_script
+})
+
 app.title = 'Reviews AI2Prod'
 
 companies = pd.read_csv('./csv/companies_forbes.csv')
