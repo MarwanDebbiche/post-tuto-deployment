@@ -66,7 +66,7 @@ python app.py
 ```
 
 
-#### How to contribute 😁
+### How to contribute 😁
 
 Feel free to contribute ! Report any bugs in the issue section.
 
@@ -79,6 +79,6 @@ Here are the few things we spotted and we wished to add.
 - [ ] Use a managed service such as [RDD](https://aws.amazon.com/rds/) for the database
 
 
-#### Licence
+### Licence
 
 MIT
