@@ -2,14 +2,14 @@
 
 ## Introduction
 
-*This started out as a challenge. With a [friend](http://marwandebbiche.com) of mine, we wanted to see if it was possible to build something and push it to production. In 3 weeks. This is our story.*
+*This started out as a challenge. With a [friend](http://marwandebbiche.com) of mine, we wanted to see if it was possible to build something from scratch and push it to production. In 3 weeks. This is our story.*
 
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun 😀.
 
 Before we begin, let's have a look at the app we'll be building:
 
 <p align="center">
-    <img src="./assets/app.gif">
+    <img src="./assets/app.gif"  style="margin:15px">
 </p>
 
 As you see, this web app allows a user to evaluate random brands by writing reviews. While writing, the user will see the sentiment score of his input updating in real-time along with a proposed rating from 1 to 5.
@@ -20,12 +20,12 @@ You can think of this as a crowd sourcing app of brand reviews with a sentiment 
 
 To build this application we'll follow these steps:
 
-- Collecting and scraping customer reviews data
-- Training a sentiment classifier using this data
-- Building a web app using Dash
-- Setting a REST API and a database
-- Dockerizing the app
-- Deploying to AWS
+- Collecting and scraping customer reviews data using Selenium and Scrapy
+- Training a deep learning sentiment classifier on this data using PyTorch
+- Building an interactive web app using Dash
+- Setting a REST API and a Postgres database
+- Dockerizing the app using Docker Compose
+- Deploying to AWS 
 
 All the code is available in our github <a href="https://github.com/MarwanDebbiche/post-tuto-deployment">repository</a> and organized in independant directories, so you can check it, run it and improve it.
 
@@ -33,7 +33,7 @@ Let's get started! 💻
 
 ## 1 - Scraping the data from Trustpilot with Selenium and Scrapy 🧹
 
-***❗Disclaimer: The scripts below are meant for educational purposes only: scrape responsibly.***
+**⚠️ Disclaimer: The scripts below are meant for educational purposes only: scrape responsibly.**
 
 In order to train a sentiment classifier, we need data. We can sure download open source datasets for sentiment analysis tasks such as <a href="http://jmcauley.ucsd.edu/data/amazon/"> Amazon Polarity</a> or <a href="https://www.kaggle.com/iarunava/imdb-movie-reviews-dataset">IMDB</a> movie reviews but for the purpose of this tutorial, **we'll build our own dataset**. We'll scrape customer reviews from Trustpilot. 
 
@@ -41,14 +41,14 @@ Trustpilot.com is a consumer review website founded in Denmark in 2007. It hosts
 
 
 <p align="center">
-  <img src="./assets/truspilot.png" width="90%">
+  <img src="./assets/truspilot.png" width="90%" style="margin:15px">
 </p>
 
 
 Trustpilot is an interesting source because each customer review is associated with a number of stars.
 
 <p align="center">
-  <img src="./assets/review_label.png" width="70%">
+  <img src="./assets/review_label.png" width="70%" style="margin:15px">
 </p>
 
 By leveraging this data, we are able to map each review to a sentiment class. 
@@ -65,30 +65,30 @@ In order to scrape customer reviews from trustpilot, we first have to understand
 Trustpilot is organized by categories of businesses.
 
 <p align="center">
-  <img src="./assets/1-categories.png" width="80%">
+  <img src="./assets/1-categories.png" width="80%" style="margin:15px">
 </p>
 
 Each category is divided into sub-categories.
 
 <p align="center">
-  <img src="./assets/2-subcategories.png" width="80%">
+  <img src="./assets/2-subcategories.png" width="80%" style="margin:15px">
 </p>
 
 Each sub-category is divided into companies.
 
 <p align="center">
-  <img src="./assets/3-companies.png" width="80%">
+  <img src="./assets/3-companies.png" width="80%" style="margin:15px">
 </p>
 
 And then each company has its own set of reviews, usually spread over many pages.
 
 <p align="center">
-  <img src="./assets/4-reviews.png" width="80%">
+  <img src="./assets/4-reviews.png" width="80%" style="margin:15px">
 </p>
 
 As you see, this is a top down tree structure. In order to scrape the reviews out of it, we'll proceed in two steps.
 
-- Step 1️⃣: use Selenium to fetch the reviews pages of each company
+- Step 1️⃣: use Selenium to fetch each company page url
 
 - Step 2️⃣: use Scrapy to extract reviews from each company page
 
@@ -134,12 +134,12 @@ We start by fetching the sub-category URLs nested inside each category.
 If you open up your browser and inspect the source code, you'll find out 22 category blocks (on the right) located in `div` objects that have a `class` attribute equal to  `category-object`
 
 <p align="center">
-    <img src="./assets/5-category_block.png" width="80%">
+    <img src="./assets/5-category_block.png" width="80%" style="margin:15px">
 </p>
 
 Each category has its own set of sub-categories. Those are located in `div` objects that have `class` attributes equal to `child-category`. We are interested in finding the urls of these subcategories.
 <p align="center">
-    <img src="./assets/6-nested_urls.png" width="80%">
+    <img src="./assets/6-nested_urls.png" width="80%" style="margin:15px">
 </p>
 
 
@@ -165,7 +165,7 @@ Now comes the selenium part: we'll need to loop over the companies of each sub-c
 Remember, companies are presented inside each sub-category like this:
 
 <p align="center">
-    <img src="./assets/3-companies.png" width="80%">
+    <img src="./assets/3-companies.png" width="80%" style="margin:15px">
 </p>
 
 We first define a function to fetch company urls of a given subcategory:
@@ -266,7 +266,7 @@ df_consolidated_data.to_csv('./exports/consolidate_company_urls.csv', index=Fals
 And here's what the data looks like:
 
 <p align="center">
-    <img src="./assets/url_companies.png" width="80%">
+    <img src="./assets/url_companies.png" width="80%" style="margin:15px">
 </p>
 
 Pretty neat right? Now we'll have to go through the reviews listed in each one of those urls.
@@ -419,7 +419,7 @@ Well, the truth is, CNN are way more versatile and their application can extend 
 To see how this is done, imagine the following tweet:
 
 <p align="center">
-    <img src="./assets/tweet.png" width="60%">
+    <img src="./assets/tweet.png" width="60%" style="margin:15px">
 </p>
 
 Assuming an alphabet of size 70 containing the english letters and the special characters and an arbitrary maximum length of 140, one possible representation of this sentence is a (70, 140) matrix where each column is a one hot vector indiciating the position of a given character in the alphabet and 140 being the maximum length of tweets. This porcess is called **quantization**.
@@ -429,7 +429,7 @@ Note that if a sentence is too long, the representation truncates up to the firs
 So what to do now with this representation?
 
 <p align="center">
-    <img src="./assets/tweet_matrix.png" width="60%">
+    <img src="./assets/tweet_matrix.png" width="60%" style="margin:15px">
 </p>
 
 **Feed it to a CNN for classification, obviously 😁**
@@ -444,7 +444,7 @@ Unlike 2D-convolutions that make a 2D kernel slide horizontally and vertically o
 The diagram below shows the architecture we'll be using: 
 
 <p align="center">
-    <img src="./assets/character_cnn_architecture.png" width="80%">
+    <img src="./assets/character_cnn_architecture.png" width="80%" style="margin:15px">
 </p>
 
 It has 6 convolutional layers:
@@ -474,7 +474,7 @@ To learn more about character level CNN and how they work, you can watch this vi
 
 <!-- insert my youtube video here -->
 <p align="center">
-    <iframe width="600" height="400" src="https://www.youtube.com/embed/CNY8VjJt-iQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="600" height="400" src="https://www.youtube.com/embed/CNY8VjJt-iQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen  style="margin:15px"></iframe>
 </p>
 
 Character CNN are interesting for various reasons since they have nice properties 💡
@@ -529,13 +529,13 @@ When it's done, you can find the trained models in ```src/training/models``` dir
 On the training set we report the following metrics for the best model (epoch 5):
 
 <p align="center">
-    <img src="./assets/metrics_train.png" width="70%">
+    <img src="./assets/metrics_train.png" width="50%" style="margin:15px">
 </p>
 
 Here's the corresponding tensorboard training logs:
 
 <p align="center">
-    <img src="./assets/tensorboard_train.png" width="90%">
+    <img src="./assets/tensorboard_train.png" width="90%" style="margin:15px">
 </p>
 
 **On validation set**
@@ -543,13 +543,13 @@ Here's the corresponding tensorboard training logs:
 On the validation set we report the following metrics for the best model (epoch 5):
 
 <p align="center">
-    <img src="./assets/metrics_val.png" width="70%">
+    <img src="./assets/metrics_val.png" width="50%" style="margin:15px">
 </p>
 
 Here's the corresponding validation tensorboard logs:
 
 <p align="center">
-    <img src="./assets/tensorboard_test.png" width="90%">
+    <img src="./assets/tensorboard_test.png" width="90%" style="margin:15px">
 </p>
 
 <hr>
@@ -574,7 +574,7 @@ Here is a schema of our app architecture:
 
 
 <p align="center">
-    <img src="./assets/7-application_schema.png" width="80%">
+    <img src="./assets/7-application_schema.png" width="80%" style="margin:15px">
 </p>
 
 As you can see, there are four building blocks in our app:
@@ -888,7 +888,7 @@ If you're experienced with Flask, you'll notice some similarities here. If fact,
 Here's what the app looks like in the browser when you visit: localhost:8050
 
 <p align="center">
-    <img src="./assets/dash_hello_world.png" width="90%">
+    <img src="./assets/dash_hello_world.png" width="90%" style="margin:15px">
 </p>
 
 Pretty neat right?
@@ -931,13 +931,13 @@ Now back to our app !
 Here's what it looks like. Each red arrow indicates the id of each html element.
 
 <p align="center">
-    <img src="./assets/app_with_elements.png" width="70%">
+    <img src="./assets/app_with_elements.png" width="70%" style="margin:15px">
 </p>
 
 These elements obviously interact between each other. To materialize this, we defined two callback functions which can be visualized in the following graph.
 
 <p align="center">
-    <img src="./assets/callbacks.png" width="70%">
+    <img src="./assets/callbacks.png" width="70%" style="margin:15px">
 </p>
 
 
@@ -1059,7 +1059,7 @@ Well, installing all our dependencies (Flask, Peewee, PyTorch, and so on...) can
 Wouldn't it be nice to have a tool that takes care of all this? Here is where [Docker](https://www.docker.com/) comes in.
 
 <p align="center" style="margin: 50px">
-    <img src="./assets/docker-logo.svg" width="30%">
+    <img src="./assets/docker-logo.svg" width="30%" style="margin:15px">
 </p>
 
 
@@ -1257,7 +1257,7 @@ CMD ["gunicorn", "-b", "0.0.0.0:8050", "app:app.server"]
 Let's first have a look at the global deployment architecture we designed: 
 
 <p align="center">
-    <img src="./assets/deployment-schema.png" width="100%">
+    <img src="./assets/deployment-schema.png" width="80%"  style="margin:15px">
 </p>
 
 Here's the workflow:
@@ -1277,7 +1277,7 @@ To do this, go to the EC2 page of the [AWS Console](https://console.aws.amazon.c
 You will need to select an AMI. We used Amazon Linux 2, but you can choose any Linux based instance.
 
 <p align="center">
-    <img src="./assets/screenshot-launch-ec2-instance.png" width="100%">
+    <img src="./assets/screenshot-launch-ec2-instance.png" width="80%"  style="margin:15px">
 </p>
 
 You will then need to choose an instance type. We went for a t3a.large but you could probably select a smaller one.
@@ -1286,7 +1286,7 @@ You will also need to configure a security group so that you can ssh into your i
 This is done as follows:
 
 <p align="center">
-    <img src="./assets/screenshot-security-group.png" width="100%">
+    <img src="./assets/screenshot-security-group.png" width="80%"  style="margin:15px">
 </p>
 
 You can finally launch the instance. If you need more explanations on how to launch an EC2 instance you can read [this tutorial](https://www.guru99.com/creating-amazon-ec2-instance.html).
@@ -1347,7 +1347,7 @@ First, you will need to buy a cool domain name. You can choose any domain regist
 Go the Route53 page of the AWS console, and click on "Domain registration".
 
 <p align="center">
-    <img src="./assets/screenshot-route53-homepage.png" width="100%">
+    <img src="./assets/screenshot-route53-homepage.png" width="80%" style="margin:15px">
 </p>
 
 Then, follow the domain purchase process which is quite straightforward. The hardest step is finding an available domain ame that you like.
@@ -1357,7 +1357,7 @@ Then, follow the domain purchase process which is quite straightforward. The har
 Once you have purchased your own domain name on Route53, you can easily request an SSL certificate using [AWS Certificate Manager](https://aws.amazon.com/certificate-manager).
 
 <p align="center">
-    <img src="./assets/screenshot-request-certificate-acm.png" width="100%">
+    <img src="./assets/screenshot-request-certificate-acm.png" width="80%" style="margin:15px">
 </p>
 
 You will need to enter the list of subdomains that you wish to protect with the certificate (for exemple `mycooldomain.com` and `*.mycooldomain.com`).
@@ -1369,7 +1369,7 @@ Then, if you registered your domain on Route53, the remainder of the process is 
 - Then AWS will offer to automatically create a CNAME record in Route53 to validate the certificate.
 
 <p align="center">
-    <img src="./assets/screenshot-acm-create-record.png" width="100%">
+    <img src="./assets/screenshot-acm-create-record.png" width="80%" style="margin:15px">
 </p>
 
 According to the [documentation](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html), it can then take a few hours for the certificate to be issued. Although from our own experience, it usually doesn't take longer than 30 minutes.
@@ -1382,13 +1382,13 @@ To create and configure your Application Load Balancer go to the [Load Balancing
 
 
 <p align="center">
-    <img src="./assets/screenshot-create-a-load-balancer.png" width="80%">
+    <img src="./assets/screenshot-create-a-load-balancer.png" width="80%" style="margin:15px">
 </p>
 
 Then you will need to select the type of load balancer you want. We won't go into too much details here, but for most use-cases you will need an Application Load Balancer.
 
 <p align="center">
-    <img src="./assets/screenshot-select-load-balancer-type.png" width="80%">
+    <img src="./assets/screenshot-select-load-balancer-type.png" width="80%" style="margin:15px">
 </p>
 
 Then you will have to:
@@ -1400,7 +1400,7 @@ Then you will have to:
 As you added an HTTPS listener, you will be asked to select or import a certificate. Select the one you requested using ACM:
 
 <p align="center">
-    <img src="./assets/screenshot-load-balancer-select-certificate.png" width="100%">
+    <img src="./assets/screenshot-load-balancer-select-certificate.png" width="80%" style="margin:15px">
 </p>
 
 Then you will need to configure the security groups for your ALB. Create a new security group for your load balancer, with ports 80 (HTTP) and 443 (HTTPS) opened.
@@ -1410,13 +1410,13 @@ Once this is done, remains the final step: creating your target group for your l
 To do that you will need to specify the port on which the traffic from the load balancer should be routed. In our case this is our Dash app's port, 8050:
 
 <p align="center">
-    <img src="./assets/screenshot-target-group-configure.png" width="100%">
+    <img src="./assets/screenshot-target-group-configure.png" width="80%" style="margin:15px">
 </p>
 
 Now you can add the EC2 instance on which we deployed the app as a registered target for the group:
 
 <p align="center">
-    <img src="./assets/screenshot-target-group-add-instance.png" width="100%">
+    <img src="./assets/screenshot-target-group-add-instance.png" width="100%" style="margin:15px">
 </p>
 
 And, here it is, you can finally create your load balancer.
@@ -1464,7 +1464,7 @@ We won't go into much details here but here is how to do that:
 Here is a schema reprensenting how everything works in the end:
 
 <p align="center">
-    <img src="./assets/schema-dns-load-balancer.png" width="80%">
+    <img src="./assets/schema-dns-load-balancer.png" width="80%" style="margin:15px">
 </p>
 
 
