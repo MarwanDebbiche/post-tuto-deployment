@@ -564,7 +564,7 @@ To learn more about the training arguments and options, please check out the ori
 
 From now on, we'll use the trained model that is saved as a release <a href="https://github.com/ahmedbesbes/character-based-cnn/releases/download/model_en_tp_amazon/model_tp_amazon_1014.pth">here</a>. When running the app for the first time, it'll get downloaded from that link and locally saved (in the container) for the inference.
 
-## 3 - Building an interactive web app 📲 with Dash, Flask and PostgeSQL
+## 3 - Building an interactive web app 📲 with Dash, Flask and PostgreSQL
 
 *The dash code can be found [here](https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/dash) and the api code [here](https://github.com/MarwanDebbiche/post-tuto-deployment/tree/master/src/api)*
 
