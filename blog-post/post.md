@@ -470,9 +470,8 @@ On the raw data, i.e. the matrix representation of a sentence, convolutions with
 
 After the last convolution layer, the output is flattened and passed through two successive fully connected layers that act as a classifier.
 
-To learn more about character level CNN and how they work, you can watch this video
+To learn more about character level CNN and how they work, you can watch this video:
 
-<!-- insert my youtube video here -->
 <p align="center">
     <iframe width="600" height="400" src="https://www.youtube.com/embed/CNY8VjJt-iQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen  style="margin:15px"></iframe>
 </p>
