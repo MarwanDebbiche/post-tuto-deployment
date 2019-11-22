@@ -414,7 +414,7 @@ There are a wide range of possible models to use. The one we'll be training is a
 
 The question you'd be asking up-front though is the following: how would you use CNNs for text classification? Aren't these architectures specifically designed for image data?
 
-Well, the truth is, CNN are way more versatile and their application can extend the scope of image classification. In fact, they are also able to capture sequential information that is inherent to text data. The only only trick here is to efficiently represent the input text.
+Well, the truth is, CNN are way more versatile and their application can extend the scope of image classification. In fact, they are also able to capture sequential information that is inherent to text data. The only trick here is to efficiently represent the input text.
 
 To see how this is done, imagine the following tweet:
 
@@ -609,7 +609,7 @@ The two following commands allow to:
 
 ### Flask API
 
-The RESTful API is the most important part of our app. It is responsible for the interractions with both the machine learning model and the database.
+The RESTful API is the most important part of our app. It is responsible for the interactions with both the machine learning model and the database.
 
 Let's have a look at the routes needed for our api:
 
@@ -1421,7 +1421,7 @@ Now you can add the EC2 instance on which we deployed the app as a registered ta
 
 And, here it is, you can finally create your load balancer.
 
-You can test it by goint to your-load-balancer-dns-name-amazonaws.com. you should see your app!
+You can test it by going to your-load-balancer-dns-name-amazonaws.com. you should see your app!
 
 BUT, despite the fact that we have used the certificate issued by ACM, it still says that the connection is not secure!
 
@@ -1452,7 +1452,7 @@ You will have to:
     <img src="./assets/route53-configure-a-record.png" width="30%">
 </p>
 
-And you will soon be able to access the app using your custom domain adress (DNS propacation might usually takes about an hour).
+And you will soon be able to access the app using your custom domain adress (DNS propacation might usually take about an hour).
 
 One last thing that you might want to do is to either redirect traffic from `yourcooldomain.com` to `www.yourcooldomain.com`, or the other way around. We chose to redirect `reviews.ai2prod.com` to [www.reviews.ai2prod.com](http://www.reviews.ai2prod.com)
 
