@@ -64,3 +64,19 @@ In order to run the dash server to visualize the output:
 cd src/dash/
 python app.py
 ```
+
+
+#### How to contribute 😁
+
+Feel free to contribute ! Report any bugs in the issue section.
+
+- [ ] Add server-side pagination for Admin Page and `GET /api/reviews` route.
+- [ ] Protect admin page with authentication.
+- [ ] Either use [Kubernetes](https://kubernetes.io) or [Amazon ECS](https://aws.amazon.com/ecs) to deploy the app on a cluster of containers, instead of on one single EC2 instance.
+- [ ] Use continuous deployment with [Travis CI](https://travis-ci.org)
+- [ ] Use a managed service such as [RDD](https://aws.amazon.com/rds/) for the database
+
+
+#### Licence
+
+MIT
