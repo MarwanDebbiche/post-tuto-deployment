@@ -70,6 +70,8 @@ python app.py
 
 Feel free to contribute ! Report any bugs in the issue section.
 
+Here are the few things we spotted and we wished to add.
+
 - [ ] Add server-side pagination for Admin Page and `GET /api/reviews` route.
 - [ ] Protect admin page with authentication.
 - [ ] Either use [Kubernetes](https://kubernetes.io) or [Amazon ECS](https://aws.amazon.com/ecs) to deploy the app on a cluster of containers, instead of on one single EC2 instance.
