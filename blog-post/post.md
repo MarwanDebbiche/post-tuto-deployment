@@ -1427,10 +1427,34 @@ BUT, despite the fact that we have used the certificate issued by ACM, it still 
 
 Don't worry, that's perfectly fine. If you remember correctly, the certificate we requested protects `mycooldomain.com`, not `your-load-balancer-dns-name-amazonaws.com`.
 
-So we need to create a record set in Route53 to map our domain name to our load balancer. We will see how to do that very soon. But before that, we will need to configure one last thing in our ALB.
+So we need to create a record set in Route53 to map our domain name to our load balancer. We will see how to do that very soon.
 
-**TBC with HTTP rule : redirection to HTTPS**
+But before that, we will already put in place a redirection from HTTP to HTTPS in our load balancer. This will ensure that all the traffic is secured when we will finally use our domain.
 
+To do that, you need to edit the HTTP rule of your Application Load Balancer:
+
+<p align="center">
+    <img src="./assets/screenshot-load-balancer-view-rules.png" width="100%" style="margin:15px">
+</p>
+
+Click on the pen symbols:
+
+<p align="center">
+    <img src="./assets/screenshot-load-balancer-edit-rule.png" width="80%" style="margin:15px">
+</p>
+
+Delete the previous action (`Forward to`) and then add a new `Redirect to` action:
+<p align="center">
+    <img src="./assets/screenshot-load-balancer-delete-old-rule.png" width="80%" style="margin:15px">
+</p>
+
+Finally, select the HTTPS protocol with port 443, and update your rule.
+
+<p align="center">
+    <img src="./assets/screenshot-load-balancer-add-new-rule.png" width="80%" style="margin:15px">
+</p>
+
+You should now be automatically redirected to https://your-load-balancer-dns-name-amazonaws.com when accessing http://your-load-balancer-dns-name-amazonaws.com
 
 
 **Create a record set in Route53**
