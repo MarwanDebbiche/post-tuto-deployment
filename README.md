@@ -25,6 +25,10 @@ To build this application we'll follow these steps:
 
 <hr>
 
+### Project architecture 
+
+All the code is avai
+
 
 ### Run the app locally
 

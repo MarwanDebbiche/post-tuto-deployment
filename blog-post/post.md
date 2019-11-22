@@ -422,7 +422,7 @@ To see how this is done, imagine the following tweet:
     <img src="./assets/tweet.png" width="60%" style="margin:15px">
 </p>
 
-Assuming an alphabet of size 70 containing the english letters and the special characters and an arbitrary maximum length of 140, one possible representation of this sentence is a (70, 140) matrix where each column is a one hot vector indiciating the position of a given character in the alphabet and 140 being the maximum length of tweets. This porcess is called **quantization**.
+Assuming an alphabet of size 70 containing the english letters and the special characters and an arbitrary maximum length of 140, one possible representation of this sentence is a (70, 140) matrix where each column is a one hot vector indicating the position of a given character in the alphabet and 140 being the maximum length of tweets. This process is called **quantization**.
 
 Note that if a sentence is too long, the representation truncates up to the first 140 characters. On the other hand, if the sentence is too short 0 column vectors are padded until the (70, 140) shape is reached.
 
@@ -435,7 +435,7 @@ So what to do now with this representation?
 **Feed it to a CNN for classification, obviously 😁**
 
 But there's a small trick though. Convolutions are usually performed using 2D-shaped kernels, because these structures capture the 2D spatial information lying in the pixels. 
-Text is however not suited to this type of convolutions beacuse letters follow each other sequentially, in one dimension only, to form a meaning. To capture this 1-dimensional denpendency, we'll use **1D convolutions**.
+Text is however not suited to this type of convolutions because letters follow each other sequentially, in one dimension only, to form a meaning. To capture this 1-dimensional dependency, we'll use **1D convolutions**.
 
 **So how does a 1-D convolution work?**
 
@@ -593,7 +593,7 @@ Now, let's have a closer look at how those blocks are built.
 
 ### PostgreSQL Database
 
-Nothnig fancy or original regarding the database part. We chose to use one of the most widely used relational databases: PostgreSQL.
+Nothing fancy or original regarding the database part. We chose to use one of the most widely used relational databases: PostgreSQL.
 
 To run a PostgreSQL database for local development, you can either download PostgreSQL from the [official website](https://www.postgresql.org/download/) or, more simply, launch a postgres container using [Docker](https://hub.docker.com/_/postgres):
 
@@ -640,7 +640,7 @@ As you can see, this route gets a text field called `review` and returns a senti
 
 It starts by downloading the trained model from github and saving it to disk. Then it loads it and pass it to GPU or CPU.
 
-When the api recieves an input review it passes it to the `predict_sentiment` function. This function is responsible of representing the raw text in a matrix format and feeding it to the model.
+When the api receives an input review it passes it to the `predict_sentiment` function. This function is responsible of representing the raw text in a matrix format and feeding it to the model.
  
 ```python
 from ml.model import CharacterLevelCNN
