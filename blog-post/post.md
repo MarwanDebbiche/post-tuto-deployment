@@ -2,7 +2,7 @@
 
 ## Introduction
 
-*This started out as a challenge. With a [friend](marwandebbiche.com) of mine, we wanted to see if it was possible to build something and push it to production. In 3 weeks. This is our story.*
+*This started out as a challenge. With a [friend](http://marwandebbiche.com) of mine, we wanted to see if it was possible to build something and push it to production. In 3 weeks. This is our story.*
 
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun 😀.
 
@@ -1378,7 +1378,7 @@ According to the [documentation](https://docs.aws.amazon.com/acm/latest/userguid
 
 Load balancers are, as their names suggest, usually used to balance the load between several instances. However, in our case, we deployed our app to one instance only, so we didn't need any load balancing. In fact, we used an [AWS ALB](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) (Application Load Balancer) as a reverse proxy, to route the traffic from HTTPS and HTTP ports (443 and 80 respectively) to our Dash app port (8050).
 
-To create and configure your Application Load Balancer go to the [Load Balancing tab]() of the EC2 page in the AWS console and click on the "Create Load Balancer" button:
+To create and configure your Application Load Balancer go to the [Load Balancing tab](https://console.aws.amazon.com/ec2/home#LoadBalancers) of the EC2 page in the AWS console and click on the "Create Load Balancer" button:
 
 
 <p align="center">
@@ -1407,36 +1407,64 @@ Then you will need to configure the security groups for your ALB. Create a new s
 
 Once this is done, remains the final step: creating your target group for your load balancer.
 
-**TBC**
+To do that you will need to specify the port on which the traffic from the load balancer should be routed. In our case this is our Dash app's port, 8050:
 
 <p align="center">
     <img src="./assets/screenshot-target-group-configure.png" width="100%">
 </p>
 
-**TBC**
+Now you can add the EC2 instance on which we deployed the app as a registered target for the group:
 
 <p align="center">
     <img src="./assets/screenshot-target-group-add-instance.png" width="100%">
 </p>
 
-You can finally create your load balancer.
+And, here it is, you can finally create your load balancer.
 
-You can test it by goint to your-load-balancer-dns-name-amazonaws.com, you should see your app!
+You can test it by goint to your-load-balancer-dns-name-amazonaws.com. you should see your app!
 
 BUT, despite the fact that we have used the certificate issued by ACM, it still says that the connection is not secure!
 
 Don't worry, that's perfectly fine. If you remember correctly, the certificate we requested protects `mycooldomain.com`, not `your-load-balancer-dns-name-amazonaws.com`.
 
-So we need to create a record set in Route53 ... **TBC**
+So we need to create a record set in Route53 to map our domain name to our load balancer. We will see how to do that very soon. But before that, we will need to configure one last thing in our ALB.
+
+**TBC with HTTP rule : redirection to HTTPS**
+
+
 
 **Create a record set in Route53**
 
-**TBC**
+A Route53 record set is basically a mapping between a domain (or subdomain) and either an IP adress or an AWS asset. In our case, our Application Load Balancer. This record will then be propagated in the [Domain Name System](https://en.wikipedia.org/wiki/Domain_Name_System), so that a user can access our app by typing the URL.
 
-Final recap schema :
+To create a record set go to your hosted zone's page in Route53 and click on the `Create Record Set` button:
 
 <p align="center">
-    <img src="./assets/schema-dns-load-balancer.png" width="100%">
+    <img src="./assets/route53-create-a-record-set.png" width="80%">
+</p>
+
+You will have to:
+- Type the subdomain name, or leave it empty if you wish to create a record set for the naked domain
+- Select "Yes" for the `Alias` option
+- You should be able to select your application load balancer in the `Alias Target` list
+
+<p align="center">
+    <img src="./assets/route53-configure-a-record.png" width="30%">
+</p>
+
+And you will soon be able to access the app using your custom domain adress (DNS propacation might usually takes about an hour).
+
+One last thing that you might want to do is to either redirect traffic from `yourcooldomain.com` to `www.yourcooldomain.com`, or the other way around. We chose to redirect `reviews.ai2prod.com` to [www.reviews.ai2prod.com](http://www.reviews.ai2prod.com)
+
+We won't go into much details here but here is how to do that:
+- Create a new application load balancer. It will only be in charge of redirecting to your app's main url so you don't need to register any instance in its target group.
+- Modify HTTP and HTTPS listeners to redirect to your app's main url
+- Create a record set in Route53 to map the subdomain you wish to redirect your traffic from, to this new ALB
+
+Here is a schema reprensenting how everything works in the end:
+
+<p align="center">
+    <img src="./assets/schema-dns-load-balancer.png" width="80%">
 </p>
 
 
