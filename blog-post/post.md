@@ -2,7 +2,7 @@
 
 ## Introduction
 
-*This started out as a challenge. With a [friend](http://marwandebbiche.com) of mine, we wanted to see if it was possible to build something from scratch and push it to production. In 3 weeks. This is our story.*
+*This started out as a challenge. With a [friend](http://marwandebbiche.com) of mine, we wanted to see if it was possible to build something from scratch and push it to production. In 3 weeks.*
 
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun 😀.
 
