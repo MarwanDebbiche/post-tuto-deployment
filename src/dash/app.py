@@ -94,7 +94,7 @@ home_layout = html.Div(
         ),
 
         html.H5(
-            'Sentiment anlysis 🤖'
+            'Sentiment analysis 🤖'
         ),
 
         dbc.Progress(

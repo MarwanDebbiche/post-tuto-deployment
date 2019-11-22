@@ -1272,7 +1272,7 @@ So how did we build this workflow? Below are the main steps.
 
 The very first step to our deployment journey is launching an instance to deploy our app on.
 
-To do this, go to the EC2 page of the [AWS Console](https://console.aws.amazon.com/ec2), and click n the "launch Instance".
+To do this, go to the EC2 page of the [AWS Console](https://console.aws.amazon.com/ec2), and click on the "launch Instance".
 
 You will need to select an AMI. We used Amazon Linux 2, but you can choose any Linux based instance.
 
@@ -1350,7 +1350,7 @@ Go the Route53 page of the AWS console, and click on "Domain registration".
     <img src="./assets/screenshot-route53-homepage.png" width="80%" style="margin:15px">
 </p>
 
-Then, follow the domain purchase process which is quite straightforward. The hardest step is finding an available domain ame that you like.
+Then, follow the domain purchase process which is quite straightforward. The hardest step is finding an available domain name that you like.
 
 **Request an SSL certificate using ACM**
 
