@@ -1,5 +1,9 @@
 # End 2 End Machine Learning : From Data Collection to Deployment 🚀 
 
+This project has be done in collaboration with and <a href="https://github.com/ahmedbesbes">Ahmed BESBES</a>
+
+You can read about it <a href="https://ahmedbesbes.com/end-to-end-ml.html">here</a> and <a href="https://marwandebbiche.com/posts/e2e-ml/">here</a>.
+
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment and the journey, as you'll see it, is exciting and fun 😀.
 
 Before we begin, let's have a look at the app we'll be building:
