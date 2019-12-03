@@ -31,9 +31,6 @@ To build this application we'll follow these steps:
 
 ### Project architecture 
 
-All the code is avai
-
-
 ### Run the app locally
 
 
