@@ -6,7 +6,7 @@ You may read about it <a href="https://ahmedbesbes.com/end-to-end-ml.html">here<
 
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment; and the journey, you'll see, is exciting and fun. 😀
 
-Before we begin, let's have a look at the app we'll build:
+Before we begin, let's have a look at [the app](https://www.reviews.ai2prod.com/) we'll build:
 
 <p align="center">
     <img src="./blog-post/assets/app.gif"  style="margin:15px">
