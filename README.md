@@ -2,7 +2,9 @@
 
 In this job, I collaborated with <a href="https://github.com/ahmedbesbes">Ahmed BESBES</a>
 
-You may read about it <a href="https://ahmedbesbes.com/end-to-end-ml.html">here</a> and <a href="https://marwandebbiche.com/posts/e2e-ml/">here</a>.
+Medium post <a href="https://medium.com/@ahmedbesbes/end-to-end-machine-learning-from-data-collection-to-deployment-ce74f51ca203">here</a>.
+
+You may also read about it <a href="https://ahmedbesbes.com/end-to-end-ml.html">here</a> and <a href="https://marwandebbiche.com/posts/e2e-ml/">here</a>.
 
 In this post, we'll go through the necessary steps to build and deploy a machine learning application. This starts from data collection to deployment; and the journey, you'll see, is exciting and fun. 😀
 
