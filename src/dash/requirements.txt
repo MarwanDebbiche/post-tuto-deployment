@@ -1,6 +1,6 @@
 dash==1.4.0
 dash-daq==0.2.2
-requests==2.22.0
+requests==2.31.0
 pandas==0.25.1
 dash_bootstrap_components==0.7.2
 gunicorn==19.9.0
